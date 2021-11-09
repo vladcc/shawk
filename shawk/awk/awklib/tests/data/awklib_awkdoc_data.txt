@@ -1,0 +1,25 @@
+#@ <test>
+#@ This is the awkdoc test.
+#@
+
+#
+#@ Start with local arguments.
+#
+function foo(    _arg1, _arg2) {
+
+}
+
+#
+#@ One public arg, others are local.
+#
+function bar(arg1,    _arg2, _arg3) {}
+
+#
+#@ Two arguments on the first line, others on the next.
+#
+function baz(arg1, arg2,
+arg3, arg4) {
+}
+
+
+#@ </test>

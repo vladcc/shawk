@@ -1,0 +1,284 @@
+%{
+#include <time.h>
+
+enum {
+	PLUS = 1,
+	MINUS,
+	MULT,
+	DIVD,
+	MODUL,
+	INCR,
+	DECR,
+	EQEQ,
+	NEQ,
+	GRTR,
+	LESS,
+	GEQ,
+	LEQ,
+	LAND,
+	LOR,
+	LNOT,
+	AMPRS,
+	BOR,
+	XOR,
+	LSHFT,
+	RSHFT,
+	EQ,
+	PLEQ,
+	MINEQ,
+	MULTEQ,
+	DIVEQ,
+	MODEQ,
+	LPAR,
+	RPAR,
+	LCURLY,
+	RCURLY,
+	LSQUARE,
+	RSQUARE,
+	SEMI,
+	COMMA,
+	TOK_EOI,
+	AUTO,
+	BREAK,
+	CASE,
+	CHAR,
+	CONST,
+	CONTINUE,
+	DEFAULT,
+	DO,
+	DOUBLE,
+	ELSE,
+	ENUM,
+	EXTERN,
+	FLOAT,
+	FOR,
+	GOTO,
+	IF,
+	INT,
+	LONG,
+	REGISTER,
+	RETURN,
+	SHORT,
+	SIGNED,
+	SIZEOF,
+	STATIC,
+	STRUCT,
+	SWITCH,
+	TYPEDEF,
+	UNION,
+	UNSIGNED,
+	VOID,
+	VOLATILE,
+	WHILE,
+	ID,
+	NUM,
+	TOK_ERROR,
+};
+
+static const char * tokens[] = {
+	"",
+	"+",
+	"-",
+	"*",
+	"/",
+	"%",
+	"++",
+	"--",
+	"==",
+	"!=",
+	">",
+	"<",
+	">=",
+	"<=",
+	"&&",
+	"||",
+	"!",
+	"&",
+	"|",
+	"^",
+	"<<",
+	">>",
+	"=",
+	"+=",
+	"-=",
+	"*=",
+	"/=",
+	"%=",
+	"(",
+	")",
+	"{",
+	"}",
+	"[",
+	"]",
+	";",
+	",",
+	"EOI",
+	"auto",
+	"break",
+	"case",
+	"char",
+	"const",
+	"continue",
+	"default",
+	"do",
+	"double",
+	"else",
+	"enum",
+	"extern",
+	"float",
+	"for",
+	"goto",
+	"if",
+	"int",
+	"long",
+	"register",
+	"return",
+	"short",
+	"signed",
+	"sizeof",
+	"static",
+	"struct",
+	"switch",
+	"typedef",
+	"union",
+	"unsigned",
+	"void",
+	"volatile",
+	"while",
+	"id",
+	"number",
+	"I am Error"
+};
+
+%}
+
+digit         [0-9]
+word        [a-z_A-Z]
+
+%%
+"auto" {return AUTO;}
+"break" {return BREAK;}
+"case" {return CASE;}
+"char" {return CHAR;}
+"const" {return CONST;}
+"continue" {return CONTINUE;}
+"default" {return DEFAULT;}
+"do" {return DO;}
+"double" {return DOUBLE;}
+"else" {return ELSE;}
+"enum" {return ENUM;}
+"extern" {return EXTERN;}
+"float" {return FLOAT;}
+"for" {return FOR;}
+"goto" {return GOTO;}
+"if" {return IF;}
+"int" {return INT;}
+"long" {return LONG;}
+"register" {return REGISTER;}
+"return" {return RETURN;}
+"short" {return SHORT;}
+"signed" {return SIGNED;}
+"sizeof" {return SIZEOF;}
+"static" {return STATIC;}
+"struct" {return STRUCT;}
+"switch" {return SWITCH;}
+"typedef" {return TYPEDEF;}
+"union" {return UNION;}
+"unsigned" {return UNSIGNED;}
+"void" {return VOID;}
+"volatile" {return VOLATILE;}
+"while" {return WHILE;}
+"+" {return PLUS;}
+"-" {return MINUS;}
+"*" {return MULT;}
+"/" {return DIVD;}
+"%" {return MODUL;}
+"++" {return INCR;}
+"--" {return DECR;}
+"==" {return EQEQ;}
+"!=" {return NEQ;}
+">" {return GRTR;}
+"<" {return LESS;}
+">=" {return GEQ;}
+"<=" {return LEQ;}
+"&&" {return LAND;}
+"||" {return LOR;}
+"!" {return LNOT;}
+"&" {return AMPRS;}
+"|" {return BOR;}
+"^" {return XOR;}
+"<<" {return LSHFT;}
+">>" {return RSHFT;}
+"=" {return EQ;}
+"+=" {return PLEQ;}
+"-=" {return MINEQ;}
+"*=" {return MULTEQ;}
+"/=" {return DIVEQ;}
+"%=" {return MODEQ;}
+"("  {return LPAR;}
+")"  {return RPAR;}
+"{"  {return LCURLY;}
+"}"  {return RCURLY;}
+"["  {return LSQUARE;}
+"]"  {return RSQUARE;}
+";"  {return SEMI;}
+","  {return COMMA;}
+
+{word}({word}|{digit})* {return ID;}
+{digit}+ {return NUM;}
+[ \t\n\r]            /* skip whitespace */
+%%
+
+int yywrap(void){return 1;}
+
+static void output(void)
+{
+    clock_t begin, end;
+    double time;
+
+    begin = clock();
+    
+    int what;
+    while ((what = yylex()) != 0)
+        printf("%s\n", tokens[what]);
+    
+    end = clock();
+    time = (double)(end - begin) / CLOCKS_PER_SEC;
+    fprintf(stderr, "%f sec\n", time);
+}
+
+static void silent(void)
+{
+    clock_t begin, end;
+    double time;
+
+    begin = clock();
+    
+    int what;
+    while ((what = yylex()) != 0)
+        continue;
+    
+    end = clock();
+    time = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("%f sec\n", time);
+}
+
+int main(int argc, char * argv[])
+{
+	if (argc > 1)
+	{
+		const char * fname = argv[1];
+		if (!freopen(fname, "r", stdin))
+		{
+			fprintf(stderr, "error: can't open file '%s'\n", fname);
+			return -1;
+		}
+	}
+	
+	if (argc > 2)
+        output();
+    else
+		silent();
+	
+	return 0;
+}

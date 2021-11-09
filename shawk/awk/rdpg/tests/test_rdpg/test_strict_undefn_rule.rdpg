@@ -1,0 +1,7 @@
+rule foo
+defn bar
+end
+
+rule bar
+defn baz
+end

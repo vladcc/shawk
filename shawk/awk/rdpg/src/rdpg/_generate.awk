@@ -1,0 +1,186 @@
+# <generate>
+function emit_func(str) {tabs_print(sprintf("%s %s", IR_FUNC(), str))}
+function emit_func_end() {tabs_print(IR_FUNC_END())}
+function emit_call(str) {tabs_print(sprintf("%s %s", IR_CALL(), str))}
+function emit_if(str) {
+	tabs_print(sprintf("%s %s %s", IR_IF(), IR_CALL(), str))
+}
+function emit_else_if(str) {
+	tabs_print(sprintf("%s %s %s", IR_ELSE_IF(), IR_CALL(), str))
+}
+function emit_else(str) {tabs_print(IR_ELSE())}
+function emit_return(str) {tabs_print(sprintf("%s %s", IR_RETURN(), str))}
+
+function expose_return(str,    _arr, _tmp, _ret) {
+	# expose the return only if it has valid IR syntax, so it can be considered
+	# in the optimization stage
+	
+	_ret = str
+	
+	split(str, _arr)
+	_tmp = _arr[1]
+	if (IR_GOAL() == _tmp || IR_FAIL() == _tmp) {
+		_tmp = _arr[2]
+		if (IR_RETURN() == _tmp) {
+			_tmp = _arr[3]
+			if (IR_TRUE() == _tmp || IR_FALSE() == _tmp || IR_CALL() == _tmp)
+				_ret = remove_first_field(str)
+		}
+	}
+
+	return _ret
+}
+function emit_goal(str) {
+	tabs_print(sprintf("%s",
+		expose_return(sprintf("%s %s", IR_GOAL(), str))))
+}
+function emit_fail(str) {
+	tabs_print(sprintf("%s",
+		expose_return(sprintf("%s %s", IR_FAIL(), str))))
+}
+
+function emit_comment(str) {print sprintf("%s %s", IR_COMMENT(), str)}
+function emit_block_open(fname) {
+	tabs_print(sprintf("%s %s_%d", IR_BLOCK_OPEN(), fname, ++_B_n))
+	tabs_inc()
+}
+function emit_block_close(fname) {
+	tabs_dec()
+	tabs_print(sprintf("%s %s_%d", IR_BLOCK_CLOSE(), fname, _B_n--))
+}
+
+function get_list_of_terminals(arr, len,    _symb, _i, _count, _str) {
+	_count = 0
+	_str = ""
+	for (_i = 1; _i <= len; ++_i) {
+		_symb = arr[_i]
+		if (is_terminal(_symb)) {
+			++_count
+			_str = sprintf("%s%s", _str, _symb)
+			if (_i != len)
+				_str = (_str " ")
+		}
+	}
+	return (_count) ? sprintf("%d %s", _count, _str) : ""
+}
+function did_only_nullables_fail(arr, len,    _i) {
+	for (_i = 1; _i <= len; ++_i) {	
+		if (!is_rule_nullable(arr[_i]))
+			return 0
+	}
+	return 1
+}
+
+function tok_match_call(val) {return sprintf("%s %s", IR_TOK_MATCH(), val)}
+
+function generate_ir_rule(tree, rule,    _current, _path, _i, _val, _arr_val,
+_len_val, _is_term, _has, _is_last, _symb) {
+	
+	if (!_current) # first time
+		_current = rule
+	
+	if (!rdpg_pft_has(tree, _current))
+		return
+	
+	_val = rdpg_pft_get(tree, _current)
+	_len_val = rdpg_pft_split(_val, _arr_val)
+	
+	for (_i = 1; _i <= _len_val; ++_i) {
+		_val = _arr_val[_i]
+		_is_term = is_terminal(_val)
+		
+		# if the current symbol is a terminal, make a tok_match call
+		# else make an ordinary function call
+		_symb = (_is_term) ? tok_match_call(_val) : _val
+		
+		if (_i == 1)
+			emit_if(_symb)        # if
+		else 
+			emit_else_if(_symb)   # else if
+			
+		emit_block_open(rule)         # {
+		
+		_path = rdpg_pft_cat(_current, _val) # current path and value is 
+		                                     # exactly where we are
+		
+		_is_last = rdpg_pft_is_marked(tree, _path) # are we at the last call of
+		                                           # a definition?
+		
+		if (_is_last) {                # if last call of definition
+			_has = goal_get(_path)     # and a goal was defined
+			if (_has)
+				emit_goal(_has)        # execute the definition goal
+		
+			if (_is_term)
+				emit_call(IR_TOK_NEXT()) # consume the token after tok_match
+
+			emit_return(IR_TRUE())       # definition match successful
+		
+		} else {
+			if (_is_term)                # not last call of definition
+				emit_call(IR_TOK_NEXT()) # consume the token after tok_match
+			
+			generate_ir_rule(tree, rule, _path)  # the same thing again until
+			                                     # the end of the definition
+			                                     # is reached
+		}
+		
+		emit_block_close(rule)    # }
+	}
+
+	emit_else()                   # else
+	emit_block_open(rule)         # {
+	
+	if (!is_rule_nullable(rule)) {    # if the rule has no epsilon production
+	                                  # it can produces errors; otherwise not
+	                                  
+		_has = get_list_of_terminals(_arr_val, _len_val)
+		if (_has)
+			emit_call(sprintf("%s %s", IR_TOK_ERR(), _has))
+	}
+	
+	_has = fail_get(_current)         # execute rule failure procedure
+	if (_has)
+		emit_fail(_has)
+	                                  # if all calls up the same level of the if
+	                                  # chain had epsilon productions, return
+	                                  # true, since returning false could
+	                                  # trigger an error further up the chain;
+	                                  # epsilon productions trigger no errors on
+	                                  # failure by definition
+	
+	emit_return(did_only_nullables_fail(_arr_val, _len_val) ? \
+		IR_TRUE() : IR_FALSE())
+	emit_block_close(rule)        # }
+}
+
+function definition_comment(rule, _str) {
+
+	_str = get_raw_definition(rule)
+	sub("\n$", "", _str)
+	gsub("\n", "\ncomment ", _str)
+	return _str
+}
+function generate_ir(tree,    _rule, _i, _end) {
+
+	emit_comment(sprintf("generated by %s %s",
+		SCRIPT_NAME(), SCRIPT_VERSION()))
+
+	_end = rule_get_count()
+	for (_i = 1; _i <= _end; ++_i) {
+		_rule = rule_get(_i)
+			
+		emit_func(_rule)                         # function _rule()
+		emit_block_open(_rule)                   # {
+		emit_comment(definition_comment(_rule))  # rule definition comment
+		
+		if (1 == _i)                             # start the tokenizer if first
+			emit_call(IR_TOK_NEXT())             # call in the parsing process
+		
+		generate_ir_rule(tree, _rule)            # generate the function content
+		
+		emit_block_close(_rule)                  # }
+		emit_func_end() # mark end of func, so it becomes a paragraph
+	}
+}
+# </generate>

@@ -1,0 +1,25 @@
+begin
+script_ver    1.0
+
+opt_name      foo
+opt_takes_arg true
+opt_short     f
+opt_long      foo
+
+opt_name      bar
+opt_takes_arg false
+opt_short     b
+opt_long      bar
+
+# omit long name
+opt_name      baz
+opt_takes_arg false
+opt_short     x
+opt_long
+
+# omit short name
+opt_name      zig
+opt_takes_arg true
+opt_short     
+opt_long      zig
+end

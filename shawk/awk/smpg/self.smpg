@@ -1,0 +1,319 @@
+%begin
+
+;
+; All needed external sources.
+;
+%include
+	./src/_smpg_doc.awk
+	./src/_smpg_generate.awk
+	../awklib/src/awklib_fsm.awk
+	../awklib/src/awklib_array.awk
+	../awklib/src/awklib_vect.awk
+	../awklib/src/awklib_prep.awk
+	../awklib/src/awklib_tabs.awk
+	../awklib/src/awklib_prog.awk
+	../awklib/src/awklib_read.awk
+%end
+
+;
+; The finite state machine definition.
+;
+%fsm stm
+	begin -> include
+	include -> fsm
+	fsm -> handler
+	handler -> handler | template
+	template -> template | other
+	other -> generate
+	generate -> begin
+%end
+
+;
+; Generate source code for each fsm handler. The syntax is
+; %handler <regex> [args]
+; <regex> is matched against all fsm state names and the code is
+; generated for each match. The '{&}' is replaced by the state name.
+; After generation, the state which matched is not considered for any
+; further matches. I.e if you have
+; %handler .+
+; before
+; %handler begin
+; then '%handler begin' will not get generated, because 'begin' was
+; already matched by '.+'. If it's the other way around, 'begin' will
+; first be generated and then all other states except 'begin', since all
+; of them will match '.+'. If '[args]' exists, it is considered a list
+; of local variables to the handler and will be pasted as is.
+;
+%handler begin
+	init()
+%end
+
+%handler include _arr, _len, _fnr, _i, _line
+	_fnr = FNR
+	_len = get_block(_arr)
+	for (_i = 1; _i <= _len; ++_i) {
+		_line = _arr[_i]
+		if (_line)
+			{&}_save_line(_arr[_i], _fnr+_i)
+	}
+%end
+
+%handler fsm _arr, _len, _fnr, _i, _line
+	if (NF > 1) {
+		{&}_save_name($2)
+		_fnr = FNR
+		_len = get_block(_arr)
+		
+		if (!_len)
+			equit("'fsm' block empty")
+		
+		for (_i = 1; _i <= _len; ++_i) {
+			_line = _arr[_i]
+			if (_line)
+				{&}_save_line(_arr[_i], _fnr+_i)
+		}
+	} else {
+		{&}_syntax_error()
+	}
+%end
+
+%handler handler
+	if (NF > 1) {
+		{&}_save_rx($2)
+		{&}_map_rx_args($2, $0)
+		{&}_map_rx_src($2, get_src())
+	} else {
+		{&}_syntax_error()
+	}
+%end
+
+%handler template
+	if (NF > 1) {
+		{&}_save_rx($2)
+		{&}_map_rx_src($2, get_src())
+	} else {
+		{&}_syntax_error()
+	}
+%end
+
+%handler other
+	{&}_save_src(get_src())
+%end
+
+%handler generate
+	main()
+%end
+
+%handler error
+; the error handler has these implicit arguments as per awklib_fsm
+	err_expect(expected, got)
+%end
+
+;
+; Generate all code associated with each fsm state and its data. Much
+; like %handler, but generates arbitrary code, rather than source code
+; for a particular function.
+;
+%template fsm
+function {&}_init() {
+	vect_init(B_vect_{&})
+	vect_init(B_vect_{&}_line_no)
+}
+function {&}_save_line(line, line_no) {
+	vect_push(B_vect_{&}, line)
+	vect_push(B_vect_{&}_line_no, line_no)
+}
+function {&}_save_name(str) {B_{&}_name = str}
+function {&}_get_{&}_src(arr_out) {
+	return arr_copy(arr_out, B_vect_{&}, vect_len(B_vect_{&}))
+}
+function {&}_get_line_no(n) {return B_vect_{&}_line_no[n]}
+function {&}_get_name() {return B_{&}_name}
+function {&}_syntax_error() {
+	equit(sprintf("syntax should be '%%%s <fsm-name>'",
+				STM_FSM()))
+}
+%end
+
+%template include
+function {&}_init() {
+	vect_init(B_vect_{&})
+	vect_init(B_vect_{&}_line_no)
+}
+function {&}_save_line(line, line_no) {
+	vect_push(B_vect_{&}, line)
+	vect_push(B_vect_{&}_line_no, line_no)
+}
+function {&}_get_num() {return vect_len(B_vect_{&})}
+function {&}_get_line_no(n) {return B_vect_{&}_line_no[n]}
+function {&}_get_fname(n) {return B_vect_{&}[n]}
+function {&}_get_file_names(arr_out) {
+	return arr_copy(arr_out, B_vect_{&}, vect_len(B_vect_{&}))
+}
+%end
+
+%template handler
+function {&}_init() {
+	B_map_{&}[""]
+	delete B_map_{&}
+}
+function {&}_map_rx_args(rx, arg_str,    _arr, _len, _args) {
+	# str is assumed to be '%handler <regex> [args]'
+	_len = split(arg_str, _arr)
+	_arr[1] = _arr[2] = " "
+	_args = arr_to_str(_arr, _len, " ")
+	sub("^[[:space:]]+", "", _args)
+	B_map_{&}[rx, "args"] = _args
+}
+function {&}_save_rx(rx) {
+	B_{&}_rx_list = str_cat(B_{&}_rx_list, rx)
+}
+function {&}_map_rx_src(rx, str) {B_map_{&}[rx, "src"] = str}
+function {&}_get_rx_src(rx) {return B_map_{&}[rx, "src"]}
+function {&}_get_rx_args(rx) {return B_map_{&}[rx, "args"]}
+function {&}_get_rx_all(arr_out) {
+	return split(B_{&}_rx_list, arr_out, SUBSEP)
+}
+function {&}_syntax_error() {
+	equit(sprintf("syntax should be '%%%s <regex> [args]'",
+				STM_HANDLER()))
+}
+%end
+
+%template template
+function {&}_init() {
+	B_map_{&}[""]
+	delete B_map_{&}
+}
+function {&}_save_rx(rx) {
+	B_{&}_rx_list = str_cat(B_{&}_rx_list, rx)
+}
+function {&}_map_rx_src(rx, str) {B_map_{&}[rx, "src"] = str}
+function {&}_get_rx_src(rx) {return B_map_{&}[rx, "src"]}
+function {&}_get_rx_all(arr_out) {
+	return split(B_{&}_rx_list, arr_out, SUBSEP)
+}
+function {&}_syntax_error() {
+	equit(sprintf("syntax should be '%%%s <regex>'", STM_TEMPLATE()))
+}
+%end
+
+%template other
+function {&}_init() {B_{&}_src = ""}
+function {&}_save_src(str) {B_{&}_src = str}
+function {&}_get_src() {return B_{&}_src}
+%end
+
+;
+; This gets pasted in the final script as is, excluding any empty lines.
+;
+%other
+# smpg.awk
+# Vladimir Dinev
+# vld.dinev@gmail.com
+# 2021-10-02
+
+# <awk_loop>
+BEGIN {enter()}
+END {leave()}
+/^;|^[[:space:]]*$/ {next}
+/^%/ {transition(remove_perc($1)); next}
+{equit("line not source or a comment")}
+# </awk_loop>
+
+# <script_main>
+function SCRIPT_NAME() {return "smpg.awk"}
+function SCRIPT_VERSION() {return "1.0"}
+
+function main() {
+	# called in the 'generate' state
+	generate_all()
+	out_print()
+}
+# </script_main>
+
+# <misc>
+function enter() {
+	set_program_name(SCRIPT_NAME())
+	
+	if (Help || Version || Doc || Template || ExampleInput || ExampleData) {
+		if (Help)
+			print_help()
+		else if (Version)
+			print_version()
+		else if (Doc)
+			print_doc()
+		else if (Template)
+			print_template_code()
+		else if (ExampleInput)
+			print_example_input()
+		else if (ExampleData)
+			print_example_data()
+		
+		skip_end_set()
+		exit_success()
+	}
+	
+	if (ARGC != 2) {
+		pstderr(get_use_str())
+		pstderr(sprintf("Try: %s -vHelp=1", get_program_name()))
+		
+		skip_end_set()
+		exit_failure()
+	}
+}
+function leave(    _st) {
+	if (!did_error_happen() && !should_skip_end()) {
+		if ((_st = get_state()) != STM_GENERATE())
+			err_expect(STM_GENERATE(), _st, "end-of-file")
+	}
+}
+function get_state() {return stm_get_state(B_the_fsm)}
+function transition(st) {stm_next(B_the_fsm, st)}
+function remove_perc(str) {
+	sub("^%", "", str)
+	return str
+}
+function str_cat(a, b, sep) {
+	return (a ? (a (sep ? sep : SUBSEP) b) : b)
+}
+function equit(msg, line_no) {
+	if (!line_no)
+		line_no = FNR
+	error_quit(sprintf("file '%s' line %s: %s", FILENAME, line_no, msg))
+}
+function err_expect(expect, got, line_no) {
+	equit(sprintf("expected '%s', got '%s' instead", expect, got), line_no)
+}
+function init() {
+	fsm_init()
+	include_init()
+	handler_init()
+	template_init()
+	other_init()
+}
+function BLOCK_END() {return "^%end"}
+function BLOCK_COMMENT() {return "^[[:space:]]*;"}
+function get_src(    _arr, _len) {
+	_len = read_lines(_arr, BLOCK_END(), BLOCK_COMMENT())
+	return arr_to_str(_arr, _len, "\n")
+}
+function get_block(arr_out,    _len) {
+	_len = read_lines(arr_out, BLOCK_END())
+	arr_gsub(arr_out, _len, "^[[:space:]]+|[[:space:]]+$", "")
+	arr_sub(arr_out, _len, "^[[:space:]]*;.*$", "")
+	return _len
+}
+function out_print() {
+	arr_print(B_vect_output, vect_len(B_vect_output), "\n")
+}
+function out_append_str(str) {
+	vect_push(B_vect_output, str)
+}
+function out_append_arr(arr, len) {
+	vect_push_arr(B_vect_output, arr, len)
+}
+# </misc>
+%end
+
+%generate

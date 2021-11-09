@@ -1,0 +1,6 @@
+key {
+key1 foo
+
+	#include "i-dont-exist"
+	key2 val
+}

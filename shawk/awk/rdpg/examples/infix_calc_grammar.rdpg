@@ -1,0 +1,81 @@
+# start symbol
+rule parse
+defn statements
+end
+
+rule statements
+defn statement eoi
+defn statement statements
+end
+
+rule eoi?
+defn EOI
+end
+
+# if parsing an expression failed, eat tokens until you see ';'
+rule statement
+defn expression_sync
+fail return call sync SEMI
+end
+
+# intermediate rule, so expression can fail at a single point
+rule expression_sync
+defn expression SEMI
+end
+
+rule expression
+defn term expr_rest
+end
+
+rule expr_rest
+defn plus_minus_term expr_rest
+end
+
+# it's ok to not have addition or subtraction in an expression
+rule plus_minus_term?
+defn PLUS term
+goal call add
+defn MINUS term
+goal call subt
+end
+
+rule term
+defn factor term_tail
+end
+
+rule term_tail
+defn div_mul_factor term_tail
+end
+
+# it's ok to not have multiplication or division in an expression
+rule div_mul_factor?
+defn MUL factor
+goal call mult
+defn DIV factor
+goal call divd
+end
+
+rule factor
+defn base expon
+end
+
+# right associative
+rule expon?
+defn EXP factor
+goal call power
+end
+
+rule base
+defn single NUMBER
+goal call push_val
+defn NUMBER
+goal call push_val
+defn LPAR expression RPAR
+end
+
+# optional negation
+rule single?
+defn MINUS
+goal call neg
+defn PLUS
+end

@@ -1,0 +1,7 @@
+begin -> script_ver
+script_ver -> opt_name
+opt_name -> opt_takes_arg
+opt_takes_arg -> opt_short
+opt_short -> opt_long
+opt_long -> opt_name | end
+end -> begin

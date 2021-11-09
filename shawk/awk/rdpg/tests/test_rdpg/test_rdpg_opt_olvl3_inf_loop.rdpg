@@ -1,0 +1,11 @@
+# this breaks the optimizer at Olvl=3 only if there's exactly one defn and its
+# optional; seems to get screwed up at Olvl=2
+# turned out drop_redundant_else() does the wrong thing when there is no else
+
+rule myrule
+defn opt
+end
+
+rule opt?
+defn FOO
+end

@@ -1,0 +1,23 @@
+key1 {
+	key2
+	key3
+	{
+		key4 "val4" {
+			foo bar
+		}
+		key5 "val 5"
+		{
+			foo ""
+		}
+		key6 "one "\
+			"two" {
+			"foo bar"
+		}
+		key7 "one "\
+			"two"
+		{
+			"foo "\
+			"bar" { zig zag }
+		}
+	}
+}

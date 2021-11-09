@@ -1,0 +1,131 @@
+%begin
+
+%include
+	./_check.awk
+	./_misc.awk
+	./_rdpg_pft.awk
+	./_generate.awk
+	./_doc.awk
+	../common/_rdpg_ir.awk
+	
+	../../../awklib/src/awklib_prog.awk
+	../../../awklib/src/awklib_array.awk
+	../../../awklib/src/awklib_vect.awk
+	../../../awklib/src/awklib_tabs.awk
+	../../../awklib/src/awklib_prefix_tree.awk
+%end
+
+%fsm fsm
+	rule -> defn
+	defn -> defn | goal | fail | end
+	goal -> defn | fail | end
+	fail -> end
+	end -> rule
+%end
+
+%handler rule _rule
+	data_or_err()
+	
+	_rule = remove_first_field($0)
+	syntax_check_rule(_rule)
+	_rule = rule_process_name(_rule)
+	
+	save_raw_definition(_rule, $0)
+	
+	if (rule_set_has(_rule))
+		error_qfpos(sprintf("rule '%s' redefined", _rule))
+	else
+		rule_set_place(_rule)
+		
+	rule_line_map_save(_rule)
+	{&}_save(_rule)
+%end
+
+%handler defn _rule, _defn, _full_path
+	data_or_err()
+	
+	gsub("^\"|\"$", "", $0)
+	_rule = get_current_rule()
+	save_raw_definition(_rule, $0)
+	
+	_defn = remove_first_field($0)
+	_defn = syntax_check_defn(_defn)
+	_full_path = get_full_path(_rule, _defn)
+	
+	{&}_save(_full_path)
+	add_defn_to_rule(G_tree, _rule, _defn)
+%end
+
+%handler goal
+	data_or_err()
+	goal_add(get_current_defn(), remove_first_field($0))
+%end
+
+%handler fail
+	data_or_err()
+	fail_add(get_current_rule(), remove_first_field($0))
+%end
+
+%handler end
+	# nothing to do
+%end
+
+%handler error
+	error_qfpos(sprintf("'%s' expected, but got '%s' instead", expected, got))
+%end
+
+%template rule|defn
+function {&}_save(str) {vect_push(_B_vect_{&}, str)}
+function {&}_get(n) {return _B_vect_{&}[n]}
+function {&}_get_count() {return vect_len(_B_vect_{&})}
+%end
+
+%template goal|fail
+function {&}_add(path, val) {_B_map_{&}[path] = val}
+function {&}_get(path) {return _B_map_{&}[path]}
+%end
+
+%other
+# Author: Vladimir Dinev
+# vld.dinev@gmail.com
+# 2021-10-12
+
+function SCRIPT_NAME() {return "rdpg.awk"}
+function SCRIPT_VERSION() {return "1.31"}
+
+# <awk_rules>
+function init() {
+	set_program_name(SCRIPT_NAME())
+
+	if (Help)
+		print_help()
+	if (Version)
+		print_version()
+	if (Example)
+		print_example()
+	if (ARGC != 2)
+		print_use_try()
+	Strict = (Strict) ? Strict : ""
+	
+	# G_tree has to be a global variable
+	rdpg_pft_init(G_tree)
+}
+BEGIN {
+	init()
+}
+END {
+	if (!did_error_happen() && !should_skip_end()) {
+		perform_input_checks(G_tree)
+		generate_ir(G_tree)
+	}
+}
+/^[[:space:]]*(#|$)/ {next} # ignore empty lines and comments
+{fsm_next(G_the_fsm, $1)}
+# </awk_rules>
+
+function error_qfpos(msg) {
+	error_quit(sprintf("file '%s' line %d: %s", FILENAME, FNR, msg))
+}
+%end
+
+%generate

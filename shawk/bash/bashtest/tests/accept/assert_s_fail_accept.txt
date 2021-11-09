@@ -1,0 +1,8 @@
+assert_s_fail.sh: error: '[ 1 -eq 0 ]' failed
+21 bt_exit_failure_strace ../bashtest.sh
+32 bt_error_exit_st ../bashtest.sh
+23 bt_assert ../bashtest.sh
+24 bt_assert_success ../bashtest.sh
+17 test_assert ./assert_s_fail.sh
+10 main ./assert_s_fail.sh
+20 main ./assert_s_fail.sh

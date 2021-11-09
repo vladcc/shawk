@@ -1,0 +1,39 @@
+char_tbl
+	\s  CH_CLS_SPACE
+	\f  CH_CLS_SPACE
+	\r  CH_CLS_SPACE
+	\t  CH_CLS_SPACE
+	\v  CH_CLS_SPACE
+	\n  CH_CLS_NEW_LINE
+	\0  CH_CLS_EOI
+	;   CH_CLS_SEMI
+	{   CH_CLS_L_CURLY
+	}   CH_CLS_R_CURLY
+	#   CH_CLS_HASH
+	"   CH_CLS_QUOTE
+end
+
+symbols
+	{        TOK_L_CURLY
+	}        TOK_R_CURLY
+	NEW_LINE TOK_NEW_LINE
+	INCLUDE  TOK_INCLUDE
+	WORD     TOK_WORD
+	STRING   TOK_STRING
+	EOI      TOK_EOI
+end
+
+keywords
+end
+
+patterns
+end
+
+actions
+	CH_CLS_SPACE    next_ch
+	CH_CLS_EOI      TOK_EOI
+	CH_CLS_NEW_LINE new_line_hack()
+	CH_CLS_HASH     read_include()
+	CH_CLS_QUOTE    read_string()
+	CH_CLS_SEMI     eat_comment()
+end

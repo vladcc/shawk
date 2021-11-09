@@ -1,0 +1,15 @@
+rule zig
+defn foo
+end
+
+rule foo
+defn bar
+end
+
+rule bar
+defn baz
+end
+
+rule baz
+defn foo
+end

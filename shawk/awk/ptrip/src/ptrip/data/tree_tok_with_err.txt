@@ -1,0 +1,11 @@
+thisIsWord	
+#includont ; comment
+
+#include thisIsPatrick
+; comment
+
+"I am string"\ ; comment
+	foo
+{
+  "I am not complet
+}

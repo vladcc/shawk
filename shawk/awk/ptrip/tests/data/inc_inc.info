@@ -1,0 +1,11 @@
+;FILE_BEGIN ./data/inc_inc.info
+ii_key
+{
+	ii_skey val
+	#include "./data/leaf/inc_leaf.info"
+	ii_skey2 val
+	{
+		#include "./data/leaf/inc_leaf.info"
+	}
+}
+;FILE_END ./data/inc_inc.info

@@ -1,0 +1,120 @@
+ptrip is a set of awk script which work with the boost ptree info syntax as
+described here:
+
+https://www.boost.org/doc/libs/1_65_1/doc/html/property_tree/parsers.html#property_tree.parsers.info_parser
+
+ptrip is a set of three tools:
+
+
+
+ptrip.awk - ptree info parser - parses the info syntax and outputs detailed dot
+notation. What ptrip.awk does differently from the boost parser is:
+
+1. Considers the '#include' directive as a part of the language, i.e. the output
+includes the '#include' directives.
+
+2. Prints the file and line number from which the key/value came from along with
+the include level for that file.
+
+3. Annotates where the different info files which make the whole info tree begin
+and end. This allows to later replay the file tree.
+
+4. True recursive include detection, rather than relying on a heuristic check of
+the include depth. I.e. no 'if (depth > 100) error("probably recursive")'. E.g.:
+--------------------------------------------------------------------------------
+$ tail -n +1 file*.info
+==> file1.info <==
+key1
+{
+        key2 val
+}
+
+key4 val
+{
+#include "file2.info"
+}
+
+==> file2.info <==
+key5 val
+
+$ awk -f ptrip.awk file1.info 
+-|file1.info
+-|file1.info:-:;FILE_BEGIN = file1.info
+-|file1.info:1:key1 = {null}
+-|file1.info:3:key1.key2 = val
+-|file1.info:6:key4 = val
+-|file1.info:8:key4.#include = "file2.info"
+--|file2.info
+--|file2.info:-:key4.;FILE_BEGIN = file2.info
+--|file2.info:1:key4.key5 = val
+--|file2.info:-:key4.;FILE_END = file2.info
+-|file1.info:-:;FILE_END = file1.info
+--------------------------------------------------------------------------------
+
+
+
+doti.awk  - dot to info - takes dot notation and outputs info syntax. It works
+with plain dot notation, however, it is intended to turn the output of ptrip.awk
+back into info. E.g.:
+--------------------------------------------------------------------------------
+$ awk -f ptrip.awk file1.info | awk -f doti.awk 
+;FILE_BEGIN file1.info
+key1
+{
+        key2 val
+}
+key4 val
+{
+        #include "file2.info"
+        ;FILE_BEGIN file2.info
+        key5 val
+        ;FILE_END file2.info
+}
+;FILE_END file1.info
+--------------------------------------------------------------------------------
+
+
+
+repli.awk - replay info - takes the output of doti.awk and recreates the
+original file structure. E.g.:
+--------------------------------------------------------------------------------
+$ mkdir info-replay
+
+### change the target directory ###
+$ awk -f ptrip.awk file1.info | awk -f doti.awk | sed 's_file_./info-replay/file_'
+;FILE_BEGIN ./info-replay/file1.info
+key1
+{
+        key2 val
+}
+key4 val
+{
+        #include "./info-replay/file2.info"
+        ;FILE_BEGIN ./info-replay/file2.info
+        key5 val
+        ;FILE_END ./info-replay/file2.info
+}
+;FILE_END ./info-replay/file1.info
+
+$ awk -f ptrip.awk file1.info | awk -f doti.awk | sed 's_file_./info-replay/file_' | awk -f repli.awk 
+repli.awk: info: writing file './info-replay/file1.info'
+repli.awk: info: writing file './info-replay/file2.info'
+
+$ tail -n +1 info-replay/*
+==> info-replay/file1.info <==
+;FILE_BEGIN ./info-replay/file1.info
+key1
+{
+        key2 val
+}
+key4 val
+{
+        #include "./info-replay/file2.info"
+}
+;FILE_END ./info-replay/file1.info
+
+==> info-replay/file2.info <==
+;FILE_BEGIN ./info-replay/file2.info
+key5 val
+;FILE_END ./info-replay/file2.info
+--------------------------------------------------------------------------------

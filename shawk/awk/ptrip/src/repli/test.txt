@@ -1,0 +1,2 @@
+cat data.doti | sed 's_../data/complex/_data/_' | awk -f repli.awk
+diff <(cat data.doti | sed 's_../data/complex/_data/_') <(awk -f ../../ptrip.awk data/entry.info | awk -f ../../doti.awk)

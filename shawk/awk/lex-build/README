@@ -1,0 +1,25 @@
+lex-build builds lexers in different languages. It is separated in a front end
+and multiple back ends. The front end is lex-first.awk. The back ends are per
+supported language, e.g. lex-awk.awk, lex-c.awk, etc. lb_lib.awk is the library
+shared by the front and all back ends. lb_lib.awk in turn uses libraries from
+awklib and is hence generated with make by concatenating all needed sources
+together.
+
+make options:
+make all       - lib + lex*
+make allt      - all + test
+make test      - run tests
+make testv     - like test but verbose
+make lib       - generates the lex-build library
+make lex-first - generate lex-first.awk
+make lex-c     - generates the C translator
+make lex-awk   - generates the awk translator
+make help      - this screen
+
+Example C run:
+$ awk -f lex-first.awk input.lb | awk -f lex-c.awk
+
+Example awk run:
+$ awk -f lex-first.awk input.lb | awk -f lex-awk.awk
+
+For more details, please check the ./doc/ directory.

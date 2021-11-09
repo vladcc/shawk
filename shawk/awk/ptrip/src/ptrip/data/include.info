@@ -1,0 +1,22 @@
+; A comment
+#include foo
+key1 value1   ; Another comment
+key2 "value with special characters in it {};#\n\t\"\0"
+{
+
+    #include "./data/tree_simple.info"    ; included file
+    
+   subkey "value split "\
+          "over three"\
+          "lines"
+   {
+      a_key_without_value ""
+      "a key with special characters in it {};#\n\t\"\0" ""
+      "" value    ; Empty key with a value
+      "" ""       ; Empty key with empty value!
+      #include bar
+   }
+  
+}
+
+#include "./data/tree_simple.info"    ; included file

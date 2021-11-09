@@ -1,0 +1,53 @@
+
+input ../data/tree_simple.info
+WORD 'key1'
+WORD 'value1'
+WORD 'key2'
+'{'
+WORD 'key3'
+WORD 'value3'
+'{'
+WORD 'key4'
+STRING "value4 with spaces"
+'}'
+WORD 'key5'
+WORD 'value5'
+'}'
+
+input ../data/tree_more.info
+WORD 'key1'
+WORD 'value1'
+WORD 'key2'
+STRING "value with special characters in it {};#\n\t\"\0"
+'{'
+WORD 'subkey'
+STRING "value split over threelines"
+'{'
+WORD 'a_key_without_value'
+STRING ""
+STRING "a key with special characters in it {};#\n\t\"\0"
+STRING ""
+STRING ""
+WORD 'value'
+STRING ""
+STRING ""
+'}'
+'}'
+INCLUDE '#include'
+STRING "file.info"
+
+input ../data/tree_tok_with_err.txt
+WORD 'thisIsWord'
+ptrip-lex.awk: error: file '../data/tree_tok_with_err.txt', line 2, pos 10: I am Error
+#includont ; comment
+         ^
+INCLUDE '#include'
+WORD 'thisIsPatrick'
+ptrip-lex.awk: error: file '../data/tree_tok_with_err.txt', line 8, pos 4: I am Error
+	foo
+	  ^
+'{'
+ptrip-lex.awk: error: file '../data/tree_tok_with_err.txt', line 10, pos 19: I am Error
+  "I am not complet
+                  ^
+'}'

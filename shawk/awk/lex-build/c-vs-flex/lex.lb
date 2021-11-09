@@ -1,0 +1,99 @@
+# comment
+char_tbl
+	\s  CH_CLS_SPACE
+	\t  CH_CLS_SPACE
+	\r  CH_CLS_SPACE
+	_   CH_CLS_WORD
+	a-z CH_CLS_WORD
+	A-Z CH_CLS_WORD
+	0-9 CH_CLS_NUMBER
+	\n  CH_CLS_NEW_LINE
+	\0  CH_CLS_EOI
+end
+
+symbols
+	+   PLUS
+	-   MINUS
+	*   MULT
+	/   DIVD
+	%   MODUL
+	++  INCR
+	--  DECR
+	==  EQEQ
+	!=  NEQ
+	>   GRTR
+	<   LESS
+	>=  GEQ
+	<=  LEQ
+	&&  LAND
+	||  LOR
+	!   LNOT
+	&   AMPRS
+	|   BOR
+	^   XOR
+	<<  LSHFT
+	>>  RSHFT
+	=   EQ
+	+=  PLEQ
+	-=  MINEQ
+	*=  MULTEQ
+	/=  DIVEQ
+	%=  MODEQ
+	(   LPAR
+	)   RPAR
+	{   LCURLY
+	}   RCURLY
+	[   LSQUARE
+	]   RSQUARE
+	;   SEMI
+	,   COMMA
+	EOI TOK_EOI
+end
+
+keywords
+	auto      AUTO
+	break     BREAK
+	case      CASE
+	char      CHAR
+	const     CONST
+	continue  CONTINUE
+	default   DEFAULT
+	do        DO
+	double    DOUBLE
+	else      ELSE
+	enum      ENUM
+	extern    EXTERN
+	float     FLOAT
+	for       FOR
+	goto      GOTO
+	if        IF
+	int       INT
+	long      LONG
+	register  REGISTER
+	return	  RETURN
+	short     SHORT
+	signed    SIGNED
+	sizeof    SIZEOF
+	static    STATIC
+	struct    STRUCT
+	switch    SWITCH
+	typedef   TYPEDEF
+	union     UNION
+	unsigned  UNSIGNED
+	void      VOID
+	volatile  VOLATILE
+	while     WHILE
+end
+
+patterns
+	id     ID
+	number NUM
+end
+
+actions
+	CH_CLS_SPACE    next_ch
+	CH_CLS_NEW_LINE next_line
+	CH_CLS_EOI      TOK_EOI
+	CH_CLS_WORD     get_word()
+	CH_CLS_NUMBER   get_number()
+end

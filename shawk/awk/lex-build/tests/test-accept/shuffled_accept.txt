@@ -1,0 +1,23 @@
+'=' line 1, pos 1
+'==' line 1, pos 7
+'id' 'imid' line 2, pos 5
+'===' line 2, pos 8
+'>' line 2, pos 14
+'id' '_im1id' line 2, pos 21
+'<=' line 2, pos 23
+'number' '2341' line 2, pos 27
+'>=' line 2, pos 30
+'&' line 2, pos 32
+'if' line 2, pos 34
+'else' line 4, pos 4
+'elif' line 4, pos 12
+'while' line 4, pos 18
+'=!' line 4, pos 20
+'id' 'im_id' line 4, pos 26
+'<' line 4, pos 28
+'id' '_im_id' line 4, pos 35
+'==!' line 5, pos 5
+'id' 'im2id_' line 5, pos 11
+'id' 'im_id4' line 5, pos 18
+'number' '12345' line 5, pos 24
+'id' 'ifid' line 5, pos 29

@@ -1,0 +1,15 @@
+; comment
+key1
+key2 "" ; comment
+"key 3" val_key3
+key4
+key5 ;comment
+; path relative to the test directory
+#include "../data/base/base_flat_inc.info"
+foo "bar baz"
+; comment
+zig ""
+zag "one "\
+	"two "\ ;comment
+	"three lines"
+final

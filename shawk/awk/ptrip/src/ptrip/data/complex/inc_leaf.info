@@ -1,0 +1,4 @@
+leaf_key1
+{
+	leaf_key2 leaf_val
+}

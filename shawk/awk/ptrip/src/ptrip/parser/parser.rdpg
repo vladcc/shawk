@@ -1,0 +1,113 @@
+#
+# To preserve compatibility with how the boost ptree info parser parses input,
+# at least as of boost 1.77.0, the new line character needs to be considered as
+# a token. The reason for this is that the following:
+#
+# foo
+# bar baz
+# { zig zag }
+#
+# to boost looks like:
+#
+# key(foo) val()
+# key(bar) val(baz) { key(zig) val(zag) }
+#
+# rather than
+#
+# key(foo) val(bar)
+# key(baz) val() { key(zig) val(zag) }
+#
+# i.e., when parsing an info tree the new line is meaningful only when a key
+# appears alone on a line. It is also meaningful when an '#include' is seen,
+# since the '#include' and the file are expected to be on the same line.
+#
+# This, unfortunately, means that you cannot let the lexer handle new lines and
+# you have to read them yourself. Therefore 'ptree_new_line_star' is used where
+# zero or more new lines may appear, and 'ptree_new_line_plus' is used where
+# at least one new has to appear. Even though both rules are optional, note that
+# if 'ptree_new_line_plus' doesn't consume a new line, it returns 0 in contrast
+# to 'ptree_new_line_star' which always returns 1. This means that the
+# 'ptree_new_line_plus' can guide the parsing if its return value is not
+# ignored. This is how you can figure out if a key is alone on a line.
+#
+
+rule ptree_fmt
+defn ptree_items TOK_EOI
+end
+
+rule ptree_items
+defn ptree_new_line_star ptree_item ptree_items
+end
+
+rule ptree_item?
+defn ptree_tree
+defn ptree_include
+end
+
+rule ptree_tree
+defn ptree_key ptree_rest
+end
+
+rule ptree_rest?
+defn ptree_new_line_plus ptree_opt_subtree
+defn ptree_val ptree_new_line_star ptree_opt_subtree
+end
+
+rule ptree_include?
+defn TOK_INCLUDE ptree_include_fname ptree_include_end
+goal call _ptree_on_include
+end
+
+rule ptree_include_end
+defn ptree_new_line_plus
+fail call _ptree_bad_include
+end
+
+rule ptree_include_fname
+defn TOK_STRING
+goal call _ptree_read_string
+end
+
+rule ptree_key
+defn ptree_read_opt
+goal call _ptree_on_key
+fail return false
+end
+
+rule ptree_val
+defn ptree_read_opt
+goal call _ptree_on_val
+end
+
+rule ptree_read_opt?
+defn TOK_WORD
+goal call _ptree_read_word
+defn TOK_STRING
+goal call _ptree_read_string
+end
+
+rule ptree_opt_subtree?
+defn ptree_left_curly ptree_items ptree_right_curly
+end
+
+rule ptree_new_line_plus?
+defn TOK_NEW_LINE ptree_new_line_star
+end
+
+rule ptree_new_line_star
+defn ptree_eat_new_line ptree_new_line_star
+end
+
+rule ptree_eat_new_line?
+defn TOK_NEW_LINE
+end
+
+rule ptree_left_curly?
+defn TOK_L_CURLY ptree_new_line_star
+goal call _ptree_lvl_push
+end
+
+rule ptree_right_curly
+defn TOK_R_CURLY ptree_new_line_star
+goal call _ptree_lvl_pop
+end

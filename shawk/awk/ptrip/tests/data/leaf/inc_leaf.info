@@ -1,0 +1,6 @@
+;FILE_BEGIN ./data/leaf/inc_leaf.info
+leaf_key1
+{
+	leaf_key2 leaf_val
+}
+;FILE_END ./data/leaf/inc_leaf.info

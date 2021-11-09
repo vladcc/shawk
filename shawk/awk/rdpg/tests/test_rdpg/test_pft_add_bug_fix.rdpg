@@ -1,0 +1,9 @@
+# in the original bug bug.foo.* disappears from the prefix tree once bug.zig is
+# encountered
+
+rule bug
+defn foo bar
+defn foo baz bar
+defn zig zag
+defn zig zog zag
+end

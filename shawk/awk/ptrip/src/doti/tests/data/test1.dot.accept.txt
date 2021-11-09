@@ -1,0 +1,60 @@
+;FILE_BEGIN ../data/complex/entry.info
+#include "../data/complex/inc_leaf.info"
+;FILE_BEGIN ../data/complex/inc_leaf.info
+leaf_key1
+{
+	leaf_key2 leaf_val
+}
+;FILE_END ../data/complex/inc_leaf.info
+e_key1 val
+{
+	e_key2
+	{
+		#include "../data/complex/inc_inc.info"
+		;FILE_BEGIN ../data/complex/inc_inc.info
+		ii_key
+		{
+			ii_skey val
+			#include "../data/complex/inc_leaf.info"
+			;FILE_BEGIN ../data/complex/inc_leaf.info
+			leaf_key1
+			{
+				leaf_key2 leaf_val
+			}
+			;FILE_END ../data/complex/inc_leaf.info
+			ii_skey2 val
+			{
+				#include "../data/complex/inc_leaf.info"
+				;FILE_BEGIN ../data/complex/inc_leaf.info
+				leaf_key1
+				{
+					leaf_key2 leaf_val
+				}
+				;FILE_END ../data/complex/inc_leaf.info
+			}
+		}
+		;FILE_END ../data/complex/inc_inc.info
+	}
+	e_key3
+}
+e_key5
+{
+	skey val
+}
+e_key4
+{
+	#include "../data/complex/inc_leaf.info"
+	;FILE_BEGIN ../data/complex/inc_leaf.info
+	leaf_key1
+	{
+		leaf_key2 leaf_val
+	}
+	;FILE_END ../data/complex/inc_leaf.info
+}
+more val
+more val
+more val
+more val
+more_val
+e_key_last val_last
+;FILE_END ../data/complex/entry.info

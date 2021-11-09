@@ -1,0 +1,9 @@
+foo.bar = 1
+foo.bar = {null}
+#foo.bar = 5
+foo.bar = ""
+foo.bar = line = baz
+foo.bar.baz = zig
+		# comment 3
+foo.bar = zig
+ # comment 2
