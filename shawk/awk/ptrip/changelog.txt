@@ -1,0 +1,3 @@
+2021-11-09
+	doti.awk 1.0 -> 1.01
+	splits ptrip output more precisely

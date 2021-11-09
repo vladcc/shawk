@@ -23,13 +23,32 @@ function run
 	eval "$G_AWK -f $L_DOTI $@"
 }
 
+function test_fixes
+{
+	local L_INPUT=\
+'-|../data/complex/entry.info:-:foo = http://maybe.website
+-|../data/complex/entry.info:1:foo.bar = ftp://or.something'
+
+	local L_RES=""
+	L_RES="$(run <(echo "$L_INPUT"))"
+	bt_assert_success
+	
+	local L_EXP=\
+"foo http://maybe.website
+{
+	bar ftp://or.something
+}"
+
+	bt_diff_ok "<(echo '$L_RES') <(echo '$L_EXP')"
+}
+
 function test_versions
 {
 	local L_RES=""
 	
 	L_RES="$(run -vVersion=1)"
 	bt_assert_success
-	bt_diff_ok "<(echo '$L_RES') <(echo 'doti.awk 1.0')"
+	bt_diff_ok "<(echo '$L_RES') <(echo 'doti.awk 1.01')"
 }
 
 function test_data
@@ -69,6 +88,7 @@ function test_data
 
 function test_all
 {
+	bt_eval test_fixes
 	bt_eval test_versions
 	bt_eval test_data
 }

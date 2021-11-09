@@ -7,7 +7,7 @@
 
 # <misc>
 function SCRIPT_NAME() {return "doti.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.01"}
 
 function err_fpos(msg) {
 	error_print(sprintf("file '%s', line %d: %s", FILENAME, FNR, msg))
@@ -21,7 +21,7 @@ function split_path_val(arr_out,    _arr, _len) {
 	if (index($0, "-|")) {
 		# assume input comes from ptrip
 		
-		if ((_len = split($0, _arr, ":")) > 1)
+		if ((_len = split($0, _arr, ":([0-9]+|-):")) > 1)
 			return split(_arr[_len], arr_out, " = ")
 		else
 			return 0 # assume a file name only line; signal nop
