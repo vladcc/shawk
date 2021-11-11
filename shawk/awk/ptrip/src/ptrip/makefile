@@ -20,7 +20,7 @@ $(LEX_AWK): $(LEX_LB)
 
 RDPG_DIR = ../../../rdpg
 RDPG_STRICT = 1
-RDPG_OLVL = 4
+RDPG_OLVL = 5
 PRS_RDPG = ./parser/parser.rdpg
 PRS_AWK = ./parser/ptrip_parser.awk
 PRS_USR = ./parser/ptrip_parser_usr.awk
@@ -31,8 +31,9 @@ $(PRS_AWK): $(PRS_RDPG)
 	awk -f $(RDPG_DIR)/rdpg-opt.awk -vOlvl=$(RDPG_OLVL) | \
 	awk -f $(RDPG_DIR)/rdpg-to-awk -vTokCallPrefix="ptree_" | \
 	sed 's/(    _arr)/()/g' | \
+	sed 's/function ptree_fmt(/&    _arr/' | \
 	sed 's/function ptree_include_fname(/&    _arr/' | \
-	sed 's/function ptree_subtree_rest(/&    _arr/' | \
+	sed 's/function ptree_opt_subtree(/&    _arr/' | \
 	sed 's/definitions>/parser_&/' > $@
 # The seds above remove the _arr private variable which otherwise exists for
 # each awk function. In this parser, however, it's needed only by two functions.

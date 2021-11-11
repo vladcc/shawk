@@ -1,3 +1,8 @@
+2021-11-11
+	ptrip.awk 1.0 -> 1.01
+	ptrip parser now made with Olvl=5
+	bugfix - local parser _arr variable sed script fixed in makefile
+
 2021-11-09
 	doti.awk 1.0 -> 1.01
 	splits ptrip output more precisely

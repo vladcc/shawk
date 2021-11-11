@@ -3,11 +3,11 @@
 # ptrip.awk -- parses boost ptree info syntax and outputs detailed dot notation
 # Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-10-31
+# 2021-11-11
 
 # <main>
 function SCRIPT_NAME() {return "ptrip.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.01"}
 
 function set_file_name(str) {_B_file_name = str}
 function get_file_name() {return _B_file_name}
