@@ -12,11 +12,11 @@
 #@ "this" should be ("t" PFT_SEP() "h" PFT_SEP() "i" PFT_SEP() "s").
 #@ Similar for "that". PFT_SEP() is a non-printable character. To make
 #@ any key or value from a pft printable, use pft_pretty().
-#@ Version: 1.0
+#@ Version: 1.1
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2021-08-15
+## 2021-11-20
 #@
 
 # <public>
@@ -40,8 +40,8 @@ function pft_init(pft) {
 }
 
 #
-#@ Description: Inserts 'path' in 'pft'. 'path' has to be a PFT_SEP()
-#@ delimited string.
+#@ Description: Inserts 'path' in 'pft'. 'path' has to be a PFT_SEP() delimited
+#@ string.
 #@ Returns: Nothing.
 #@ Complexity: O(n)
 #
@@ -60,6 +60,37 @@ function pft_insert(pft, path,    _val, _len, _arr) {
 	_pft_add(pft, path, _val)
 	_len = pft_split(_arr, path)
 	pft_insert(pft, pft_arr_to_pft_str(_arr, _len-1), _arr[_len])
+}
+
+#
+#@ Description: If 'path' exists in 'pft', makes 'path' and all paths stemming
+#@ from 'path' unreachable. 'path' has to be a PFT_SEP() delimited string.
+#@ Returns: Nothing.
+#@ Complexity: O(n)
+#
+function pft_rm(pft, path,    _arr, _arr2, _i, _len, _last, _no_tail, _tmp) {
+	
+	if (pft_has(pft, path)) {
+		
+		delete pft[path]
+		
+		if ((_len = pft_split(_arr, path)) > 1) {
+			
+			_last = _arr[_len]
+			_no_tail = pft_arr_to_pft_str(_arr, _len-1)
+			
+			_len = pft_split(_arr, pft[_no_tail])
+			
+			_tmp = 0
+			for (_i = 1; _i <= _len; ++_i) {
+				
+				if (_arr[_i] != _last)
+					_arr2[++_tmp] = _arr[_i]
+			}
+			
+			pft[_no_tail] = pft_arr_to_pft_str(_arr2, _tmp)
+		}
+	}
 }
 
 #

@@ -235,6 +235,61 @@ function test_pft_str_dump(    _pft, _str, _arr, _len) {
 	at_true("pft[\"-t-h\"] = \"\"" == pft_str_dump(_pft, "-"))
 }
 
+function _test_pft_rm_init(_pft) {
+	pft_init(_pft)
+
+	_len = split("this", _arr, "")
+	_str = pft_arr_to_pft_str(_arr, _len)
+	pft_insert(_pft, _str)
+
+	_len = split("that", _arr, "")
+	_str = pft_arr_to_pft_str(_arr, _len)
+	pft_insert(_pft, _str)
+
+	_len = split("these", _arr, "")
+	_str = pft_arr_to_pft_str(_arr, _len)
+	pft_insert(_pft, _str)
+}
+
+function test_pft_rm(    _pft, _str, _arr, _len) {
+	at_test_begin("pft_rm()")
+	
+	_test_pft_rm_init(_pft)
+	at_true("t.h.i.s | t.h.a.t | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+		
+	pft_rm(_pft, ("t" PFT_SEP() "h" PFT_SEP() "i"))
+	at_true("t.h.a.t | t.h.e.s.e" == pft_to_str_dfs(_pft, "t", " | ", "."))
+	
+	_test_pft_rm_init(_pft)
+	at_true("t.h.i.s | t.h.a.t | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+	
+	pft_rm(_pft, ("t" PFT_SEP() "h" PFT_SEP() "a"))
+	at_true("t.h.i.s | t.h.e.s.e" == pft_to_str_dfs(_pft, "t", " | ", "."))
+	
+	_test_pft_rm_init(_pft)
+	at_true("t.h.i.s | t.h.a.t | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+	
+	pft_rm(_pft, ("t" PFT_SEP() "h" PFT_SEP() "e"))
+	at_true("t.h.i.s | t.h.a.t" == pft_to_str_dfs(_pft, "t", " | ", "."))
+	
+	_test_pft_rm_init(_pft)
+	at_true("t.h.i.s | t.h.a.t | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+	
+	pft_rm(_pft, ("t" PFT_SEP() "h"))
+	at_true("t" == pft_to_str_dfs(_pft, "t", " | ", "."))
+	
+	_test_pft_rm_init(_pft)
+	at_true("t.h.i.s | t.h.a.t | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+	
+	pft_rm(_pft, "t")
+	at_true("" == pft_to_str_dfs(_pft, "t", " | ", "."))
+}
+
 function main() {
 	at_awklib_awktest_required()
 	test_pft_init()
@@ -250,6 +305,7 @@ function main() {
 	test_pft_pretty()
 	test_pft_to_str_dfs()
 	test_pft_str_dump()
+	test_pft_rm()
 	
 	if (Report)
 		at_report()
