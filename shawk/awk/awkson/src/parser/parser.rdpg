@@ -1,0 +1,82 @@
+# General JSON grammar
+# json -> value
+# value -> object | array | STRING | NUMBER | TRUE | FALSE | NULL
+# object -> LCURL members RCURL
+# members -> member | member COMMA members | eps
+# member -> STRING COLON value
+# array -> LSQR values RSQR
+# values -> value | value COMMA values | eps
+
+rule _prs_json
+defn _prs_value _TOK_EOI
+end
+
+rule _prs_value
+
+# _prs_usr_on_obj_start and _prs_usr_on_arr_start will be called after the { [
+# tokens are already consumed, and both should return true
+
+defn _TOK_LCURL _prs_usr_on_obj_start _prs_obj_rest
+goal call _prs_usr_on_obj_end
+defn _TOK_LSQR _prs_usr_on_arr_start _prs_arr_rest
+goal call _prs_usr_on_arr_end
+defn _TOK_STRING
+goal call _prs_usr_on_string
+defn _TOK_NUMBER
+goal call _prs_usr_on_number
+defn _TOK_TRUE
+goal call _prs_usr_on_bool
+defn _TOK_FALSE
+goal call _prs_usr_on_bool
+defn _TOK_NULL
+goal call _prs_usr_on_null
+end
+
+rule _prs_parse_as_value_on_err_sync
+defn _prs_value
+end
+
+rule _prs_obj_rest
+defn _TOK_RCURL
+defn _prs_members _TOK_RCURL
+end
+
+rule _prs_arr_rest
+defn _TOK_RSQR
+defn _prs_values _TOK_RSQR
+end
+
+rule _prs_members
+defn _prs_member _prs_members_rest
+end
+
+rule _prs_member
+defn _prs_member_name _TOK_COLON _prs_value
+end
+
+rule _prs_member_name
+defn _TOK_STRING
+goal call _prs_usr_on_member_name
+end
+
+rule _prs_members_rest
+# allows for tail call optimization and inlining
+defn _prs_member_next _prs_members_rest
+end
+
+rule _prs_member_next?
+defn _TOK_COMMA _prs_member
+end
+
+rule _prs_values
+defn _prs_value _prs_values_rest
+end
+
+rule _prs_values_rest
+# like members_rest
+defn _prs_value_next _prs_values_rest
+end
+
+rule _prs_value_next?
+defn _TOK_COMMA _prs_value
+end

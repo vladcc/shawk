@@ -1,0 +1,44 @@
+""
+"string"
+"string with spaces"
+"\""
+"\"\\\/\b\f\n\r\t"
+"\u0123 \u4567 \u89ab \ucdef \u89AB \uCDEF"
+"#more st	ring! ! @"
+1234
+-1234
+0
+-0
+-5
+01
+5.123
+5.0
+5.1
+5e2
+5e-2
+5E20
+5E-20
+5e+2
+5E+20
+5.2e4
+5.20e42
+5.20e-42
+-5.20e42
+-5.20e-42
+{ } [ ] : , true false null
+
+-
++
++6
+"bad non terminated string
+"\u 2"
+\"not terminated 2 \\\"
+@ true felse noll
+TRUE FALSE NULL
+foo
+# 	@!!
+"\ux"
+"\u2x"
+"\u22x"
+"\u222x"
+"\u2222"

@@ -1,0 +1,198 @@
+file './test-inputs/lex_tests.txt', line 1, pos 2: string
+""
+ ^
+file './test-inputs/lex_tests.txt', line 2, pos 8: string
+"string"
+       ^
+file './test-inputs/lex_tests.txt', line 3, pos 20: string
+"string with spaces"
+                   ^
+file './test-inputs/lex_tests.txt', line 4, pos 4: string
+"\""
+   ^
+file './test-inputs/lex_tests.txt', line 5, pos 18: string
+"\"\\\/\b\f\n\r\t"
+                 ^
+file './test-inputs/lex_tests.txt', line 6, pos 43: string
+"\u0123 \u4567 \u89ab \ucdef \u89AB \uCDEF"
+                                          ^
+file './test-inputs/lex_tests.txt', line 7, pos 20: string
+"#more st	ring! ! @"
+         	         ^
+file './test-inputs/lex_tests.txt', line 8, pos 4: number
+1234
+   ^
+file './test-inputs/lex_tests.txt', line 9, pos 5: number
+-1234
+    ^
+file './test-inputs/lex_tests.txt', line 10, pos 1: number
+0
+^
+file './test-inputs/lex_tests.txt', line 11, pos 2: number
+-0
+ ^
+file './test-inputs/lex_tests.txt', line 12, pos 2: number
+-5
+ ^
+file './test-inputs/lex_tests.txt', line 13, pos 1: number
+01
+^
+file './test-inputs/lex_tests.txt', line 13, pos 2: number
+01
+ ^
+file './test-inputs/lex_tests.txt', line 14, pos 5: number
+5.123
+    ^
+file './test-inputs/lex_tests.txt', line 15, pos 3: number
+5.0
+  ^
+file './test-inputs/lex_tests.txt', line 16, pos 3: number
+5.1
+  ^
+file './test-inputs/lex_tests.txt', line 17, pos 3: number
+5e2
+  ^
+file './test-inputs/lex_tests.txt', line 18, pos 4: number
+5e-2
+   ^
+file './test-inputs/lex_tests.txt', line 19, pos 4: number
+5E20
+   ^
+file './test-inputs/lex_tests.txt', line 20, pos 5: number
+5E-20
+    ^
+file './test-inputs/lex_tests.txt', line 21, pos 4: number
+5e+2
+   ^
+file './test-inputs/lex_tests.txt', line 22, pos 5: number
+5E+20
+    ^
+file './test-inputs/lex_tests.txt', line 23, pos 5: number
+5.2e4
+    ^
+file './test-inputs/lex_tests.txt', line 24, pos 7: number
+5.20e42
+      ^
+file './test-inputs/lex_tests.txt', line 25, pos 8: number
+5.20e-42
+       ^
+file './test-inputs/lex_tests.txt', line 26, pos 8: number
+-5.20e42
+       ^
+file './test-inputs/lex_tests.txt', line 27, pos 9: number
+-5.20e-42
+        ^
+file './test-inputs/lex_tests.txt', line 28, pos 1: {
+{ } [ ] : , true false null
+^
+file './test-inputs/lex_tests.txt', line 28, pos 3: }
+{ } [ ] : , true false null
+  ^
+file './test-inputs/lex_tests.txt', line 28, pos 5: [
+{ } [ ] : , true false null
+    ^
+file './test-inputs/lex_tests.txt', line 28, pos 7: ]
+{ } [ ] : , true false null
+      ^
+file './test-inputs/lex_tests.txt', line 28, pos 9: :
+{ } [ ] : , true false null
+        ^
+file './test-inputs/lex_tests.txt', line 28, pos 11: ,
+{ } [ ] : , true false null
+          ^
+file './test-inputs/lex_tests.txt', line 28, pos 16: true
+{ } [ ] : , true false null
+               ^
+file './test-inputs/lex_tests.txt', line 28, pos 22: false
+{ } [ ] : , true false null
+                     ^
+file './test-inputs/lex_tests.txt', line 28, pos 27: null
+{ } [ ] : , true false null
+                          ^
+file './test-inputs/lex_tests.txt', line 30, pos 1: bad number
+-
+^
+file './test-inputs/lex_tests.txt', line 31, pos 1: bad sign
++
+^
+file './test-inputs/lex_tests.txt', line 32, pos 1: bad sign
++6
+^
+file './test-inputs/lex_tests.txt', line 32, pos 2: number
++6
+ ^
+file './test-inputs/lex_tests.txt', line 33, pos 26: bad string
+"bad non terminated string
+                         ^
+file './test-inputs/lex_tests.txt', line 34, pos 4: bad hex number
+"\u 2"
+   ^
+file './test-inputs/lex_tests.txt', line 34, pos 5: number
+"\u 2"
+    ^
+file './test-inputs/lex_tests.txt', line 34, pos 6: bad string
+"\u 2"
+     ^
+file './test-inputs/lex_tests.txt', line 35, pos 1: unknown characters
+\"not terminated 2 \\\"
+^
+file './test-inputs/lex_tests.txt', line 35, pos 23: bad string
+\"not terminated 2 \\\"
+                      ^
+file './test-inputs/lex_tests.txt', line 36, pos 1: unknown characters
+@ true felse noll
+^
+file './test-inputs/lex_tests.txt', line 36, pos 6: true
+@ true felse noll
+     ^
+file './test-inputs/lex_tests.txt', line 36, pos 12: I am Error
+@ true felse noll
+           ^
+file './test-inputs/lex_tests.txt', line 36, pos 17: I am Error
+@ true felse noll
+                ^
+file './test-inputs/lex_tests.txt', line 37, pos 4: I am Error
+TRUE FALSE NULL
+   ^
+file './test-inputs/lex_tests.txt', line 37, pos 10: I am Error
+TRUE FALSE NULL
+         ^
+file './test-inputs/lex_tests.txt', line 37, pos 15: I am Error
+TRUE FALSE NULL
+              ^
+file './test-inputs/lex_tests.txt', line 38, pos 3: I am Error
+foo
+  ^
+file './test-inputs/lex_tests.txt', line 39, pos 1: unknown characters
+# 	@!!
+^
+file './test-inputs/lex_tests.txt', line 39, pos 6: unknown characters
+# 	@!!
+  	  ^
+file './test-inputs/lex_tests.txt', line 40, pos 4: bad hex number
+"\ux"
+   ^
+file './test-inputs/lex_tests.txt', line 40, pos 5: bad string
+"\ux"
+    ^
+file './test-inputs/lex_tests.txt', line 41, pos 5: bad hex number
+"\u2x"
+    ^
+file './test-inputs/lex_tests.txt', line 41, pos 6: bad string
+"\u2x"
+     ^
+file './test-inputs/lex_tests.txt', line 42, pos 6: bad hex number
+"\u22x"
+     ^
+file './test-inputs/lex_tests.txt', line 42, pos 7: bad string
+"\u22x"
+      ^
+file './test-inputs/lex_tests.txt', line 43, pos 7: bad hex number
+"\u222x"
+      ^
+file './test-inputs/lex_tests.txt', line 43, pos 8: bad string
+"\u222x"
+       ^
+file './test-inputs/lex_tests.txt', line 44, pos 8: string
+"\u2222"
+       ^

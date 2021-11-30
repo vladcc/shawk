@@ -35,6 +35,13 @@ used to generate documentation from comments, awklib_awktest.awk is used to test
 awk scripts when no i/o is needed; i.e. functionality is tested rather than
 output.
 
+### awkson
+A json parser and editor. Parses json, calls a user defined function, the user
+can then use the usual awk functionality + a number of APIs provided by awkson
+to query, edit, and otherwise use the json object. The script itself provides
+its own documentation and examples. Doesn't quit on the first error, keeps the
+awk one-liner way of use, leverages the power of awklib.
+
 ### genbash
 Generates bash boilerplate which can parse short and/or long command line
 options. Useful when writing bash wrappers.

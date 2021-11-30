@@ -1,0 +1,5 @@
+awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 2, pos 3
+awkson.awk: error: expected 'string', got 'unknown characters' instead
+  @x"firstName": "John",
+  ^
+awkson.awk: quitting because of -vFatalError=1

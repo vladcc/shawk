@@ -1,0 +1,260 @@
+# <get_file_name>
+./test-inputs/parser-tests/api_test.json
+# </get_file_name>
+
+# <json_has>
+1
+1
+1
+0
+0
+# </json_has>
+
+# <json_get_paths>
+r
+r.firstName
+r.lastName
+r.isAlive
+r.age
+r.address
+r.address.streetAddress
+r.address.city
+r.address.state
+r.address.postalCode
+r.phoneNumbers
+r.phoneNumbers.1
+r.phoneNumbers.1.type
+r.phoneNumbers.1.number
+r.phoneNumbers.2
+r.phoneNumbers.2.type
+r.phoneNumbers.2.number
+r.other
+r.children
+r.spouse
+# </json_get_paths>
+
+# <json_get_children>
+r.firstName
+r.lastName
+r.isAlive
+r.age
+r.address
+r.phoneNumbers
+r.other
+r.children
+r.spouse
+# </json_get_children>
+
+# <json_print_dot>
+r = \{
+r.firstName = "John"
+r.lastName = "Smith"
+r.isAlive = true
+r.age = 27
+r.address = \{
+r.address.streetAddress = "21 2nd Street"
+r.address.city = "New York"
+r.address.state = "NY"
+r.address.postalCode = "10021-3100"
+r.phoneNumbers = \[
+r.phoneNumbers.1 = \{
+r.phoneNumbers.1.type = "home"
+r.phoneNumbers.1.number = "212 555-1234"
+r.phoneNumbers.2 = \{
+r.phoneNumbers.2.type = "office"
+r.phoneNumbers.2.number = "646 555-4567"
+r.other = \{
+r.children = \[
+r.spouse = \0
+r.phoneNumbers = \[
+r.phoneNumbers.1 = \{
+r.phoneNumbers.1.type = "home"
+r.phoneNumbers.1.number = "212 555-1234"
+r.phoneNumbers.2 = \{
+r.phoneNumbers.2.type = "office"
+r.phoneNumbers.2.number = "646 555-4567"
+# </json_print_dot>
+
+# <json_print>
+{
+	"firstName" : "John",
+	"lastName" : "Smith",
+	"isAlive" : true,
+	"age" : 27,
+	"address" : {
+		"streetAddress" : "21 2nd Street",
+		"city" : "New York",
+		"state" : "NY",
+		"postalCode" : "10021-3100"
+	},
+	"phoneNumbers" : [
+		{
+			"type" : "home",
+			"number" : "212 555-1234"
+		},
+		{
+			"type" : "office",
+			"number" : "646 555-4567"
+		}
+	],
+	"other" : {},
+	"children" : [],
+	"spouse" : null
+}
+{
+	"streetAddress" : "21 2nd Street",
+	"city" : "New York",
+	"state" : "NY",
+	"postalCode" : "10021-3100"
+}
+27
+{
+	"type" : "office",
+	"number" : "646 555-4567"
+}
+"John"
+true
+{}
+[]
+null
+# </json_print>
+
+# <json_get_type>
+object
+string
+bool
+number
+array
+object
+string
+null
+
+# </json_get_type>
+
+# <json_get_val>
+\{
+Smith
+true
+27
+\[
+\{
+212 555-1234
+\0
+
+# </json_get_val>
+
+# <json_set_val>
+{
+	"streetAddress" : "Foo Street",
+	"city" : "Boston",
+	"state" : "MA",
+	"postalCode" : "7777"
+}
+# </json_set_val>
+
+# <json_set_type>
+{
+	"streetAddress" : null,
+	"city" : {},
+	"state" : false,
+	"postalCode" : 7777
+}
+{
+	"streetAddress" : "",
+	"city" : [],
+	"state" : true,
+	"postalCode" : 0
+}
+{
+	"streetAddress" : "foo",
+	"city" : [],
+	"state" : true,
+	"postalCode" : 1000
+}
+# </json_set_type>
+
+# <json_add_rm>
+{
+	"firstName" : "John",
+	"lastName" : "Smith",
+	"isAlive" : true,
+	"age" : 27,
+	"phoneNumbers" : [
+		{
+			"type" : "office",
+			"number" : "646 555-4567"
+		},
+		{
+			"added" : "this is added"
+		}
+	],
+	"children" : [],
+	"spouse" : null,
+	"added" : ""
+}
+# </json_add_rm>
+
+# <json_get_children>
+r.firstName
+r.lastName
+r.isAlive
+r.age
+r.phoneNumbers
+r.children
+r.spouse
+r.added
+# </json_get_children>
+
+# <json_get_paths>
+r
+r.firstName
+r.lastName
+r.isAlive
+r.age
+r.phoneNumbers
+r.phoneNumbers.2
+r.phoneNumbers.2.type
+r.phoneNumbers.2.number
+r.children
+r.spouse
+r.added
+r.phoneNumbers.3
+r.phoneNumbers.3.added
+# </json_get_paths>
+
+# <json_print_dot>
+r = \{
+r.firstName = "John"
+r.lastName = "Smith"
+r.isAlive = true
+r.age = 27
+r.phoneNumbers = \[
+r.phoneNumbers.2 = \{
+r.phoneNumbers.2.type = "office"
+r.phoneNumbers.2.number = "646 555-4567"
+r.children = \[
+r.spouse = \0
+r.added = ""
+r.phoneNumbers.3 = \{
+r.phoneNumbers.3.added = "this is added"
+
+r.phoneNumbers = \[
+r.phoneNumbers.2 = \{
+r.phoneNumbers.2.type = "office"
+r.phoneNumbers.2.number = "646 555-4567"
+r.phoneNumbers.3 = \{
+r.phoneNumbers.3.added = "this is added"
+# </json_print_dot>
+
+# <json_has>
+1
+1
+0
+1
+0
+# </json_has>
+
+# <json_get_children>
+r.phoneNumbers.2
+r.phoneNumbers.3
+# </json_get_children>

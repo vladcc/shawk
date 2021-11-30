@@ -1,0 +1,28 @@
+awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 2, pos 3
+awkson.awk: error: expected 'string', got 'unknown characters' instead
+  @x"firstName": "John",
+  ^
+awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 3, pos 23
+awkson.awk: error: expected ':', got 'string' instead
+  "lastName" "lastName" : "Smith",
+                      ^
+awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 4, pos 3
+awkson.awk: error: expected 'string', got 'I am Error' instead
+  x"isAlive": true,
+  ^
+awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 8, pos 13
+awkson.awk: error: expected '{ [ string number true false null', got 'I am Error' instead
+    "city": x"New York",
+            ^
+awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 19, pos 14
+awkson.awk: error: expected '}', got 'string' instead
+      "number": "646 555-4567",
+             ^
+awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 20, pos 5
+awkson.awk: error: expected 'string', got '}' instead
+    }
+    ^
+awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 23, pos 12
+awkson.awk: error: expected '}', got 'string' instead
+  "children": [],
+           ^

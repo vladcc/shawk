@@ -1,0 +1,9 @@
+awkson.awk -- json parser and editor
+
+Use: awk -f awkson.awk [-v OPTION] [-f user_file.awk] file.json
+
+Options:
+-v FatalError=1 - quit on the first json error
+-v Doc=1        - print API documentation
+-v Help=1       - this screen
+-v Version=1    - version info

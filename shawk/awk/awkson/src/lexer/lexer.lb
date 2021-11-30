@@ -1,0 +1,45 @@
+char_tbl
+	\s  CH_CLS_SPACE
+	\t  CH_CLS_SPACE
+	\r  CH_CLS_SPACE
+	\"  CH_CLS_QUOTE
+	-   CH_CLS_SIGN
+	+   CH_CLS_SIGN
+	0-9 CH_CLS_NUMBER
+	a-z CH_CLS_WORD
+	A-Z CH_CLS_WORD
+	_   CH_CLS_WORD
+	\n  CH_CLS_NEW_LINE
+	\0  CH_CLS_EOI
+end
+
+symbols
+	{     TOK_LCURL
+	}     TOK_RCURL
+	[     TOK_LSQR
+	]     TOK_RSQR
+	:     TOK_COLON
+	,     TOK_COMMA
+	EOI   TOK_EOI
+end
+
+keywords
+	true  TOK_TRUE
+	false TOK_FALSE
+	null  TOK_NULL
+end
+
+patterns
+	string TOK_STRING
+	number TOK_NUMBER
+end
+
+actions
+	CH_CLS_SPACE    next_ch
+	CH_CLS_NEW_LINE next_line
+	CH_CLS_QUOTE    get_string()
+	CH_CLS_NUMBER   get_number()
+	CH_CLS_SIGN     get_number()
+	CH_CLS_WORD     get_kword()
+	CH_CLS_EOI      TOK_EOI
+end
