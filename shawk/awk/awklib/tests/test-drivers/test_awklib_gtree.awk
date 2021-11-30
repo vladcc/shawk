@@ -99,6 +99,28 @@ function test_gtr_right_from(    _tree, _node, _arr, _len) {
 	at_true("zog" == gtr_get_val(_tree, _arr[2]))
 }
 
+function test_gtr_marked(    _tree, _node, _arr, _len) {
+	at_test_begin("gtr_mark*()")
+
+	gtr_init(_tree)
+
+	_node = "foo"
+
+	at_true(0 == (_gtr_mark_str(_node) in _tree))
+	at_true(0 == gtr_is_marked(_tree, _node))
+	at_true(0 == (_gtr_mark_str(_node) in _tree))
+
+	gtr_mark(_tree, _node)
+	at_true(1 == (_gtr_mark_str(_node) in _tree))
+	at_true(1 == gtr_is_marked(_tree, _node))
+	at_true(1 == (_gtr_mark_str(_node) in _tree))
+
+	gtr_unmark(_tree, _node)
+	at_true(0 == (_gtr_mark_str(_node) in _tree))
+	at_true(0 == gtr_is_marked(_tree, _node))
+	at_true(0 == (_gtr_mark_str(_node) in _tree))
+}
+
 function main() {
 	at_awklib_awktest_required()
 	test_GTR_ROOT()
@@ -109,6 +131,7 @@ function main() {
 	test_gtr_down_of()
 	test_gtr_right_of()
 	test_gtr_right_from()
+	test_gtr_marked()
 
 	if (Report)
 		at_report()

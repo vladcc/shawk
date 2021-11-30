@@ -1,4 +1,7 @@
 2021-11-30
+	awklib_gtree.awk 1.0 -> 1.1
+	gtr_{mark,unmark,is_marked}() added
+
 	awklib_map.awk 1.0 -> 2.0
 	map_add() now map_set()
 	map_get_val() now map_get()

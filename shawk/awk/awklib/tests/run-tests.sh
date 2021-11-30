@@ -360,7 +360,7 @@ function test_functional
 		20 15 14 2
 		1  1  5  1
 		3  6  1  3
-		8  2
+		9  2
 	)
 	local L_THIS_LIB=""
 	local L_RES=""
