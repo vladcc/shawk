@@ -3,11 +3,11 @@
 # doti.awk -- turns dot notation into annotated boost ptree info syntax
 # Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-11-03
+# 2021-11-30
 
 # <misc>
 function SCRIPT_NAME() {return "doti.awk"}
-function SCRIPT_VERSION() {return "1.01"}
+function SCRIPT_VERSION() {return "1.02"}
 
 function err_fpos(msg) {
 	error_print(sprintf("file '%s', line %d: %s", FILENAME, FNR, msg))
