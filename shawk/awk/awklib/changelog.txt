@@ -1,3 +1,9 @@
+2021-11-30
+	awklib_map.awk 1.0 -> 2.0
+	map_add() now map_set()
+	map_get_val() now map_get()
+	map_is_empty() added
+
 2021-11-20
 	awklib_prefix_tree.awk v1.0 -> v1.1
 	pft_rm() added

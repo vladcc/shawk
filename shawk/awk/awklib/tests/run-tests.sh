@@ -357,7 +357,7 @@ function test_functional
 	)
 	local L_NUM_UNIQ_TESTS=(
 		18 12 12 7
-		19 15 14 2
+		20 15 14 2
 		1  1  5  1
 		3  6  1  3
 		8  2

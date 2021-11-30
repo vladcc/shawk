@@ -1,11 +1,11 @@
 #@ <awklib_map>
 #@ Library: map
 #@ Description: Encapsulates map operations.
-#@ Version: 1.0
+#@ Version: 2.0
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2021-08-15
+## 2021-11-30
 #@
 
 #
@@ -24,7 +24,7 @@ function map_init(map) {
 #@ Returns: Nothing.
 #@ Complexity: O(1)
 #
-function map_add(map, key, val) {
+function map_set(map, key, val) {
 
 	map[key] = val
 }
@@ -46,7 +46,7 @@ function map_del(map, key) {
 #@ otherwise. Use map_has_key() first.
 #@ Complexity: O(1)
 #
-function map_get_val(map, key) {
+function map_get(map, key) {
 
 	return map_has_key(map, key) ? map[key] : ""
 }
@@ -89,6 +89,18 @@ function map_has_val(map, val,    _n) {
 			return 1
 	}
 	return 0
+}
+
+#
+#@ Description: Indicates if 'map' has any members.
+#@ Returns: 1 if 'map' is empty, 0 otherwise.
+#@ Complexity: O(1)
+#
+function map_is_empty(map,    _n) {
+
+	for (_n in map)
+		return 0
+	return 1
 }
 
 #
