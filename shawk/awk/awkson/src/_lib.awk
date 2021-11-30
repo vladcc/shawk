@@ -24,15 +24,14 @@ function _xdotnot_parse(str,    _ret) {
 function _get_removed_re(    _n, _re) {
 
 	_re = ""
-	for (_n in _G_json_removed_set) {
-		if (!_re)
-			_re = "^("
-		_re = (_re _n "|")
-	}
-	
-	if (_re)
-		sub("\\|$", ")", _re)
+	if (!map_is_empty(_G_json_removed_set)) {
 		
+		_re = "^("
+		for (_n in _G_json_removed_set)
+			_re = (_re _n "|")
+
+		sub("\\|$", ")", _re)
+	}
 	return _re
 }
 # <program_flags>
@@ -807,7 +806,7 @@ function json_print(path) {
 #@ Returns: The type of 'path'.
 #
 function json_get_type(path) {
-	return map_get_val(_G_json_type_tbl, _xdotnot_parse(path))
+	return map_get(_G_json_type_tbl, _xdotnot_parse(path))
 }
 
 #
@@ -820,7 +819,7 @@ function json_get_type(path) {
 #@ Returns: The value of 'path'.
 #
 function json_get_val(path) {
-	return map_get_val(_G_json_values_tbl, _xdotnot_parse(path))
+	return map_get(_G_json_values_tbl, _xdotnot_parse(path))
 }
 
 #
@@ -835,8 +834,8 @@ function json_get_val(path) {
 function json_set_val(path, val) {
 	path = _xdotnot_parse(path)
 	if (pft_has(_G_the_pft, path)) {
-		map_add(_G_json_values_tbl, path,
-			_json_type_val_check(map_get_val(_G_json_type_tbl, path), val))
+		map_set(_G_json_values_tbl, path,
+			_json_type_val_check(map_get(_G_json_type_tbl, path), val))
 	}
 }
 
@@ -853,8 +852,8 @@ function json_set_type(path, type, val) {
 	if (pft_has(_G_the_pft, path)) {
 		_json_type_check(type)
 		val = _json_type_val_get(type, val)
-		map_add(_G_json_type_tbl, path, type)
-		map_add(_G_json_values_tbl, path, val)
+		map_set(_G_json_type_tbl, path, type)
+		map_set(_G_json_values_tbl, path, val)
 	}
 }
 
@@ -870,8 +869,8 @@ function json_add(path, type, val) {
 		_json_type_check(type)
 		val = _json_type_val_get(type, val)
 		pft_insert(_G_the_pft, path)
-		map_add(_G_json_type_tbl, path, type)
-		map_add(_G_json_values_tbl, path, val)
+		map_set(_G_json_type_tbl, path, type)
+		map_set(_G_json_values_tbl, path, val)
 		vect_push(_G_input_order_keeper, path)
 	}
 }
@@ -885,7 +884,7 @@ function json_rm(path) {
 	path = _xdotnot_parse(path)
 	if (pft_has(_G_the_pft, path)) {
 		pft_rm(_G_the_pft, path)
-		map_add(_G_json_removed_set, path, 1)
+		map_set(_G_json_removed_set, path, 1)
 	}
 }
 
@@ -1583,11 +1582,11 @@ function _VECT_LEN() {return "len"}
 #@ <awklib_map>
 #@ Library: map
 #@ Description: Encapsulates map operations.
-#@ Version: 1.0
+#@ Version: 2.0
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2021-08-15
+## 2021-11-30
 #@
 
 #
@@ -1606,7 +1605,7 @@ function map_init(map) {
 #@ Returns: Nothing.
 #@ Complexity: O(1)
 #
-function map_add(map, key, val) {
+function map_set(map, key, val) {
 
 	map[key] = val
 }
@@ -1628,7 +1627,7 @@ function map_del(map, key) {
 #@ otherwise. Use map_has_key() first.
 #@ Complexity: O(1)
 #
-function map_get_val(map, key) {
+function map_get(map, key) {
 
 	return map_has_key(map, key) ? map[key] : ""
 }
@@ -1671,6 +1670,18 @@ function map_has_val(map, val,    _n) {
 			return 1
 	}
 	return 0
+}
+
+#
+#@ Description: Indicates if 'map' has any members.
+#@ Returns: 1 if 'map' is empty, 0 otherwise.
+#@ Complexity: O(1)
+#
+function map_is_empty(map,    _n) {
+
+	for (_n in map)
+		return 0
+	return 1
 }
 
 #

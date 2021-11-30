@@ -141,7 +141,7 @@ function json_print(path) {
 #@ Returns: The type of 'path'.
 #
 function json_get_type(path) {
-	return map_get_val(_G_json_type_tbl, _xdotnot_parse(path))
+	return map_get(_G_json_type_tbl, _xdotnot_parse(path))
 }
 
 #
@@ -154,7 +154,7 @@ function json_get_type(path) {
 #@ Returns: The value of 'path'.
 #
 function json_get_val(path) {
-	return map_get_val(_G_json_values_tbl, _xdotnot_parse(path))
+	return map_get(_G_json_values_tbl, _xdotnot_parse(path))
 }
 
 #
@@ -169,8 +169,8 @@ function json_get_val(path) {
 function json_set_val(path, val) {
 	path = _xdotnot_parse(path)
 	if (pft_has(_G_the_pft, path)) {
-		map_add(_G_json_values_tbl, path,
-			_json_type_val_check(map_get_val(_G_json_type_tbl, path), val))
+		map_set(_G_json_values_tbl, path,
+			_json_type_val_check(map_get(_G_json_type_tbl, path), val))
 	}
 }
 
@@ -187,8 +187,8 @@ function json_set_type(path, type, val) {
 	if (pft_has(_G_the_pft, path)) {
 		_json_type_check(type)
 		val = _json_type_val_get(type, val)
-		map_add(_G_json_type_tbl, path, type)
-		map_add(_G_json_values_tbl, path, val)
+		map_set(_G_json_type_tbl, path, type)
+		map_set(_G_json_values_tbl, path, val)
 	}
 }
 
@@ -204,8 +204,8 @@ function json_add(path, type, val) {
 		_json_type_check(type)
 		val = _json_type_val_get(type, val)
 		pft_insert(_G_the_pft, path)
-		map_add(_G_json_type_tbl, path, type)
-		map_add(_G_json_values_tbl, path, val)
+		map_set(_G_json_type_tbl, path, type)
+		map_set(_G_json_values_tbl, path, val)
 		vect_push(_G_input_order_keeper, path)
 	}
 }
@@ -219,7 +219,7 @@ function json_rm(path) {
 	path = _xdotnot_parse(path)
 	if (pft_has(_G_the_pft, path)) {
 		pft_rm(_G_the_pft, path)
-		map_add(_G_json_removed_set, path, 1)
+		map_set(_G_json_removed_set, path, 1)
 	}
 }
 

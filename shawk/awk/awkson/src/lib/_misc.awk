@@ -24,15 +24,14 @@ function _xdotnot_parse(str,    _ret) {
 function _get_removed_re(    _n, _re) {
 
 	_re = ""
-	for (_n in _G_json_removed_set) {
-		if (!_re)
-			_re = "^("
-		_re = (_re _n "|")
-	}
-	
-	if (_re)
-		sub("\\|$", ")", _re)
+	if (!map_is_empty(_G_json_removed_set)) {
 		
+		_re = "^("
+		for (_n in _G_json_removed_set)
+			_re = (_re _n "|")
+
+		sub("\\|$", ")", _re)
+	}
 	return _re
 }
 # <program_flags>

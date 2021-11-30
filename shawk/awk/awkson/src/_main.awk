@@ -2,7 +2,7 @@
 
 # <main>
 function SCRIPT_NAME() {return "awkson.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.1"}
 
 function _state_clear() {
 	map_init(_G_json_type_tbl)

@@ -310,8 +310,8 @@ function _pop_pos(    _ret) {
 	return _ret
 }
 
-function _add_type(type) {map_add(_G_json_type_tbl, _get_pos(), type)}
-function _add_val(val) {map_add(_G_json_values_tbl, _get_pos(), val)}
+function _add_type(type) {map_set(_G_json_type_tbl, _get_pos(), type)}
+function _add_val(val) {map_set(_G_json_values_tbl, _get_pos(), val)}
 
 function _push_jarr_ind() {vect_push(_G_array_index_stack, 0)}
 function _next_arr_ind(    _ind) {

@@ -333,7 +333,7 @@ function test_lexer
 # <test_version>
 function test_version
 {
-	bt_diff_ok "<($G_AWK -f $G_AWKSON -vVersion=1) <(echo 'awkson.awk 1.0')"
+	bt_diff_ok "<($G_AWK -f $G_AWKSON -f <(echo 'function on_json(){}') -vVersion=1) <(echo 'awkson.awk 1.1')"
 }
 # </test_version>
 

@@ -2,7 +2,7 @@
 
 # <main>
 function SCRIPT_NAME() {return "awkson.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.1"}
 
 function _state_clear() {
 	map_init(_G_json_type_tbl)
@@ -480,8 +480,8 @@ function _pop_pos(    _ret) {
 	return _ret
 }
 
-function _add_type(type) {map_add(_G_json_type_tbl, _get_pos(), type)}
-function _add_val(val) {map_add(_G_json_values_tbl, _get_pos(), val)}
+function _add_type(type) {map_set(_G_json_type_tbl, _get_pos(), type)}
+function _add_val(val) {map_set(_G_json_values_tbl, _get_pos(), val)}
 
 function _push_jarr_ind() {vect_push(_G_array_index_stack, 0)}
 function _next_arr_ind(    _ind) {
@@ -1071,15 +1071,14 @@ function _xdotnot_parse(str,    _ret) {
 function _get_removed_re(    _n, _re) {
 
 	_re = ""
-	for (_n in _G_json_removed_set) {
-		if (!_re)
-			_re = "^("
-		_re = (_re _n "|")
-	}
-	
-	if (_re)
-		sub("\\|$", ")", _re)
+	if (!map_is_empty(_G_json_removed_set)) {
 		
+		_re = "^("
+		for (_n in _G_json_removed_set)
+			_re = (_re _n "|")
+
+		sub("\\|$", ")", _re)
+	}
 	return _re
 }
 # <program_flags>
@@ -1854,7 +1853,7 @@ function json_print(path) {
 #@ Returns: The type of 'path'.
 #
 function json_get_type(path) {
-	return map_get_val(_G_json_type_tbl, _xdotnot_parse(path))
+	return map_get(_G_json_type_tbl, _xdotnot_parse(path))
 }
 
 #
@@ -1867,7 +1866,7 @@ function json_get_type(path) {
 #@ Returns: The value of 'path'.
 #
 function json_get_val(path) {
-	return map_get_val(_G_json_values_tbl, _xdotnot_parse(path))
+	return map_get(_G_json_values_tbl, _xdotnot_parse(path))
 }
 
 #
@@ -1882,8 +1881,8 @@ function json_get_val(path) {
 function json_set_val(path, val) {
 	path = _xdotnot_parse(path)
 	if (pft_has(_G_the_pft, path)) {
-		map_add(_G_json_values_tbl, path,
-			_json_type_val_check(map_get_val(_G_json_type_tbl, path), val))
+		map_set(_G_json_values_tbl, path,
+			_json_type_val_check(map_get(_G_json_type_tbl, path), val))
 	}
 }
 
@@ -1900,8 +1899,8 @@ function json_set_type(path, type, val) {
 	if (pft_has(_G_the_pft, path)) {
 		_json_type_check(type)
 		val = _json_type_val_get(type, val)
-		map_add(_G_json_type_tbl, path, type)
-		map_add(_G_json_values_tbl, path, val)
+		map_set(_G_json_type_tbl, path, type)
+		map_set(_G_json_values_tbl, path, val)
 	}
 }
 
@@ -1917,8 +1916,8 @@ function json_add(path, type, val) {
 		_json_type_check(type)
 		val = _json_type_val_get(type, val)
 		pft_insert(_G_the_pft, path)
-		map_add(_G_json_type_tbl, path, type)
-		map_add(_G_json_values_tbl, path, val)
+		map_set(_G_json_type_tbl, path, type)
+		map_set(_G_json_values_tbl, path, val)
 		vect_push(_G_input_order_keeper, path)
 	}
 }
@@ -1932,7 +1931,7 @@ function json_rm(path) {
 	path = _xdotnot_parse(path)
 	if (pft_has(_G_the_pft, path)) {
 		pft_rm(_G_the_pft, path)
-		map_add(_G_json_removed_set, path, 1)
+		map_set(_G_json_removed_set, path, 1)
 	}
 }
 
@@ -2630,11 +2629,11 @@ function _VECT_LEN() {return "len"}
 #@ <awklib_map>
 #@ Library: map
 #@ Description: Encapsulates map operations.
-#@ Version: 1.0
+#@ Version: 2.0
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2021-08-15
+## 2021-11-30
 #@
 
 #
@@ -2653,7 +2652,7 @@ function map_init(map) {
 #@ Returns: Nothing.
 #@ Complexity: O(1)
 #
-function map_add(map, key, val) {
+function map_set(map, key, val) {
 
 	map[key] = val
 }
@@ -2675,7 +2674,7 @@ function map_del(map, key) {
 #@ otherwise. Use map_has_key() first.
 #@ Complexity: O(1)
 #
-function map_get_val(map, key) {
+function map_get(map, key) {
 
 	return map_has_key(map, key) ? map[key] : ""
 }
@@ -2718,6 +2717,18 @@ function map_has_val(map, val,    _n) {
 			return 1
 	}
 	return 0
+}
+
+#
+#@ Description: Indicates if 'map' has any members.
+#@ Returns: 1 if 'map' is empty, 0 otherwise.
+#@ Complexity: O(1)
+#
+function map_is_empty(map,    _n) {
+
+	for (_n in map)
+		return 0
+	return 1
 }
 
 #
@@ -3361,7 +3372,7 @@ print "</awklib_vect>"
 print "<awklib_map>"
 print "Library: map"
 print "Description: Encapsulates map operations."
-print "Version: 1.0"
+print "Version: 2.0"
 print ""
 print "Description: Clears 'map'."
 print "Returns: Nothing."
@@ -3371,7 +3382,7 @@ print ""
 print "Description: Does \"map[key] = val\". Overwrites existing values."
 print "Returns: Nothing."
 print "Complexity: O(1)"
-print "function map_add(map, key, val)"
+print "function map_set(map, key, val)"
 print ""
 print "Description: Does \"delete map[key]\" if 'key' exists in 'map'."
 print "Returns: Nothing."
@@ -3382,7 +3393,7 @@ print "Description: Retrieves the value at index 'key' from 'map'."
 print "Returns: map[key] if 'key' exists in main, the empty string"
 print "otherwise. Use map_has_key() first."
 print "Complexity: O(1)"
-print "function map_get_val(map, key)"
+print "function map_get(map, key)"
 print ""
 print "Description: Retrieves the key for 'val' from 'map'."
 print "Returns: The string representing the key for 'val' in 'map', the"
@@ -3399,6 +3410,11 @@ print "Description: Indicates whether 'val' exists in map."
 print "Returns: 1 if 'val' is a value in 'map', 0 otherwise."
 print "Complexity: O(n)"
 print "function map_has_val(map, val)"
+print ""
+print "Description: Indicates if 'map' has any members."
+print "Returns: 1 if 'map' is empty, 0 otherwise."
+print "Complexity: O(1)"
+print "function map_is_empty(map)"
 print ""
 print "Description: Counts the elements in 'map'."
 print "Returns: The number of elements in 'map'."
