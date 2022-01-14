@@ -66,7 +66,7 @@ function pft_insert(pft, path,    _val) {
 	_pft_add(pft, path, _val)
 
 	if (match(path, _PFT_LAST_NODE())) {
-		_val = substr(path, RSTART+1, RLENGTH-1)
+		_val = substr(path, RSTART+1)
 		path = substr(path, 1, RSTART-1)
 	} else {
 		return

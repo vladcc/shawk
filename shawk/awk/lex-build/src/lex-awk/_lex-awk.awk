@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-10-18
+# 2022-01-14
 
 # Generates a lexer in awk. It determines the next token by branching on the
 # character class of the current input character, and then branches on the next
@@ -11,7 +11,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.41"}
+function SCRIPT_VERSION() {return "1.411"}
 # </script>
 
 # <out_signature>

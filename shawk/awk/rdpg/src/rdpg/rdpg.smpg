@@ -88,10 +88,10 @@ function {&}_get(path) {return _B_map_{&}[path]}
 %other
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-10-12
+# 2022-01-14
 
 function SCRIPT_NAME() {return "rdpg.awk"}
-function SCRIPT_VERSION() {return "1.31"}
+function SCRIPT_VERSION() {return "1.311"}
 
 # <awk_rules>
 function init() {
