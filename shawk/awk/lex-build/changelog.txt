@@ -1,3 +1,9 @@
+2022-01-14
+	lex-awk.awk   1.41 -> 1.411
+	lex-c.awk     1.4 -> 1.41
+	lex-first.awk 1.2 -> 1.21
+	all updated to awklib_prefix_tree.awk 1.2
+
 2021-10-18
 	lex-awk.awk v1.4 -> v1.41
 	'\' and '"' now escape properly

@@ -1,3 +1,7 @@
+2022-01-14
+	awkson.awk 1.1 -> 1.11
+	updated to awklib_prefix_tree.awk 1.2
+
 2021-11-30
 	awkson.awk 1.0 -> 1.1
 	updated to using awklib_map.awk 2.0

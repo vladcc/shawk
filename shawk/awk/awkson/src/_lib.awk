@@ -182,6 +182,12 @@ function _json_to_str(path, pftree, order, types, values,    _type) {
 ## 2022-01-14
 #@
 
+# "\034" is inlined as a constant; make sure it's in sync with PFT_SEP()
+function _PFT_LAST_NODE() {
+
+	return "\034[^\034]+$"
+}
+
 # <public>
 #@ Description: The prefix tree path delimiter.
 #@ Returns: Some non-printable character.
@@ -189,12 +195,6 @@ function _json_to_str(path, pftree, order, types, values,    _type) {
 function PFT_SEP() {
 
 	return "\034"
-}
-
-# "\034" is inlined as a constant; make sure it's in sync with PFT_SEP()
-function _PFT_LAST_NODE() {
-
-	return "\034[^\034]+$"
 }
 
 #
@@ -229,7 +229,7 @@ function pft_insert(pft, path,    _val) {
 	_pft_add(pft, path, _val)
 
 	if (match(path, _PFT_LAST_NODE())) {
-		_val = substr(path, RSTART+1, RLENGTH)
+		_val = substr(path, RSTART+1)
 		path = substr(path, 1, RSTART-1)
 	} else {
 		return

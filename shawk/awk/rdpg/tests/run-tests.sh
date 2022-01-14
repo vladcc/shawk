@@ -32,7 +32,7 @@ function test_version_checks
 	local L_TO_C="../rdpg-to-c.awk"
 	local L_TO_AWK="../rdpg-to-awk.awk"
 	
-	bt_diff_ok "<($G_AWK -f $G_RDPG -vVersion=1)" "<(echo 'rdpg.awk 1.31')"
+	bt_diff_ok "<($G_AWK -f $G_RDPG -vVersion=1)" "<(echo 'rdpg.awk 1.311')"
 	bt_diff_ok "<($G_AWK -f $G_RDPG_OPT -vVersion=1)" "<(echo 'rdpg-opt.awk 1.2')"
 	bt_diff_ok "<($G_AWK -f $L_TO_C -vVersion=1)" "<(echo 'rdpg-to-c.awk 1.1')"
 	bt_diff_ok "<($G_AWK -f $L_TO_AWK -vVersion=1)" "<(echo 'rdpg-to-awk.awk 1.1')"

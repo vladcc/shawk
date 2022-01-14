@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-10-17
+# 2022-01-14
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.4"}
+function SCRIPT_VERSION() {return "1.41"}
 # </script>
 
 # <out_signature>
@@ -2198,6 +2198,12 @@ function error_quit(msg, code) {
 ## 2022-01-14
 #@
 
+# "\034" is inlined as a constant; make sure it's in sync with PFT_SEP()
+function _PFT_LAST_NODE() {
+
+	return "\034[^\034]+$"
+}
+
 # <public>
 #@ Description: The prefix tree path delimiter.
 #@ Returns: Some non-printable character.
@@ -2205,12 +2211,6 @@ function error_quit(msg, code) {
 function PFT_SEP() {
 
 	return "\034"
-}
-
-# "\034" is inlined as a constant; make sure it's in sync with PFT_SEP()
-function _PFT_LAST_NODE() {
-
-	return "\034[^\034]+$"
 }
 
 #
@@ -2245,7 +2245,7 @@ function pft_insert(pft, path,    _val) {
 	_pft_add(pft, path, _val)
 
 	if (match(path, _PFT_LAST_NODE())) {
-		_val = substr(path, RSTART+1, RLENGTH)
+		_val = substr(path, RSTART+1)
 		path = substr(path, 1, RSTART-1)
 	} else {
 		return

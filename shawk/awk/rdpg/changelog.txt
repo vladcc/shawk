@@ -1,3 +1,7 @@
+2022-01-14
+	rdpg.awk 1.31 -> 1.311
+	updated to awklib_prefix_tree.awk 1.2
+
 2021-10-30
 	rdpg.awk v1.3  -> v1.31
 	spaces after defn bug fixed

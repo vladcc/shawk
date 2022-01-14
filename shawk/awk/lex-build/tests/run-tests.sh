@@ -52,7 +52,7 @@ function eval_success
 # <awk>
 function test_awk_ver
 {
-	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.41"
+	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.411"
 }
 function test_awk_run_test
 {
@@ -109,7 +109,7 @@ function test_c_run_tests
 }
 function test_c_ver
 {
-	run_test_version_info "lex-c.awk" "lex-c.awk 1.4"
+	run_test_version_info "lex-c.awk" "lex-c.awk 1.41"
 }
 function test_c_kw_len
 {
@@ -134,7 +134,7 @@ function test_c
 # <first>
 function test_lex_first_ver
 {
-	run_test_version_info "lex-first.awk" "lex-first.awk 1.2"
+	run_test_version_info "lex-first.awk" "lex-first.awk 1.21"
 }
 # </first>
 

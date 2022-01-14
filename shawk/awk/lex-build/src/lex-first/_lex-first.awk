@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-10-17
+# 2022-01-14
 
 # This is the first step of the lex building process. It makes sure no first
 # fields of the input repeat, expands character ranges, and generates character
@@ -10,7 +10,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-first.awk"}
-function SCRIPT_VERSION() {return "1.2"}
+function SCRIPT_VERSION() {return "1.21"}
 # </script>
 
 # <misc>
