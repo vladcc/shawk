@@ -1,3 +1,9 @@
+2022-01-14
+	awklib_prefix_tree.awk 1.1 -> 1.2
+	pft_insert() optimized; no more array transformations
+	pft_unmark() added
+	pft_cat() checks explicitly against "" instead of !
+
 2021-11-30
 	awklib_gtree.awk 1.0 -> 1.1
 	gtr_{mark,unmark,is_marked}() added

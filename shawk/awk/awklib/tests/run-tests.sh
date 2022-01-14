@@ -14,7 +14,7 @@ function test_awklib_awkdoc
 {
 	local L_SRC=\
 'function main(    _arr_src, _src_len, _arr_doc, _doc_len) {
-	
+
 	_arr_doc[1] = "should be cleared"
 	_src_len = read_file("./data/awklib_awkdoc_data.txt", _arr_src)
 	_doc_len = awd_make_doc(_arr_doc, _arr_src, _src_len)
@@ -39,20 +39,20 @@ function baz(arg1, arg2)
 </test>'
 
 	local L_RES=""
-	
+
 	L_RES="$(eval "$G_AWK"\
 		"-f '$(get_src awkdoc)'"\
 		"-f '$(get_src array)'"\
 		"-f '$(get_src read)'"\
 		"-f <(echo '$L_SRC')")"
 	bt_assert_success
-	
+
 	diff_ok "<(echo '$L_RES') <(echo '$L_ACCEPT')"
 }
 
 function test_awklib_test
 {
-	
+
 	local L_TEST_SRC_OK=\
 'function test_1() {
 	at_test_begin("test_1()")
@@ -124,10 +124,10 @@ BEGIN {
 '###### test_2() ######
 1 true test_2()
 error: 2 false test_2()'
-	
+
 	bt_eval "$G_AWK -f $G_AWK_TEST -f <(echo '$L_TEST_SRC_OK')"
 	bt_assert_success
-	
+
 	L_RES="$(eval $G_AWK -f $G_AWK_TEST -f <(echo $L_TEST_SRC_LOG))"
 	bt_assert_success
 	diff_ok "<(echo '$L_RES') <(echo '$L_ACCEPT_OK_LOG')"
@@ -202,7 +202,7 @@ this that than thank'
 	bt_assert_success
 	L_RES="$(echo "$L_RES" | sort)"
 	diff_ok "<(echo '$L_RES') <(echo '$L_ACCEPT')"
-	
+
 	L_ACCEPT=\
 'map_bar 2
 map_baz 3
@@ -210,7 +210,7 @@ map_foo 1
 set_bar
 set_baz
 set_foo'
-	
+
 	L_RES="$(eval $G_AWK"\
 		"-f '$(get_src array)'"\
 		"-f '$(get_src vect)'"\
@@ -221,7 +221,7 @@ set_foo'
 		"-f '$(get_src tabs)'"\
 		"-f '$(get_driver prints) -vUnpredictable=1')"
 	bt_assert_success
-	
+
 	L_RES="$(echo "$L_RES" | tr '|-' '\n' | sort)"
 	diff_ok "<(echo '$L_RES') <(echo '$L_ACCEPT')"
 }
@@ -229,31 +229,31 @@ set_foo'
 function test_awklib_prog
 {
 	local L_PROG="../src/awklib_prog.awk"
-	
+
 	local L_SRC=""
 	local L_RES=""
 	local L_ACCEPT=""
-	
+
 	L_SRC=\
 'BEGIN {
 	print "\"" get_program_name() "\""
 	set_program_name("myprog")
 	print get_program_name()
-	
+
 	print did_error_happen()
 	error_flag_set()
 	print did_error_happen()
-	
+
 	print should_skip_end()
 	skip_end_set()
 	print should_skip_end()
-	
+
 	error_flag_clear()
 	print did_error_happen()
-	
+
 	skip_end_clear()
 	print did_error_happen()
-	
+
 	pstderr("stderr")
 	error_print("my error msg")
 	print did_error_happen()
@@ -278,12 +278,12 @@ END {
 myprog
 myprog: error: my error msg
 stderr'
-	
+
 	L_RES="$(eval $G_AWK -f $L_PROG -f <(echo "$L_SRC") 2>&1)"
 	bt_assert_success
 	L_RES="$(echo "$L_RES" | sort)"
 	diff_ok "<(echo '$L_RES') <(echo '$L_ACCEPT')"
-	
+
 	L_SRC=\
 'BEGIN {
 	print did_error_happen()
@@ -295,7 +295,7 @@ stderr'
 END {
 	if (!should_skip_end())
 		print "this should not print"
-}'	
+}'
 	L_ACCEPT=\
 '0
 1
@@ -305,21 +305,21 @@ END {
 	diff_ok "<(echo 1) <(echo $?)"
 	L_RES="$(echo "$L_RES" | sort)"
 	diff_ok "<(echo '$L_RES') <(echo '$L_ACCEPT')"
-	
+
 	L_SRC=\
 'BEGIN {exit_failure(5)}'
 	L_RES="$(eval $G_AWK -f $L_PROG -f <(echo "$L_SRC") 2>&1)"
 	diff_ok "<(echo 5) <(echo $?)"
-	
+
 	L_SRC=\
-'BEGIN {error_quit("fatal")}'	
+'BEGIN {error_quit("fatal")}'
 	L_ACCEPT=\
 ': error: fatal'
-	
+
 	L_RES="$(eval $G_AWK -f $L_PROG -f <(echo "$L_SRC") 2>&1)"
 	diff_ok "<(echo 1) <(echo $?)"
 	diff_ok "<(echo '$L_RES') <(echo '$L_ACCEPT')"
-	
+
 	L_SRC=\
 'BEGIN {
 	set_program_name("myprog")
@@ -327,7 +327,7 @@ END {
 }'
 	L_ACCEPT=\
 'myprog: error: fatal'
-	
+
 	L_RES="$(eval $G_AWK -f $L_PROG -f <(echo "$L_SRC") 2>&1)"
 	diff_ok "<(echo 5) <(echo $?)"
 	diff_ok "<(echo '$L_RES') <(echo '$L_ACCEPT')"
@@ -357,7 +357,7 @@ function test_functional
 	)
 	local L_NUM_UNIQ_TESTS=(
 		18 12 12 7
-		20 15 14 2
+		20 15 15 2
 		1  1  5  1
 		3  6  1  3
 		9  2
@@ -365,19 +365,19 @@ function test_functional
 	local L_THIS_LIB=""
 	local L_RES=""
 	local L_DEP=""
-	
+
 	local len="${#L_LIBS[@]}"
 	for ((i = 0; i < ${len}; ++i));
 	do
 		L_DEP="${L_DEPENDS[$i]}"
 		L_THIS_LIB="${L_LIBS[$i]}"
-		
+
 		bt_eval "$G_AWK"\
 		"-f '$G_AWK_TEST' -vReport=0"\
 		"-f '$(get_src $L_THIS_LIB)'"\
 		"-f '$(get_driver $L_THIS_LIB)' $L_DEP"
 		bt_assert_success
-		
+
 		# make sure the number of unique tests is as expected
 		bt_eval "# eval again with -vReport=1"
 		L_RES="$(eval $G_AWK"\
@@ -401,7 +401,7 @@ bar
   # another comment
 end line
 another line'
-	
+
 	for ((i = 1; i <= 5; ++i));
 	do
 		bt_eval "$G_AWK"\
@@ -422,7 +422,7 @@ function test_all
 "awklib_awkdoc "\
 "functional "\
 "read_lines "
-	
+
 	for test in $L_TESTS; do
 		bt_eval "test_${test}"
 	done
@@ -431,11 +431,11 @@ function test_all
 function main
 {
 	source "$(dirname $(realpath $0))/../../../bash/bashtest/bashtest.sh"
-	
+
 	if [ "$#" -gt 0 ]; then
 		bt_set_verbose
 	fi
-	
+
 	bt_enter
 	bt_eval test_all
 	bt_exit_success
