@@ -1,9 +1,12 @@
 .PHONY: help
 help:
-	@echo 'test  - run tests'
-	@echo 'help  - this screen'
+	@echo "make all  - run top level rebuild and test; regenerates if needed"
+	@echo "make help - this screen"
 
-.PHONY: test
-test:
-	find . -name 'run-test*.sh' | \
-	while read f; do echo $$f; bash $$f || { echo $$f failed; exit 1; }; done
+SH_GEN = ./gen-make.sh
+MF_GEN = makefile.gen
+
+.PHONY: all
+all:
+	bash -c '(diff <($(SH_GEN)) $(MF_GEN) > /dev/null) || ($(SH_GEN) > $(MF_GEN))'
+	$(MAKE) -f $(MF_GEN) all

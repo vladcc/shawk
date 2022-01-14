@@ -1,7 +1,11 @@
 .PHONY: help
 help:
-	@echo 'test  - run tests'
-	@echo 'help  - this screen'
+	@echo 'make all   - does nothing'
+	@echo 'make test  - run tests'
+	@echo 'make help  - this screen'
+
+.PHONY: all
+all:
 
 .PHONY: test
 test:

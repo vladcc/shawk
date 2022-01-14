@@ -5,10 +5,11 @@ DEP += ../awklib/src/awklib_prog.awk
 
 .PHONY: help
 help:
-	@echo 'prep  - compiles prep.awk'
-	@echo 'test  - run tests'
-	@echo 'testv - like test but verbose'
-	@echo 'help  - this screen'
+	@echo 'make all   - does prep'
+	@echo 'make prep  - compiles prep.awk'
+	@echo 'make test  - run tests'
+	@echo 'make testv - like test but verbose'
+	@echo 'make help  - this screen'
 
 .PHONY: all
 all: prep

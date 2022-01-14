@@ -1,6 +1,7 @@
 # <help>
 .PHONY: help
 help:
+	@echo 'make all    - lexer parser lib doc awkson'
 	@echo 'make awkson - generates awkson'
 	@echo 'make lexer  - generates the lexer'
 	@echo 'make parser - generates the parser'
@@ -11,6 +12,11 @@ help:
 	@echo 'make clean  - leave only the base source files'
 	@echo 'make help   - this screen'
 # </help>
+
+# <all>
+.PHONY: all
+all: lexer parser lib doc awkson
+# </all>
 
 # <lexer>
 LB_DIR = ../lex-build

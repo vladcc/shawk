@@ -1,0 +1,106 @@
+.PHONY: help
+help:
+	@echo "make all     - rebuild test"
+	@echo "make rebuild - rebuild all projects"
+	@echo "make test    - test all projects"
+	@echo "make help    - this screen"
+
+.PHONY: all
+all: rebuild test
+
+TEST_PROJ = test_awklib test_awkson test_genbash test_lex-build test_make-doc test_make-test test_prep test_ptrip test_rdpg test_smpg test_bashtest 
+.PHONY: test
+test: $(TEST_PROJ)
+
+REBUILD_PROJ = rebuild_awklib rebuild_awkson rebuild_genbash rebuild_lex-build rebuild_make-doc rebuild_make-test rebuild_prep rebuild_ptrip rebuild_rdpg rebuild_smpg rebuild_bashtest 
+.PHONY: rebuild
+rebuild: $(REBUILD_PROJ)
+
+.PHONY: rebuild_awklib
+rebuild_awklib:
+	cd ./awk/awklib && $(MAKE) -B all
+
+.PHONY: rebuild_awkson
+rebuild_awkson:
+	cd ./awk/awkson && $(MAKE) -B all
+
+.PHONY: rebuild_genbash
+rebuild_genbash:
+	cd ./awk/genbash && $(MAKE) -B all
+
+.PHONY: rebuild_lex-build
+rebuild_lex-build:
+	cd ./awk/lex-build && $(MAKE) -B all
+
+.PHONY: rebuild_make-doc
+rebuild_make-doc:
+	cd ./awk/make-doc && $(MAKE) -B all
+
+.PHONY: rebuild_make-test
+rebuild_make-test:
+	cd ./awk/make-test && $(MAKE) -B all
+
+.PHONY: rebuild_prep
+rebuild_prep:
+	cd ./awk/prep && $(MAKE) -B all
+
+.PHONY: rebuild_ptrip
+rebuild_ptrip:
+	cd ./awk/ptrip && $(MAKE) -B all
+
+.PHONY: rebuild_rdpg
+rebuild_rdpg:
+	cd ./awk/rdpg && $(MAKE) -B all
+
+.PHONY: rebuild_smpg
+rebuild_smpg:
+	cd ./awk/smpg && $(MAKE) -B all
+
+.PHONY: rebuild_bashtest
+rebuild_bashtest:
+	cd ./bash/bashtest && $(MAKE) -B all
+
+.PHONY: test_awklib
+test_awklib:
+	cd ./awk/awklib && $(MAKE) test
+
+.PHONY: test_awkson
+test_awkson:
+	cd ./awk/awkson && $(MAKE) test
+
+.PHONY: test_genbash
+test_genbash:
+	cd ./awk/genbash && $(MAKE) test
+
+.PHONY: test_lex-build
+test_lex-build:
+	cd ./awk/lex-build && $(MAKE) test
+
+.PHONY: test_make-doc
+test_make-doc:
+	cd ./awk/make-doc && $(MAKE) test
+
+.PHONY: test_make-test
+test_make-test:
+	cd ./awk/make-test && $(MAKE) test
+
+.PHONY: test_prep
+test_prep:
+	cd ./awk/prep && $(MAKE) test
+
+.PHONY: test_ptrip
+test_ptrip:
+	cd ./awk/ptrip && $(MAKE) test
+
+.PHONY: test_rdpg
+test_rdpg:
+	cd ./awk/rdpg && $(MAKE) test
+
+.PHONY: test_smpg
+test_smpg:
+	cd ./awk/smpg && $(MAKE) test
+
+.PHONY: test_bashtest
+test_bashtest:
+	cd ./bash/bashtest && $(MAKE) test
+
