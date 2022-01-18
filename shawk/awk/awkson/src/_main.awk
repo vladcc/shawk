@@ -3,11 +3,11 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-14
+# 2022-01-18
 
 # <main>
 function SCRIPT_NAME() {return "awkson.awk"}
-function SCRIPT_VERSION() {return "1.11"}
+function SCRIPT_VERSION() {return "1.12"}
 
 function _state_clear() {
 	map_init(_G_json_type_tbl)

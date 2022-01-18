@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-14
+# 2022-01-18
 
 # This is the first step of the lex building process. It makes sure no first
 # fields of the input repeat, expands character ranges, and generates character
@@ -10,7 +10,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-first.awk"}
-function SCRIPT_VERSION() {return "1.21"}
+function SCRIPT_VERSION() {return "1.22"}
 # </script>
 
 # <misc>
@@ -1288,11 +1288,11 @@ function error_quit(msg, code) {
 #@ "this" should be ("t" PFT_SEP() "h" PFT_SEP() "i" PFT_SEP() "s").
 #@ Similar for "that". PFT_SEP() is a non-printable character. To make
 #@ any key or value from a pft printable, use pft_pretty().
-#@ Version: 1.2
+#@ Version: 1.3
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2022-01-14
+## 2022-01-18
 #@
 
 # "\034" is inlined as a constant; make sure it's in sync with PFT_SEP()
@@ -1339,14 +1339,14 @@ function pft_insert(pft, path,    _val) {
 	if (!path)
 		return
 
-	_pft_add(pft, path, _val)
-
-	if (match(path, _PFT_LAST_NODE())) {
-		_val = substr(path, RSTART+1)
-		path = substr(path, 1, RSTART-1)
-	} else {
+	if (!_pft_add(pft, path, _val))
 		return
-	}
+
+	if (!match(path, _PFT_LAST_NODE()))
+		return
+
+	_val = substr(path, RSTART+1)
+	path = substr(path, 1, RSTART-1)
 
 	pft_insert(pft, path, _val)
 }
@@ -1357,27 +1357,29 @@ function pft_insert(pft, path,    _val) {
 #@ Returns: Nothing.
 #@ Complexity: O(n)
 #
-function pft_rm(pft, path,    _arr, _arr2, _i, _len, _last, _no_tail, _tmp) {
+function pft_rm(pft, path,    _last, _start_last, _no_tail, _no_tail_val) {
 
 	if (pft_has(pft, path)) {
 
 		delete pft[path]
 
-		if ((_len = pft_split(_arr, path)) > 1) {
+		if (match(path, _PFT_LAST_NODE())) {
 
-			_last = _arr[_len]
-			_no_tail = pft_arr_to_pft_str(_arr, _len-1)
+			_last = substr(path, RSTART+1)
+			_no_tail = substr(path, 1, RSTART-1)
 
-			_len = pft_split(_arr, pft[_no_tail])
+			_no_tail_val = (PFT_SEP() pft[_no_tail] PFT_SEP())
 
-			_tmp = 0
-			for (_i = 1; _i <= _len; ++_i) {
+			_start_last = index(_no_tail_val, (PFT_SEP() _last PFT_SEP()))
 
-				if (_arr[_i] != _last)
-					_arr2[++_tmp] = _arr[_i]
-			}
+			_no_tail_val = ( \
+				substr(_no_tail_val, 1, _start_last-1) \
+				PFT_SEP() \
+				substr(_no_tail_val, _start_last + length(_last) + 2) \
+			)
+			gsub(("^" PFT_SEP() "|" PFT_SEP() "$"), "", _no_tail_val)
 
-			pft[_no_tail] = pft_arr_to_pft_str(_arr2, _tmp)
+			pft[_no_tail] = _no_tail_val
 		}
 	}
 }
@@ -1459,14 +1461,9 @@ function pft_split(arr, pft_str) {
 #@ Returns: 1 if 'node' is a path in 'pft_str', 0 otherwise.
 #@ Complexity: O(n)
 #
-function pft_path_has(pft_str, node,    _i, _len, _arr) {
+function pft_path_has(pft_str, node) {
 
-	_len = pft_split(_arr, pft_str)
-	for (_i = 1; _i <= _len; ++_i) {
-		if (_arr[_i] == node)
-			return 1
-	}
-	return 0
+	return (!!index((PFT_SEP() pft_str PFT_SEP()), (PFT_SEP() node PFT_SEP())))
 }
 
 #
@@ -1527,7 +1524,7 @@ function pft_pretty(pft_str, sep) {
 #@ Complexity: O(n)
 #
 function pft_to_str_dfs(pft, root, sep, subsep,    _arr, _i, _len, _str,
-_tmp) {
+_tmp, _get) {
 
 	if (!pft_has(pft, root))
 		return ""
@@ -1595,15 +1592,18 @@ function pft_print_dump(pft, sep) {
 }
 # </public>
 
-function _pft_add(pft, key, val,    _get) {
+function _pft_add(pft, key, val,    _path) {
 
-	if ((_get = pft_get(pft, key))) {
-		if (val && !pft_path_has(_get, val)) {
-			pft[key] = pft_cat(_get, val)
-		}
-	} else {
-		pft[key] = val
+	if ((_path = pft_get(pft, key))) {
+
+		if (val && !pft_path_has(_path, val))
+			val = pft_cat(_path, val)
+		else
+			return 0
 	}
+
+	pft[key] = val
+	return 1
 }
 
 function _PFT_MARK_SEP() {return "mark\006"}
