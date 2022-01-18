@@ -272,6 +272,30 @@ function test_pft_rm(    _pft, _str, _arr, _len) {
 	at_true("t.h.i.s | t.h.a.t | t.h.e.s.e" == \
 		pft_to_str_dfs(_pft, "t", " | ", "."))
 
+	pft_rm(_pft, ("t" PFT_SEP() "h" PFT_SEP() "i" PFT_SEP() "s"))
+	at_true("t.h.i | t.h.a.t | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+
+	_test_pft_rm_init(_pft)
+	at_true("t.h.i.s | t.h.a.t | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+
+	pft_rm(_pft, ("t" PFT_SEP() "h" PFT_SEP() "a" PFT_SEP() "t"))
+	at_true("t.h.i.s | t.h.a | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+
+	_test_pft_rm_init(_pft)
+	at_true("t.h.i.s | t.h.a.t | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+
+	pft_rm(_pft, ("t" PFT_SEP() "h" PFT_SEP() "e" PFT_SEP() "s" PFT_SEP() "e"))
+	at_true("t.h.i.s | t.h.a.t | t.h.e.s" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+
+	_test_pft_rm_init(_pft)
+	at_true("t.h.i.s | t.h.a.t | t.h.e.s.e" == \
+		pft_to_str_dfs(_pft, "t", " | ", "."))
+
 	pft_rm(_pft, ("t" PFT_SEP() "h" PFT_SEP() "i"))
 	at_true("t.h.a.t | t.h.e.s.e" == pft_to_str_dfs(_pft, "t", " | ", "."))
 
