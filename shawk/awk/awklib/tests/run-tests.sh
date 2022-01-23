@@ -338,11 +338,11 @@ function get_driver { echo "./test-drivers/test_awklib_${1}.awk"; }
 function test_functional
 {
 	local L_LIBS=(
-		'array'   'vect'  'eos'          'heap'
-		'map'     'set'   'prefix_tree'  'exec_cmd'
-		'read'    'tabs'  'fsm'          'prep'
-		'ch_num'  'sort'  'psplit'       'str_check'
-		'gtree'   'dotnot'
+		'array'   'vect'   'eos'          'heap'
+		'map'     'set'    'prefix_tree'  'exec_cmd'
+		'read'    'tabs'   'fsm'          'prep'
+		'ch_num'  'sort'   'psplit'       'str_check'
+		'gtree'   'dotnot' 'bitwise'
 	)
 	local L_DEPENDS=(
 		""
@@ -353,14 +353,14 @@ function test_functional
 		"-f '$(get_src array)'"
 		"" "" ""
 		"" "" "" ""
-		"" ""
+		"" "" ""
 	)
 	local L_NUM_UNIQ_TESTS=(
 		18 12 12 7
 		20 15 15 2
 		1  1  5  1
 		3  6  1  3
-		9  2
+		9  2  8
 	)
 	local L_THIS_LIB=""
 	local L_RES=""
