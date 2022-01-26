@@ -14,7 +14,7 @@ function foo_lex_usr_get_word() {
 			break
 	}
 	
-	return ((!foo_lex_is_saved_a_keyword()) ?
+	return ((!foo_lex_is_saved_a_keyword()) ? \
 		G_CONST_tok_id : foo_lex_get_saved())
 }
 

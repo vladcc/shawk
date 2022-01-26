@@ -1,3 +1,8 @@
+2022-01-26
+	lex-c.awk 1.42 -> 1.5
+	awklib_{sort,bitwise}.awk now used; doesn't depend on gawk anymore
+	'make regen' added to makefile
+	
 2022-01-18
 	lex-awk.awk   1.411 -> 1.412
 	lex-c.awk     1.41 -> 1.42

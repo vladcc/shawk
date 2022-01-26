@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-18
+# 2022-01-26
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.42"}
+function SCRIPT_VERSION() {return "1.5"}
 # </script>
 
 # <out_signature>
@@ -734,7 +734,7 @@ _kw_set, _kw_lengths) {
 		_add = "0"
 		for (_j = 1; _j <= _jend; ++_j) {
 			if (_i == _kw_lengths[_j]) {
-				_valid_lengths = or(_valid_lengths, lshift(1, _i))
+				_valid_lengths = bw_or(_valid_lengths, bw_lshift(1, _i))
 				_add = "1"
 				break
 			}	
@@ -758,13 +758,20 @@ function KW_LEN_CHECK() {
 }
 
 # <lex_kw_lookup_bsearch>
+function _qsorti(tbl, arr,    _len, _n, _i) {
+
+	for (_n in tbl)
+		arr[++_i] = tbl[_n]
+
+	return qsort(arr, _len)
+}
 function out_kw_static_tbls(    _set, _sorted, _i, _end, _pad, _map_kw, _tbl,
 _start, _len, _ch, _nout) {
 	lb_vect_make_set(_set, G_keywords_vect, 1)
 	lb_vect_to_map(_map_kw, G_keywords_vect)
-	lb_vect_to_array(_sorted, _set)
+	_end = lb_vect_to_array(_sorted, _set)
 	
-	_end = asort(_sorted)
+	qsort(_sorted, _end)
 
 	# Output keywords table
 	out_line("// sorted; don't jumble up")
@@ -809,7 +816,7 @@ _start, _len, _ch, _nout) {
 		++_tbl[str_ch_at(_sorted[_i], 1)]
 
 	# Sort only the first characters of all keywords in _sorted
-	_end = asorti(_tbl, _sorted)
+	_end = _qsorti(_tbl, _sorted)
 
 	out_line()
 	# Output the len data per first character

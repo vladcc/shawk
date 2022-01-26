@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-18
+# 2022-01-26
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.42"}
+function SCRIPT_VERSION() {return "1.5"}
 # </script>
 
 # <out_signature>
@@ -734,7 +734,7 @@ _kw_set, _kw_lengths) {
 		_add = "0"
 		for (_j = 1; _j <= _jend; ++_j) {
 			if (_i == _kw_lengths[_j]) {
-				_valid_lengths = or(_valid_lengths, lshift(1, _i))
+				_valid_lengths = bw_or(_valid_lengths, bw_lshift(1, _i))
 				_add = "1"
 				break
 			}	
@@ -758,13 +758,20 @@ function KW_LEN_CHECK() {
 }
 
 # <lex_kw_lookup_bsearch>
+function _qsorti(tbl, arr,    _len, _n, _i) {
+
+	for (_n in tbl)
+		arr[++_i] = tbl[_n]
+
+	return qsort(arr, _len)
+}
 function out_kw_static_tbls(    _set, _sorted, _i, _end, _pad, _map_kw, _tbl,
 _start, _len, _ch, _nout) {
 	lb_vect_make_set(_set, G_keywords_vect, 1)
 	lb_vect_to_map(_map_kw, G_keywords_vect)
-	lb_vect_to_array(_sorted, _set)
+	_end = lb_vect_to_array(_sorted, _set)
 	
-	_end = asort(_sorted)
+	qsort(_sorted, _end)
 
 	# Output keywords table
 	out_line("// sorted; don't jumble up")
@@ -809,7 +816,7 @@ _start, _len, _ch, _nout) {
 		++_tbl[str_ch_at(_sorted[_i], 1)]
 
 	# Sort only the first characters of all keywords in _sorted
-	_end = asorti(_tbl, _sorted)
+	_end = _qsorti(_tbl, _sorted)
 
 	out_line()
 	# Output the len data per first character
@@ -2511,3 +2518,428 @@ function _pft_add(pft, key, val,    _path) {
 
 function _PFT_MARK_SEP() {return "mark\006"}
 #@ </awklib_prefix_tree>
+#@ <awklib_sort>
+#@ Library: sort
+#@ Description: Sorting procedures in case your awk doesn't have one, or
+#@ you're looking for a specific property. The input arrays are assumed
+#@ to be number indexed starting from one. Sorting is done in
+#@ non-decreasing order.
+#@ Version: 1.0
+##
+## Vladimir Dinev
+## vld.dinev@gmail.com
+## 2021-08-30
+#@
+
+#
+#@ Description: Checks if 'arr' is sorted in non-decreasing order.
+#@ Returns: 1 if it is, 0 otherwise. 1 if 'len' < 2 as well.
+#@ Complexity: O(n)
+#
+function is_sorted(arr, len,    _i) {
+
+	if (len > 1) {
+
+		for (_i = 2; _i <= len; ++_i) {
+		
+			if (arr[_i-1] > arr[_i])
+				return 0
+		}
+	}
+	return 1
+}
+
+#
+#@ Description: A quick sort implementation. If 'arr' is already sorted,
+#@ the procedure takes O(n) time. When the sub-arrays become small,
+#@ insertion sort is used for optimization.
+#@ Returns: Nothing.
+#@ Complexity: O(n log n)
+#
+function qsort(arr, len) {
+	
+	if (!is_sorted(arr, len))
+		_qsort(arr, 1, len)
+}
+function _qsort(arr, start, end,    _up, _down, _piv, _tmp,
+_size_minus_one) {
+	
+	_size_minus_one = end-start
+	if (_size_minus_one < 5) {
+	
+		_snsort(arr, start, end)
+		return
+	}
+	
+	_piv = arr[start+int(_size_minus_one/2)]
+	_up = start-1
+	_down = end+1
+	
+	while (1) {
+		
+		do {
+			# _piv = arr[start+int(_size_minus_one/2)] guarantees _piv
+			# is never the last element of any array with size >= 2 and
+			# it guarantees _up will stop at least once before it
+			# reaches _down. This guarantees that to break out of the
+			# loop _down would either reach _up before _up reaches _down
+			# on the first iteration, or the loop will execute at least
+			# twice, therefore _down will be decremented at least twice.
+			# Hence (_down < end) will always hold true, so 
+			# qsort(start, _down) will always terminate because the
+			# range will have at least one element less than the
+			# previous call.
+		
+			++_up
+		} while (arr[_up] < _piv)
+		
+		
+		do {
+			--_down
+		} while (arr[_down] > _piv)
+		
+		if (_up < _down) {
+		
+			# arr[_up] must be >= _piv
+			# arr[_down] must be <= _piv
+			# hence the swap ensures no value left of _down is > _piv
+			# and no value right of _down is < _piv
+			#
+			# i.e. if arr[_down] is <= _piv, it will be swapped with
+			# something which cannot be < _piv because all < _piv were
+			# skipped
+			# if arr[_up] is >= _piv, it will be swapped with something
+			# which cannot be > _piv because all > _piv were skipped
+		
+			_tmp = arr[_up]
+			arr[_up] = arr[_down]
+			arr[_down] = _tmp
+		} else {
+		
+			break
+		}
+	}
+	
+	_qsort(arr, start, _down)
+	_qsort(arr, _down+1, end)
+}
+
+#
+#@ Description: A merge sort implementation. Generally slower than quick
+#@ sort, but still the quickest stable sort around for large inputs.
+#@ Already sorted input takes O(n) time.
+#@ Returns: Nothing.
+#@ Complexity: O(n log n)
+#
+function msort(arr, len) {
+	
+	if (!is_sorted(arr, len))
+		_msort(arr, 1, len)
+}
+function _msort(arr, start, end,    _i, _cpy) {
+		
+		# copy the array
+		for (_i = start; _i <= end; ++_i)
+			_cpy[_i] = arr[_i]
+			
+		# sort the copy into the array ...
+		_merge_sort(arr, start, end, _cpy)
+}
+function _merge_sort(arr, start, end, cpy,    _mid, _size_minus_one,
+_left, _right) {
+
+	_size_minus_one = (end-start)
+	if (_size_minus_one < 5) {
+	
+		_snsort(arr, start, end)
+		return
+	}
+
+	_mid = start + int(_size_minus_one/2)
+	
+	# ... by sorting the first half of the array into the copy
+	_merge_sort(cpy, start, _mid, arr)
+	
+	# then the second half
+	_merge_sort(cpy, _mid+1, end, arr)
+	
+	
+	# then merge the two sorted halves of the copy back into the array
+	_left = start
+	_right = _mid+1
+	
+	while (_left <= _mid && _right <= end) {
+		
+		if (cpy[_left] < cpy[_right])
+			arr[start++] = cpy[_left++]
+		else
+			arr[start++] = cpy[_right++]
+	}
+	
+	while (_left <= _mid)
+		arr[start++] = cpy[_left++]
+	
+	while (_right <= end)
+		arr[start++] = cpy[_right++]
+}
+
+#
+# Simple insertion sort - faster for very small arrays since it has less
+# overhead than the binary search version.
+#
+function _snsort(arr, start, end,    _i, _j, _tmp) {
+
+	for (_i = start+1; _i <= end; ++_i) {
+		
+		_tmp = arr[_i]
+		for (_j = _i-1; _j >= start && arr[_j] > _tmp; --_j)
+			arr[_j+1] = arr[_j]
+		arr[_j+1] = _tmp
+	} 
+}
+
+#
+#@ Description: An binary insertion sort implementation. Stable, online,
+#@ adaptive, in-place, quick for small arrays. Don't sort more than a
+#@ few thousand things unless you're not in a hurry.
+#@ Returns: Nothing.
+#@ Complexity: O(n*n)
+#
+function nsort(arr, len) {_nsort(arr, 1, len)}
+function _nsort(arr, start, end,    _i, _j, _s, _e, _m, _k, _key) {
+	
+	for (_i = start; _i < end; ++_i) {
+		
+		_s = start
+		_e = _i
+		_k = _i+1
+		_key = arr[_k]
+		
+		while (_s <= _e) {
+		
+			_m = _s + int((_e-_s)/2)	
+			if (_key < arr[_m])
+				_e = _m - 1
+			else
+				_s = _m + 1
+		}
+		
+		for (_j = _k; _j > _s; --_j)
+			arr[_j] = arr[_j-1]
+		arr[_j] = _key
+	}
+}
+#@ </awklib_sort>
+#@ <awklib_bitwise>
+#@ Library: bitwise
+#@ Description: Bit operations implemented with loops and arithmetic. They work
+#@ as if on 32 bit unsigned ints. If a number wider than that is passed to a bit
+#@ operations, it is truncated to 32 bits. Conversion procedures can optionally
+#@ convert numbers winder than 32 bits. The operations are, of course, slow and
+#@ shouldn't be used for much more than the occasional bit pattern.
+#@ Version: 1.0
+##
+## Vladimir Dinev
+## vld.dinev@gmail.com
+## 2022-01-20
+#@
+
+# <public>
+
+#
+#@ Description: Bitwise and.
+#@ Returns: The result of the operation, or -1 if any input is negative.
+#
+function bw_and(a, b) {
+	return _bw_do_bw(a, b, _BW_AND())
+}
+
+#
+#@ Description: Bitwise or.
+#@ Returns: The result of the operation, or -1 if any input is negative.
+#
+function bw_or(a, b) {
+	return _bw_do_bw(a, b, _BW_OR())
+}
+
+#
+#@ Description: Bitwise xor.
+#@ Returns: The result of the operation, or -1 if any input is negative.
+#
+function bw_xor(a, b) {
+	return _bw_do_bw(a, b, _BW_XOR())
+}
+
+#
+#@ Description: Bitwise not.
+#@ Returns: The result of the operation, or -1 if any input is negative.
+#
+function bw_not(val) {
+	return _bw_do_bw(val, _BW_UVAL_MAX(), _BW_XOR())
+}
+
+#
+#@ Description: Bitwise left shift.
+#@ Returns: The result of the operation, or -1 if any input is negative, or
+#@ 'bits' is larger than 31.
+#
+function bw_lshift(val, bits) {
+	return _bw_do_bw(val, bits, _BW_LSHIFT())
+}
+
+#
+#@ Description: Bitwise right shift.
+#@ Returns: The result of the operation, or -1 if any input is negative, or
+#@ 'bits' is larger than 31.
+#
+function bw_rshift(val, bits) {
+	return _bw_do_bw(val, bits, _BW_RSHIFT())
+}
+
+#
+#@ Description: Creates a binary string representation of 'num'. 'sep', if
+#@ given, separates every four bits. 'limit', if given, is the number of bytes
+#@ to process, starting from the least significant one. The default is four.
+#@ Returns: The binary string representation of 'num', -1 if 'num' is negative.
+#
+function bw_bin_str(num, sep, limit,    _str) {
+	
+	return _bw_base_str(num, sep, limit, _BW_BASE_BIN())
+}
+
+#
+#@ Description: Creates a hex string representation of 'num'. 'sep', if given,
+#@ separates every two hex digits. 'limit', if given, is the number of bytes
+#@ to process, starting from the least significant one. The default is four.
+#@ Returns: The hex string representation of 'num', -1 if 'num' is negative.
+#
+function bw_hex_str(num, sep, limit,    _str, _digit) {
+	
+	return _bw_base_str(num, sep, limit, _BW_BASE_HEX())
+}
+# </public>
+
+# <private>
+function _BW_MAX_BITS() {return 32}
+function _BW_MSB() {return _BW_MAX_BITS()-1}
+function _BW_UVAL_MAX() {return int(2^_BW_MAX_BITS()-1)}
+
+function _BW_AND() {return 1}
+function _BW_OR() {return 2}
+function _BW_XOR() {return 3}
+function _BW_LSHIFT() {return 4}
+function _BW_RSHIFT() {return 5}
+
+function _bw_mask_max(n) {return int(n%(2^_BW_MAX_BITS()))}
+
+function _bw_do_bw(na, nb, op,    _ba, _bb, _bc, _pw, _res) {
+	
+	if ((op < _BW_AND()) || (op > _BW_RSHIFT()))
+		return -1
+	
+	na = int(na)
+	nb = int(nb)
+	
+	if ((na < 0) || (nb < 0))
+		return -1
+	
+	if (na > _BW_UVAL_MAX())
+		na = _bw_mask_max(na)
+
+	if (nb > _BW_UVAL_MAX())
+		nb = _bw_mask_max(nb)
+	
+	_res = -1
+	if ((_BW_LSHIFT() == op) || (_BW_RSHIFT() == op)) {
+		
+		if (nb > _BW_MSB())
+			return -1
+		
+		while (na && nb--)
+			na = (_BW_LSHIFT() == op) ? _bw_mask_max(na*2) : int(na/2)
+			
+		_res = na
+	} else {
+	
+		_pw = 0
+		_res = 0
+		while (1) {
+			
+			if (na > 0 || nb > 0) { 
+				
+				_ba = !!(na % 2)
+				_bb = !!(nb % 2)
+				
+				if (_BW_AND() == op)
+					_bc = (_ba && _bb)
+				else if (_BW_OR() == op)
+					_bc = (_ba || _bb)
+				else if (_BW_XOR() == op)
+					_bc = (_ba != _bb)
+
+				_res += _bc * 2^_pw
+				
+				++_pw
+				na = int(na/2)
+				nb = int(nb/2)
+			} else {
+				break
+			}
+		}
+	}
+	return _res
+}
+
+function _BW_BASE_BIN() {return 1}
+function _BW_BASE_HEX() {return 2}
+
+function _bw_base_str(num, sep, limit, base,    _mod) {
+	
+	if (base != _BW_BASE_BIN() && base != _BW_BASE_HEX())
+		return -1
+	
+	if (num < 0)
+		return -1
+		
+	num = int(num)
+	
+	if (_BW_BASE_BIN() == base) {
+		limit = (limit) ? limit * 8 : _BW_MAX_BITS()
+		_mod = 4
+	} else if (_BW_BASE_HEX() == base) {
+		limit = (limit) ? limit * 2 : _BW_MAX_BITS() / 4
+		_mod = 2
+	}
+	
+	_str = ""
+	while (limit) {
+		
+		if ((sep != "") && (_str != "") && !(limit % _mod))
+			_str = (sep _str)
+		
+			if (_BW_BASE_BIN() == base) {
+				
+				_str = ((num % 2) _str)	
+				num = int(num/2)
+			} else if (_BW_BASE_HEX() == base) {
+				
+				_digit = num % 16
+			
+				if (_digit == 10) _digit = "A"
+				else if (_digit == 11) _digit = "B"
+				else if (_digit == 12) _digit = "C"
+				else if (_digit == 13) _digit = "D"
+				else if (_digit == 14) _digit = "E"
+				else if (_digit == 15) _digit = "F"
+				
+				_str = (_digit _str)
+				num = int(num/16)
+			}
+		
+		--limit
+	}
+	return _str
+}
+# </private>
+
+#@ </awklib_bitwise>

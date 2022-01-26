@@ -1,6 +1,7 @@
 #!/bin/bash
 
 readonly G_TEST_CASES="base_case shuffled error"
+G_AWK="${G_AWK:-awk}"
 
 # <misc>
 function make_input_name { echo "./test-data/${1}.txt"; }
@@ -37,7 +38,7 @@ function run_test_version_info
 {
 	local L_LEX="../$1"
 	local L_VER="$2"
-	eval_success "diff <(awk -f $L_LEX -vVersion=1) "\
+	eval_success "diff <($G_AWK -f $L_LEX -vVersion=1) "\
 	"<(echo \"$L_VER\")"
 }
 function gen_lex { bt_eval "bash ./generate-lex.sh > /dev/null"; }
@@ -56,8 +57,8 @@ function test_awk_ver
 }
 function test_awk_run_test
 {
-	local L_LEX="awk -f ./awk/lex.awk -f ./awk/inc_lex.awk"
-	local L_LEX_PREF="awk -f ./awk/foo-lex.awk -f ./awk/foo_inc_lex.awk"
+	local L_LEX="$G_AWK -f ./awk/lex.awk -f ./awk/inc_lex.awk"
+	local L_LEX_PREF="$G_AWK -f ./awk/foo-lex.awk -f ./awk/foo_inc_lex.awk"
 	for lexer in $G_C_LEXERS; do
 		bt_eval run_tests_on_single_file "$L_LEX"
 		bt_eval run_tests_on_multiple_files "$L_LEX"
@@ -109,14 +110,14 @@ function test_c_run_tests
 }
 function test_c_ver
 {
-	run_test_version_info "lex-c.awk" "lex-c.awk 1.42"
+	run_test_version_info "lex-c.awk" "lex-c.awk 1.5"
 }
 function test_c_kw_len
 {
 	local L_MSG=""
 	local L_EXPECT="lex-c.awk: error: keyword 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': length cannot be greater than 31"
 	
-	L_MSG="$(awk -f ../lex-first.awk input-err-lex-c-kw-len.lb | awk -f ../lex-c.awk 2>&1)"
+	L_MSG="$($G_AWK -f ../lex-first.awk input-err-lex-c-kw-len.lb | $G_AWK -f ../lex-c.awk 2>&1)"
 	bt_assert_failure
 
 	bt_diff "<(echo \"$L_MSG\")" "<(echo \"$L_EXPECT\")"
