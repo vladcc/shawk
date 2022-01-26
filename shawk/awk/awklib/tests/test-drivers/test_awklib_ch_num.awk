@@ -17,15 +17,15 @@ function test_ch_to_num(    _i) {
 	ch_num_init()
 	for (_i = 0; _i <= 127; ++_i) {
 		
-		if (0x00 == _i) at_true(ch_to_num("\\0") == 0x00)
-		else if (0x07 == _i) at_true(ch_to_num("\\a") == 0x07)
-		else if (0x08 == _i) at_true(ch_to_num("\\b") == 0x08)
-		else if (0x09 == _i) at_true(ch_to_num("\\t") == 0x09)
-		else if (0x0A == _i) at_true(ch_to_num("\\n") == 0x0A)
-		else if (0x0B == _i) at_true(ch_to_num("\\v") == 0x0B)
-		else if (0x0C == _i) at_true(ch_to_num("\\f") == 0x0C)
-		else if (0x0D == _i) at_true(ch_to_num("\\r") == 0x0D)
-		else if (0x1B == _i) at_true(ch_to_num("\\e") == 0x1B)
+		if (0 == _i) at_true(ch_to_num("\\0") == 0)
+		else if (7 == _i) at_true(ch_to_num("\\a") == 7)
+		else if (8 == _i) at_true(ch_to_num("\\b") == 8)
+		else if (9 == _i) at_true(ch_to_num("\\t") == 9)
+		else if (10 == _i) at_true(ch_to_num("\\n") == 10)
+		else if (11 == _i) at_true(ch_to_num("\\v") == 11)
+		else if (12 == _i) at_true(ch_to_num("\\f") == 12)
+		else if (13 == _i) at_true(ch_to_num("\\r") == 13)
+		else if (27 == _i) at_true(ch_to_num("\\e") == 27)
 		else at_true(_i == ch_to_num(sprintf("%c", _i)))
 	}
 }
@@ -36,15 +36,15 @@ function test_num_to_ch() {
 	ch_num_init()
 	for (_i = 0; _i <= 127; ++_i) {
 	
-		if (0x00 == _i) at_true(num_to_ch(0x00) == "\\0")
-		else if (0x07 == _i) at_true(num_to_ch(0x07) == "\\a")
-		else if (0x08 == _i) at_true(num_to_ch(0x08) == "\\b")
-		else if (0x09 == _i) at_true(num_to_ch(0x09) == "\\t")
-		else if (0x0A == _i) at_true(num_to_ch(0x0A) == "\\n")
-		else if (0x0B == _i) at_true(num_to_ch(0x0B) == "\\v")
-		else if (0x0C == _i) at_true(num_to_ch(0x0C) == "\\f")
-		else if (0x0D == _i) at_true(num_to_ch(0x0D) == "\\r")
-		else if (0x1B == _i) at_true(num_to_ch(0x1B) == "\\e")
+		if (0 == _i) at_true(num_to_ch(0) == "\\0")
+		else if (7 == _i) at_true(num_to_ch(7) == "\\a")
+		else if (8 == _i) at_true(num_to_ch(8) == "\\b")
+		else if (9 == _i) at_true(num_to_ch(9) == "\\t")
+		else if (10 == _i) at_true(num_to_ch(10) == "\\n")
+		else if (11 == _i) at_true(num_to_ch(11) == "\\v")
+		else if (12 == _i) at_true(num_to_ch(12) == "\\f")
+		else if (13 == _i) at_true(num_to_ch(13) == "\\r")
+		else if (27 == _i) at_true(num_to_ch(27) == "\\e")
 		else at_true(sprintf("%c", _i) == num_to_ch(_i))
 	}
 }
