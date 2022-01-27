@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-27
+# 2022-01-28
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.51"}
+function SCRIPT_VERSION() {return "1.6"}
 # </script>
 
 # <out_signature>
@@ -478,9 +478,8 @@ _zero_line_len, _zero_new_line, _j, _ch_out) {
 }
 
 function out_kw_const() {
-	out_line(sprintf("#define KW_LONG  %d // longest keyword length",
+	out_line(sprintf("#define KW_LONGEST  %d // longest keyword length",
 		kw_longest()))
-	out_valid_len()
 }
 # </char_tbls>
 function CHR_TBL_END() {return 128}
@@ -687,6 +686,21 @@ function has_keywords() {return vect_len(G_keywords_vect)}
 function set_kw_type(str) {_B_kw_type = str}
 function get_kw_type() {return _B_kw_type}
 
+function kw_len_bitmap_make(arr, len,    _i, _ch) {
+
+	for (_i = 1; _i <= len; ++_i) {
+		
+		_ch = str_ch_at(arr[_i], 1)
+		_B_kw_len_by_start[_ch] = \
+			bw_or(_B_kw_len_by_start[_ch], bw_lshift(1, length(arr[_i])))
+	}
+}
+function kw_len_bitmap_get(ch) {
+	if (ch in _B_kw_len_by_start)
+		return bw_hex_str(_B_kw_len_by_start[ch], "", 4)
+	return ""
+}
+
 function out_keywords() {
 	if (has_keywords()) {
 		out_line("// <lex_keyword_or_base>")
@@ -709,70 +723,21 @@ function IS_KW_HEAD() {
 }
 function out_is_kw_head() {out_line(IS_KW_HEAD())}
 function KW_LEN_LIMIT() {return 31}
-function out_valid_len(    _i, _end, _j, _jend, _valid_lengths, _bin_str, _add,
-_kw_set, _kw_lengths) {
-	# Generate a bitmap of valid keyword lengths. Bit number 0 is always 0. If
-	# there are keywords with a length of 1, then bit number 1 is 1, if not,
-	# then it's 0. If there are keywords 2 characters long, then bit 2 is 1, 0
-	# if there aren't, etc. You can then easily check if a keyword of length
-	# n exists by (VALID_LENGTHS & (1 << n)), given n <= 31.
-
-
-	lb_vect_make_set(_kw_set, G_keywords_vect, 1)
-
-	_end = vect_len(_kw_set)
-	for (_i = 1; _i <= _end; ++_i)
-		_kw_lengths[_i] = length(_kw_set[_i])
-	
-	_end = KW_LEN_LIMIT()
-	_jend = vect_len(_kw_set)
-
-	# Get the actual int value of the bit map and generate as binary
-	_bin_str = "0"
-	_valid_lengths = 0
-	for (_i = 1; _i <= _end; ++_i) {
-		_add = "0"
-		for (_j = 1; _j <= _jend; ++_j) {
-			if (_i == _kw_lengths[_j]) {
-				_valid_lengths = bw_or(_valid_lengths, bw_lshift(1, _i))
-				_add = "1"
-				break
-			}	
-		}
-
-		if (!(_i % 8))
-			_bin_str = (" " _bin_str)
-		else if (!(_i % 4))
-			_bin_str = ("_" _bin_str)
-			
-		_bin_str = (_add _bin_str)
-	}
-
-	out_line(sprintf("#define VALID_LENGTHS 0x%08XU // %s",
-		_valid_lengths, _bin_str))
-	out_line("#define is_valid_len(len) (VALID_LENGTHS & (1 << (len)))")
-}
-
 function KW_LEN_CHECK() {
-	return "txt_len <= KW_LONG && is_valid_len(txt_len)"
+	return "txt_len <= KW_LONGEST && (vlens & (1 << txt_len))"
 }
 
 # <lex_kw_lookup_bsearch>
-function _qsorti(tbl, arr,    _len, _n, _i) {
+function out_kw_static_tbls_bsrc(    _set, _sorted, _i, _end, _pad, _map_kw,
+_tbl, _start, _len, _ch, _nout) {
 
-	for (_n in tbl)
-		arr[++_i] = tbl[_n]
-
-	return qsort(arr, _len)
-}
-function out_kw_static_tbls(    _set, _sorted, _i, _end, _pad, _map_kw, _tbl,
-_start, _len, _ch, _nout) {
 	lb_vect_make_set(_set, G_keywords_vect, 1)
 	lb_vect_to_map(_map_kw, G_keywords_vect)
 	_end = lb_vect_to_array(_sorted, _set)
 	
 	qsort(_sorted, _end)
-
+	kw_len_bitmap_make(_sorted, _end)
+	
 	# Output keywords table
 	out_line("// sorted; don't jumble up")
 	out_line(sprintf("static const char * kws[%d] = {", _end))
@@ -805,8 +770,9 @@ _start, _len, _ch, _nout) {
 	out_line()
 	out_line("typedef struct kw_len_data {")
 	tabs_inc()
+	out_line("unsigned int valid_lengths;")
 	out_line("byte start;")
-	out_line("byte len;")
+	out_line("byte span;")
 	tabs_dec()
 	out_line("} kw_len_data;")
 
@@ -814,9 +780,6 @@ _start, _len, _ch, _nout) {
 	# _end is still the length of _sorted
 	for (_i = 1; _i <= _end; ++_i)
 		++_tbl[str_ch_at(_sorted[_i], 1)]
-
-	# Sort only the first characters of all keywords in _sorted
-	_end = _qsorti(_tbl, _sorted)
 
 	out_line()
 	# Output the len data per first character
@@ -829,7 +792,7 @@ _start, _len, _ch, _nout) {
 	_len = 0
 	# Count of how many empty structs have been output so some formatting exists
 	_nout = 0
-	_pad = 8
+	_pad = 4
 	
 	_end = CHR_TBL_END()
 	for (_i = 0; _i < _end; ++_i) {
@@ -845,14 +808,15 @@ _start, _len, _ch, _nout) {
 				out_tabs()
 			}
 
-			printf("{%d, %d}, /* '%s' */", _start, _len, _ch)
+			printf("{0x%s, %2d, %2d}, /* '%s' */",
+				kw_len_bitmap_get(_ch), _start, _len, _ch)
 			out_line()
 			out_tabs()
 			_start += _len
 			_nout = 0
 		} else {
 			# Print at most _pad empty structs on a line
-			printf("{0, 0}, ")
+			printf("{0, 0, 0}, ")
 			++_nout
 			if ((_i+1 < _end) && !(_nout % _pad)) {
 				out_line()
@@ -880,20 +844,21 @@ function out_kw_bsrch() {
 	out_line("{")
 	tabs_inc()
 
-	out_kw_static_tbls()
+	out_kw_static_tbls_bsrc()
 	out_line()
 	
 	out_line(sprintf("%s tok = base;", N_TOK_ID()))
 	out_line("const char * txt = lex->write_buff;")
 	out_line("byte first = (byte)*txt;")
+	out_line("uint vlens = kwlen[first].valid_lengths;")
 	out_line("uint start = kwlen[first].start;")
-	out_line("uint len = kwlen[first].len;")
+	out_line("uint span = kwlen[first].span;")
 	out_line("uint txt_len = lex->write_buff_pos;")
 	
 	# Call bsearch() only if a keyword with length(input) exists and limit the
 	# search to the range of keywords with exactly that length.
 	out_line()
-	out_line(sprintf("if (!(%s && len))", KW_LEN_CHECK()))
+	out_line(sprintf("if (!(%s))", KW_LEN_CHECK()))
 	tabs_inc()
 	out_line("return tok;")
 	tabs_dec()
@@ -902,7 +867,7 @@ function out_kw_bsrch() {
 	out_line("const char ** kw = (const char **)bsearch(txt,")
 	tabs_inc()
 	out_line("kws+start,")
-	out_line("len,")
+	out_line("span,")
 	out_line("sizeof(*kws),")
 	out_line("compar")
 	tabs_dec()
@@ -938,6 +903,51 @@ function out_kw_walk(tree, root, map_kw, n,    _next, _ch, _i, _end) {
 		tabs_dec()
 		out_line("}")
 	}
+}function out_kw_static_tbls_ifs(    _set, _sorted, _i, _end, _pad, _map_kw,
+_ch, _hex, _nout) {
+
+	lb_vect_make_set(_set, G_keywords_vect, 1)
+	lb_vect_to_map(_map_kw, G_keywords_vect)
+	_end = lb_vect_to_array(_sorted, _set)
+	
+	qsort(_sorted, _end)
+	kw_len_bitmap_make(_sorted, _end)
+
+	# Output the len data per first character
+	out_line(sprintf("static const unsigned int kwlen[CHAR_TBL_SZ] = {", _end))
+	out_tabs()
+
+	# Count of how many empty structs have been output so some formatting exists
+	_nout = 0
+	_pad = 16
+	
+	_end = CHR_TBL_END()
+	for (_i = 0; _i < _end; ++_i) {
+		_ch = num_to_ch(_i) 
+		if (_hex = kw_len_bitmap_get(_ch)) {
+		
+			# Ugly 'make sure you don't output two new lines after each other'
+			if (_nout % _pad) {
+				out_line()
+				out_tabs()
+			}
+
+			printf("0x%s, /* '%s' */", _hex, _ch)
+			out_line()
+			out_tabs()
+			_nout = 0
+		} else {
+			# Print at most _pad empty structs on a line
+			printf("0, ")
+			++_nout
+			if ((_i+1 < _end) && !(_nout % _pad)) {
+				out_line()
+				out_tabs()
+			}
+		}
+	}
+	out_line()
+	out_line("};")
 }
 function out_kw_ifs(    _tree, _set_kw, _map_kw, _i, _end, _vect, _set_ch) {
 
@@ -954,21 +964,31 @@ function out_kw_ifs(    _tree, _set_kw, _map_kw, _i, _end, _vect, _set_ch) {
 		vect_push(_vect, str_ch_at(_set_kw[_i], 1))
 	}
 	lb_vect_make_set(_set_ch, _vect)
-
+	
 	out_is_kw_head()
 	out_line("{")
 	tabs_inc()
-	out_line(sprintf("%s tok = base;", N_TOK_ID()))
-	out_line("uint txt_len = lex->write_buff_pos;")
+	
+	out_kw_static_tbls_ifs()
 	out_line()
-
-	# Do not proceed if there are no keywords with length(input)
-	out_line(sprintf("if (!(%s))", KW_LEN_CHECK()))
+	
+	out_line("uint vlens = kwlen[(byte)*(lex->write_buff)];")
+	out_line("if (!vlens)")
 	tabs_inc()
-	out_line("return tok;")
+	out_line("return base;")
 	tabs_dec()
 	
 	out_line()
+	
+	out_line("uint txt_len = lex->write_buff_pos;")
+	# Do not proceed if there are no keywords with length(input)
+	out_line(sprintf("if (!(%s))", KW_LEN_CHECK()))
+	tabs_inc()
+	out_line("return base;")
+	tabs_dec()
+	
+	out_line()
+	out_line(sprintf("%s tok = base;", N_TOK_ID()))
 	out_line("const char * ch = lex->write_buff;")
 	
 	_end = vect_len(_set_ch)

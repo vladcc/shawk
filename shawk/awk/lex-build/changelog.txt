@@ -1,3 +1,7 @@
+2022-01-28
+	lex-c.awk 1.51 -> 1.6
+	generated lexers keyword lookup optimization
+
 2022-01-27
 	lex-awk.awk   1.412 -> 1.5
 	lex-c.awk     1.5   -> 1.51
