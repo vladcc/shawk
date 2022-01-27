@@ -1,10 +1,12 @@
 #!/bin/bash
 
-readonly G_AWK="awk"
+G_AWK="${G_AWK:-awk}"
 
 function main
 {
-	pushd $(dirname $(realpath $0))
+	pushd "$(dirname $(realpath $0))"
+
+	echo "$0 generating with $G_AWK"
 
 	generate_c bsearch
 	generate_c ifs

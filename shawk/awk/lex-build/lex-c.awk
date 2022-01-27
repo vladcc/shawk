@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-26
+# 2022-01-27
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.5"}
+function SCRIPT_VERSION() {return "1.51"}
 # </script>
 
 # <out_signature>
@@ -1310,11 +1310,11 @@ END {
 #@ Description: Translates character to numbers and numbers to
 #@ characters for the range 0,127 inclusive, i.e. ASCII if that's your
 #@ underlying character set.
-#@ Version: 1.0
+#@ Version: 1.1
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2021-08-30
+## 2022-01-27
 #@
 
 #
@@ -1327,15 +1327,15 @@ function ch_num_init(    _i, _ch) {
 		
 		_ch = sprintf("%c", _i)
 		
-		if (0x00 == _i) {_ch = "\\0"}
-		else if (0x07 == _i) { _ch = "\\a"}
-		else if (0x08 == _i) { _ch = "\\b"}
-		else if (0x09 == _i) { _ch = "\\t"}
-		else if (0x0A == _i) { _ch = "\\n"}
-		else if (0x0B == _i) { _ch = "\\v"}
-		else if (0x0C == _i) { _ch = "\\f"}
-		else if (0x0D == _i) { _ch = "\\r"}
-		else if (0x1B == _i) { _ch = "\\e"}
+		if (0 == _i) {_ch = "\\0"}        # 0x00
+		else if (7 == _i) { _ch = "\\a"}  # 0x07
+		else if (8 == _i) { _ch = "\\b"}  # 0x08
+		else if (9 == _i) { _ch = "\\t"}  # 0x09
+		else if (10 == _i) { _ch = "\\n"} # 0x0A
+		else if (11 == _i) { _ch = "\\v"} # 0x0B
+		else if (12 == _i) { _ch = "\\f"} # 0x0C
+		else if (13 == _i) { _ch = "\\r"} # 0x0D
+		else if (27 == _i) { _ch = "\\e"} # 0x1B
 		
 		__LB_ch_num_ch_to_num__[_ch] = _i
 		__LB_ch_num_num_to_ch__[_i] = _ch

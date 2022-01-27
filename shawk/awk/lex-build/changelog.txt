@@ -1,3 +1,9 @@
+2022-01-27
+	lex-awk.awk   1.412 -> 1.5
+	lex-c.awk     1.5   -> 1.51
+	lex-first.awk 1.22  -> 1.3
+	updated to awklib_ch_num.awk 1.1
+	
 2022-01-26
 	lex-c.awk 1.42 -> 1.5
 	awklib_{sort,bitwise}.awk now used; doesn't depend on gawk anymore

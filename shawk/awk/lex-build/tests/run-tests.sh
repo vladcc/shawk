@@ -41,7 +41,16 @@ function run_test_version_info
 	eval_success "diff <($G_AWK -f $L_LEX -vVersion=1) "\
 	"<(echo \"$L_VER\")"
 }
-function gen_lex { bt_eval "bash ./generate-lex.sh > /dev/null"; }
+function gen_lex
+{
+	local L_REDIRECT=""
+	 
+	if [ ! "$G_IS_VERBOSE" ]; then
+		L_REDIRECT=" > /dev/null"
+	fi
+	
+	bt_eval "bash ./generate-lex.sh $L_REDIRECT"
+}
 
 function eval_success
 {
@@ -53,7 +62,7 @@ function eval_success
 # <awk>
 function test_awk_ver
 {
-	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.412"
+	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.5"
 }
 function test_awk_run_test
 {
@@ -110,7 +119,7 @@ function test_c_run_tests
 }
 function test_c_ver
 {
-	run_test_version_info "lex-c.awk" "lex-c.awk 1.5"
+	run_test_version_info "lex-c.awk" "lex-c.awk 1.51"
 }
 function test_c_kw_len
 {
@@ -135,7 +144,7 @@ function test_c
 # <first>
 function test_lex_first_ver
 {
-	run_test_version_info "lex-first.awk" "lex-first.awk 1.22"
+	run_test_version_info "lex-first.awk" "lex-first.awk 1.3"
 }
 # </first>
 
@@ -161,11 +170,13 @@ function runf
 	done
 }
 
+G_IS_VERBOSE=""
 function main
 {
 	source "$(dirname $(realpath $0))/../../../bash/bashtest/bashtest.sh"
 	
 	if [ "$#" -gt 0 ]; then
+		G_IS_VERBOSE="x"
 		bt_set_verbose
 	fi
 	

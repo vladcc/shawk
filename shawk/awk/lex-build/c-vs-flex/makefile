@@ -2,6 +2,10 @@ CC=gcc
 SHELL=/bin/bash
 AWK=awk
 
+ifdef G_AWK
+AWK=$(G_AWK)
+endif
+
 FLEX_BINS=flex.bin flex.full.bin
 LEX_BINS=lex_bsearch.bin lex_ifs.bin
 FILE=big_file.txt
