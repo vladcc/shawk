@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-28
+# 2022-02-05
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.6"}
+function SCRIPT_VERSION() {return "1.7"}
 # </script>
 
 # <out_signature>
@@ -827,19 +827,7 @@ _tbl, _start, _len, _ch, _nout) {
 	out_line()
 	out_line("};")
 }
-function out_bsrch_prereq() {
-	out_line("static int compar(const void * a, const void * b)")
-	out_line("{")
-	tabs_inc()
-	out_line("const char * key = (const char *)a;")
-	out_line("const char * str = *(const char **)b;")
-	out_line("return strcmp(key, str);")
-	tabs_dec()
-	out_line("}")
-}
 function out_kw_bsrch() {
-	out_bsrch_prereq()
-	out_line()
 	out_is_kw_head()
 	out_line("{")
 	tabs_inc()
@@ -851,8 +839,6 @@ function out_kw_bsrch() {
 	out_line("const char * txt = lex->write_buff;")
 	out_line("byte first = (byte)*txt;")
 	out_line("uint vlens = kwlen[first].valid_lengths;")
-	out_line("uint start = kwlen[first].start;")
-	out_line("uint span = kwlen[first].span;")
 	out_line("uint txt_len = lex->write_buff_pos;")
 	
 	# Call bsearch() only if a keyword with length(input) exists and limit the
@@ -864,47 +850,102 @@ function out_kw_bsrch() {
 	tabs_dec()
 
 	out_line()
-	out_line("const char ** kw = (const char **)bsearch(txt,")
+	out_line("uint start = kwlen[first].start;")
+	out_line("uint span = kwlen[first].span;")
+	
+	out_line("switch (span)")
+	out_line("{")
 	tabs_inc()
-	out_line("kws+start,")
-	out_line("span,")
-	out_line("sizeof(*kws),")
-	out_line("compar")
+	out_line("case 2:")
+	tabs_inc()
+	out_line("if (strcmp(kws[start], txt) == 0)")
+	tabs_inc()
+	out_line("return tks[start];")
 	tabs_dec()
-	out_line(");")
-
+	out_line("++start;")
+	tabs_dec()
+	out_line("case 1:")
+	tabs_inc()
+	out_line("if (strcmp(kws[start], txt) == 0)")
+	tabs_inc()
+	out_line("return tks[start];")
+	tabs_dec()
+	out_line("return tok;")
+	tabs_dec()
+	out_line("default:")
+	out_line("{")
+	tabs_inc()
+	out_line("int left = (int)start;")
+	out_line("int right = left + (int)span;")
+	out_line("int mid, res;")
+	out_line("byte second = txt[1];")
+	out_line("const char * pkw = NULL;")
 	out_line()
-	out_line("return ((!kw) ? tok : tks[kw-kws]);")
-
+	out_line("while (left <= right)")
+	out_line("{")
+	tabs_inc()
+	out_line("mid = left + ((right - left) / 2);")
+	out_line("pkw = kws[mid];")
+	out_line("if (((res = (pkw[1] - second)) == 0) &&")
+	tabs_inc()
+	out_line("(res = strcmp(pkw, txt)) == 0)")
+	tabs_inc()
+	tabs_dec()
+	out_line("return tks[mid];")
+	tabs_dec()
+	out_line("else if (res < 0)")
+	tabs_inc()
+	out_line("left = mid + 1;")
+	tabs_dec()
+	out_line("else")
+	tabs_inc()
+	out_line("right = mid - 1;")
+	tabs_dec()
+	tabs_dec()
+	out_line("}")
+	out_line("return tok;")
+	tabs_dec()
+	out_line("}")
+	tabs_dec()
+	out_line("}")
 	tabs_dec()
 	out_line("}")
 }
 # </lex_kw_lookup_bsearch>
 
 # # <lex_kw_lookup_ifs>
-function out_kw_walk(tree, root, map_kw, n,    _next, _ch, _i, _end) {
+function out_kw_walk(tree, root, map_kw, n,    _next, _ch, _i, _end, _rlen) {
 
 	if (ch_ptree_has(tree, root) || ch_ptree_is_word(tree, root)) {
-	
-		_ch = str_ch_at(root, length(root))
-		out_line(sprintf("%s ('%s' == *ch)", (1 == n) ? "if" : "else if", _ch))
-		out_line("{")
-		tabs_inc()
-		out_line("++ch;")
+		
+		if ((_rlen = length(root)) > 1) {
+			
+			_ch = str_ch_at(root, _rlen)
+			out_line(sprintf("%s ('%s' == *ch)", (1 == n) ? "if" : "else if",
+				_ch))
+			out_line("{")
+			tabs_inc()
+			out_line("++ch;")
 
-		if (ch_ptree_is_word(tree, root))
-			out_line(sprintf("tok = %s;", map_kw[root]))
+			if (ch_ptree_is_word(tree, root))
+				out_line(sprintf("tok = %s;", map_kw[root]))
+		}
 		
 		_next = ch_ptree_get(tree, root)
 		_end = length(_next)
 		for (_i = 1; _i <= _end; ++_i)
 			out_kw_walk(tree, (root str_ch_at(_next, _i)), map_kw, _i)
+		
+		if (_rlen > 1) {
 			
-		tabs_dec()
-		out_line("}")
+			tabs_dec()
+			out_line("}")
+		}
 	}
-}function out_kw_static_tbls_ifs(    _set, _sorted, _i, _end, _pad, _map_kw,
-_ch, _hex, _nout) {
+}
+
+function out_kw_static_tbls_ifs(set_ch,    _set, _sorted, _i, _end, _pad,
+_map_kw, _ch, _hex, _nout) {
 
 	lb_vect_make_set(_set, G_keywords_vect, 1)
 	lb_vect_to_map(_map_kw, G_keywords_vect)
@@ -913,13 +954,34 @@ _ch, _hex, _nout) {
 	qsort(_sorted, _end)
 	kw_len_bitmap_make(_sorted, _end)
 
+	out_line("typedef struct kw_info {")
+	tabs_inc()
+	out_line("unsigned int valid_lengths;")
+	out_line("unsigned int target;")
+	tabs_dec()
+	out_line("} kw_info;")
+	out_line()
+	
+	out_line("enum {")
+	tabs_inc()
+	
+	_end = eos_size(set_ch)
+	out_line(sprintf("CH_%c = 1,", set_ch[1]))
+	
+	for (_i = 2; _i <= _end; ++_i)
+		out_line(sprintf("CH_%c,", set_ch[_i]))
+	
+	tabs_dec()
+	out_line("};")
+	out_line()
+	
 	# Output the len data per first character
-	out_line(sprintf("static const unsigned int kwlen[CHAR_TBL_SZ] = {", _end))
+	out_line(sprintf("static const kw_info kwinf[CHAR_TBL_SZ] = {", _end))
 	out_tabs()
 
 	# Count of how many empty structs have been output so some formatting exists
 	_nout = 0
-	_pad = 16
+	_pad = 8
 	
 	_end = CHR_TBL_END()
 	for (_i = 0; _i < _end; ++_i) {
@@ -932,13 +994,13 @@ _ch, _hex, _nout) {
 				out_tabs()
 			}
 
-			printf("0x%s, /* '%s' */", _hex, _ch)
+			printf("{0x%s, CH_%c}, /* '%s' */", _hex, _ch, _ch)
 			out_line()
 			out_tabs()
 			_nout = 0
 		} else {
 			# Print at most _pad empty structs on a line
-			printf("0, ")
+			printf("{0, 0}, ")
 			++_nout
 			if ((_i+1 < _end) && !(_nout % _pad)) {
 				out_line()
@@ -949,7 +1011,9 @@ _ch, _hex, _nout) {
 	out_line()
 	out_line("};")
 }
-function out_kw_ifs(    _tree, _set_kw, _map_kw, _i, _end, _vect, _set_ch) {
+
+function out_kw_ifs(    _tree, _set_kw, _map_kw, _i, _end, _vect, _set_ch,
+_ch) {
 
 	# Find out if, and which, keyword the input is by literal if statements for
 	# each character.
@@ -969,42 +1033,58 @@ function out_kw_ifs(    _tree, _set_kw, _map_kw, _i, _end, _vect, _set_ch) {
 	out_line("{")
 	tabs_inc()
 	
-	out_kw_static_tbls_ifs()
+	out_kw_static_tbls_ifs(_set_ch)
 	out_line()
 	
-	out_line("uint vlens = kwlen[(byte)*(lex->write_buff)];")
-	out_line("if (!vlens)")
-	tabs_inc()
-	out_line("return base;")
-	tabs_dec()
-	
-	out_line()
-	
+	out_line("const char * txt = lex->write_buff;")
 	out_line("uint txt_len = lex->write_buff_pos;")
-	# Do not proceed if there are no keywords with length(input)
-	out_line(sprintf("if (!(%s))", KW_LEN_CHECK()))
+	out_line("const kw_info * pkwi = kwinf+((byte)*txt);")
+	out_line("uint vlens = pkwi->valid_lengths;")
+	out_line("uint target = pkwi->target;")
+	out_line()
+	
+	out_line(sprintf("if (vlens && (%s))", KW_LEN_CHECK()))
+	out_line("{")
+	tabs_inc()
+	
+	out_line("const char * ch = txt+1;")
+	out_line(sprintf("%s tok = base;", N_TOK_ID()))
+	out_line()
+	
+	out_line("switch (target)")
+	out_line("{")
+	tabs_inc()
+	
+	_end = eos_size(_set_ch)
+	# Generate one big if - else if tree for all keywords.
+	for (_i = 1; _i <= _end; ++_i) {
+		_ch = _set_ch[_i]
+		
+		out_line(sprintf("case CH_%c:", _ch))
+		out_line("{")
+		tabs_inc()
+		
+		out_kw_walk(_tree, _ch, _map_kw, _i)
+		
+		tabs_dec()
+		out_line("} break;")
+	}
+	
+	out_line("default:")
+	out_line("{")
 	tabs_inc()
 	out_line("return base;")
 	tabs_dec()
+	out_line("} break;")
 	
 	out_line()
-	out_line(sprintf("%s tok = base;", N_TOK_ID()))
-	out_line("const char * ch = lex->write_buff;")
 	
-	_end = vect_len(_set_ch)
-	# Generate one big if - else if tree for all keywords.
-	for (_i = 1; _i <= _end; ++_i)
-		out_kw_walk(_tree, _set_ch[_i], _map_kw, _i)
-	out_line()
-
-	# Whatever the value of 'tok' is at this point, it is valid if and only if
-	# '*ch' is at the end of the input. This ensures the longest possible match.
-	# E.g. if the input is "dont" and "do" is a keyword, at this point 'tok'
-	# would have the value of TOK_DO, given another keyword of length 4 exists.
-	# This is not correct, as "do" is a prefix of "dont", so to be sure 'tok' is
-	# actually the "do" keyword, '*ch' has to be at the end of the string.
-	
-	out_line("return ('\\0' == *ch) ? tok : base;")
+	tabs_dec()
+	out_line("}")
+	out_line("return *ch ? base : tok;")
+	tabs_dec()
+	out_line("}")
+	out_line("return base;")
 	tabs_dec()
 	out_line("}")
 }

@@ -1,3 +1,10 @@
+2022-02-05
+	lex-c.awk 1.6 -> 1.7
+		keyword bsearch optimization
+		keyword ifs optimization
+	_lb_lib_common.awk 1.11 -> 1.111
+	a local '_str' variable name added to ch_ptree_get()
+
 2022-01-28
 	lex-c.awk 1.51 -> 1.6
 	generated lexers keyword lookup optimization

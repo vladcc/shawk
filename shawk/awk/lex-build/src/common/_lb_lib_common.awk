@@ -1,10 +1,10 @@
 # <lb_common>
 # Common lex-build functionality
-# v1.11
+# v1.111
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-10-17
+# 2022-02-05
 
 # <misc>
 function join(a, b) {return (a SUBSEP b)}
@@ -91,7 +91,7 @@ function ch_ptree_insert(tree, str) {
 		_ch_ptree_insert(tree, str)
 	}
 }
-function ch_ptree_get(tree, ind,    _arr, _len) {
+function ch_ptree_get(tree, ind,    _arr, _len, _str) {
 	_len = split(ind, _arr, "")
 	_str = pft_get(tree, pft_arr_to_pft_str(_arr, _len))
 	gsub(PFT_SEP(), "", _str)

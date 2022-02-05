@@ -160,7 +160,10 @@ function lex_next() {
 		} else if (8 == _B_lex_curr_ch_cls_cache) { # CH_CLS_AUTO_1_()
 			_B_lex_curr_tok = "="
 			_B_lex_peeked_ch_cache = lex_peek_ch()
-			if ("=" == _B_lex_peeked_ch_cache) {
+			if ("!" == _B_lex_peeked_ch_cache) {
+				lex_read_ch()
+				_B_lex_curr_tok = "=!"
+			} else if ("=" == _B_lex_peeked_ch_cache) {
 				lex_read_ch()
 				_B_lex_curr_tok = "=="
 				_B_lex_peeked_ch_cache = lex_peek_ch()
@@ -171,9 +174,6 @@ function lex_next() {
 					lex_read_ch()
 					_B_lex_curr_tok = "==="
 				} 
-			} else if ("!" == _B_lex_peeked_ch_cache) {
-				lex_read_ch()
-				_B_lex_curr_tok = "=!"
 			} 
 		} else if (9 == _B_lex_curr_ch_cls_cache) { # CH_CLS_AUTO_2_()
 			_B_lex_curr_tok = "&"
