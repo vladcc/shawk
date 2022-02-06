@@ -1,3 +1,6 @@
+2022-02-06
+	c-vs-flex/generate-lex.sh now uses G_AWK
+	
 2022-02-05
 	lex-c.awk 1.6 -> 1.7
 		keyword bsearch optimization
