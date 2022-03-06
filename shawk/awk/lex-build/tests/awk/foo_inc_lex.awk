@@ -7,6 +7,7 @@
 # foo_lex_usr_on_unknown_ch()
 # foo_lex_usr_get_word()
 # foo_lex_usr_get_number()
+# foo_lex_usr_handle_slash()
 # </lex_usr_defined>
 
 # <lex_public>
@@ -24,6 +25,7 @@ function FOO_TOK_LEQ() {return "<="}
 function FOO_TOK_GEQ() {return ">="}
 function FOO_TOK_AND() {return "&"}
 function FOO_TOK_EOI() {return "EOI"}
+function FOO_TOK_SLASH() {return "/"}
 function FOO_TOK_IF() {return "if"}
 function FOO_TOK_ELSE() {return "else"}
 function FOO_TOK_ELIF() {return "elif"}
@@ -39,8 +41,9 @@ function FOO_CH_CLS_LESS_THAN() {return 4}
 function FOO_CH_CLS_GRTR_THAN() {return 5}
 function FOO_CH_CLS_NEW_LINE() {return 6}
 function FOO_CH_CLS_EOI() {return 7}
-function FOO_CH_CLS_AUTO_1_() {return 8}
-function FOO_CH_CLS_AUTO_2_() {return 9}
+function FOO_CH_CLS_SLASH() {return 8}
+function FOO_CH_CLS_AUTO_1_() {return 9}
+function FOO_CH_CLS_AUTO_2_() {return 10}
 # </lex_constants>
 
 # read the next character; advance the input
@@ -157,7 +160,9 @@ function foo_lex_next() {
 			continue
 		} else if (7 == _B_foo_lex_curr_ch_cls_cache) { # FOO_CH_CLS_EOI()
 			_B_foo_lex_curr_tok = FOO_TOK_EOI()
-		} else if (8 == _B_foo_lex_curr_ch_cls_cache) { # FOO_CH_CLS_AUTO_1_()
+		} else if (8 == _B_foo_lex_curr_ch_cls_cache) { # FOO_CH_CLS_SLASH()
+			_B_foo_lex_curr_tok = foo_lex_usr_handle_slash()
+		} else if (9 == _B_foo_lex_curr_ch_cls_cache) { # FOO_CH_CLS_AUTO_1_()
 			_B_foo_lex_curr_tok = "="
 			_B_foo_lex_peeked_ch_cache = foo_lex_peek_ch()
 			if ("!" == _B_foo_lex_peeked_ch_cache) {
@@ -175,7 +180,7 @@ function foo_lex_next() {
 					_B_foo_lex_curr_tok = "==="
 				} 
 			} 
-		} else if (9 == _B_foo_lex_curr_ch_cls_cache) { # FOO_CH_CLS_AUTO_2_()
+		} else if (10 == _B_foo_lex_curr_ch_cls_cache) { # FOO_CH_CLS_AUTO_2_()
 			_B_foo_lex_curr_tok = "&"
 		} else {
 			_B_foo_lex_curr_tok = foo_lex_usr_on_unknown_ch()
@@ -264,6 +269,7 @@ function _foo_lex_init_ch_tbl() {
 	_B_foo_lex_ch_tbl[">"] = FOO_CH_CLS_GRTR_THAN()
 	_B_foo_lex_ch_tbl["\n"] = FOO_CH_CLS_NEW_LINE()
 	_B_foo_lex_ch_tbl[""] = FOO_CH_CLS_EOI()
+	_B_foo_lex_ch_tbl["/"] = FOO_CH_CLS_SLASH()
 	_B_foo_lex_ch_tbl["="] = FOO_CH_CLS_AUTO_1_()
 	_B_foo_lex_ch_tbl["&"] = FOO_CH_CLS_AUTO_2_()
 }

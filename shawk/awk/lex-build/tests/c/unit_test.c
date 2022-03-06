@@ -165,6 +165,17 @@ static bool test_lex(void)
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "EOI") == 0);
 	check(lex_match(lex, TOK_EOI));
 	
+	// test lex_save_ch_usr()
+	static char slash[] = "/aabbcc/";
+	str = slash;
+	
+	init_lex(lex, &pinput);
+	check(TOK_SLASH == lex_next(lex));
+	check(TOK_SLASH == lex_get_curr_tok(lex));
+	check(lex_match(lex, TOK_SLASH));
+	check(strcmp(lex_get_saved(lex), "bbccdd") == 0);
+	check(6 == lex_get_saved_len(lex));
+	
 	return true;
 }
 //------------------------------------------------------------------------------
@@ -247,6 +258,27 @@ tok_id lex_usr_get_number(lex_state * lex)
 	lex_save_end(lex);
 	
 	return TOK_NUMBER;
+}
+
+tok_id lex_usr_handle_slash(lex_state * lex)
+{
+	lex_read_ch(lex);
+	
+	lex_save_begin(lex);
+	
+	while (1)
+	{
+		lex_save_ch_usr(lex, lex_get_curr_ch(lex)+1);
+
+		if ('/' != lex_peek_ch(lex))
+			lex_read_ch(lex);
+		else
+			break;
+	}
+	
+	lex_save_end(lex);
+	
+	return TOK_SLASH;
 }
 
 tok_id lex_usr_on_unknown_ch(lex_state * lex)

@@ -69,6 +69,12 @@ foo_tok_id foo_lex_usr_get_number(foo_lex_state * lex)
 	return FOO_TOK_NUMBER;
 }
 
+foo_tok_id foo_lex_usr_handle_slash(foo_lex_state * lex)
+{
+	// does nothing here; important in foo_unit_test.c
+	return FOO_TOK_SLASH;
+}
+
 foo_tok_id foo_lex_usr_on_unknown_ch(foo_lex_state * lex)
 {
 	printf("error: line %d, pos %d: unknown char '%c'\n",

@@ -10,6 +10,7 @@ char_tbl
 	>   CH_CLS_GRTR_THAN
 	\n  CH_CLS_NEW_LINE
 	\0  CH_CLS_EOI
+	/   CH_CLS_SLASH
 end
 
 symbols
@@ -24,6 +25,7 @@ symbols
 	>= TOK_GEQ
 	&  TOK_AND
 	EOI TOK_EOI
+	/   TOK_SLASH
 end
 
 keywords
@@ -44,4 +46,5 @@ actions
 	CH_CLS_EOI      TOK_EOI
 	CH_CLS_WORD     get_word()
 	CH_CLS_NUMBER   get_number()
+	CH_CLS_SLASH    handle_slash()
 end

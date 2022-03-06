@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-02-05
+# 2022-03-06
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.7"}
+function SCRIPT_VERSION() {return "1.8"}
 # </script>
 
 # <out_signature>
@@ -40,6 +40,7 @@ function N_LEX_PEEK_CH() {return npref("lex_peek_ch")}
 function N_LEX_READ_CH() {return npref("lex_read_ch")}
 function N_LEX_SAVE_BEGIN() {return npref("lex_save_begin")}
 function N_LEX_SAVE_CH() {return npref("lex_save_ch")}
+function N_LEX_SAVE_CH_USR() {return npref("lex_save_ch_usr")}
 function N_LEX_SAVE_END() {return npref("lex_save_end")}
 function N_LEX_STATE() {return npref("lex_state")}
 function N_LEX_TOK_TO_STR() {return npref("lex_tok_to_str")}
@@ -99,6 +100,20 @@ function out_lex_init_info(    _set, _i, _end, _str) {
 	out_line()
 	
 }
+function out_lex_save_ch(save_fn, args, save_ch) {
+	out_line("// call this to write to the lexer write space")
+	out_line(sprintf("static inline bool %s(%s)", save_fn, args))
+	out_line("{")
+	tabs_inc()
+	out_line("bool is_saved = (lex->write_buff_pos < lex->write_buff_len);") 
+	out_line("if (is_saved)")
+	tabs_inc()
+	out_line(sprintf("lex->write_buff[lex->write_buff_pos++] = %s;", save_ch))
+	tabs_dec()
+	out_line("return is_saved;")
+	tabs_dec()
+	out_line("}")
+}
 function out_lex_define(    _set, _i, _end, _str) {
 	out_line("typedef unsigned int uint;")
 	out_line(sprintf("typedef struct %s {", N_LEX_STATE()))
@@ -148,19 +163,13 @@ function out_lex_define(    _set, _i, _end, _str) {
 	out_line("{lex->write_buff_pos = 0;}")
 	out_line()
 
-	out_line("// call this to write to the lexer write space")
-	out_line(sprintf("static inline bool %s(%s * lex)",
-		N_LEX_SAVE_CH(), N_LEX_STATE()))
-	out_line("{")
-	tabs_inc()
-	out_line("bool is_saved = (lex->write_buff_pos < lex->write_buff_len);") 
-	out_line("if (is_saved)")
-	tabs_inc()
-	out_line("lex->write_buff[lex->write_buff_pos++] = lex->curr_ch;")
-	tabs_dec()
-	out_line("return is_saved;")
-	tabs_dec()
-	out_line("}")
+	out_lex_save_ch(N_LEX_SAVE_CH(),
+		sprintf("%s * lex", N_LEX_STATE()),
+		"lex->curr_ch")
+	
+	out_lex_save_ch(N_LEX_SAVE_CH_USR(),
+		sprintf("%s * lex, char ch", N_LEX_STATE()),
+		"ch")
 	
 	out_line()
 	out_line("// call this after you're done writing to the lexer write space")

@@ -7,6 +7,7 @@
 # lex_usr_on_unknown_ch()
 # lex_usr_get_word()
 # lex_usr_get_number()
+# lex_usr_handle_slash()
 # </lex_usr_defined>
 
 # <lex_public>
@@ -24,6 +25,7 @@ function TOK_LEQ() {return "<="}
 function TOK_GEQ() {return ">="}
 function TOK_AND() {return "&"}
 function TOK_EOI() {return "EOI"}
+function TOK_SLASH() {return "/"}
 function TOK_IF() {return "if"}
 function TOK_ELSE() {return "else"}
 function TOK_ELIF() {return "elif"}
@@ -39,8 +41,9 @@ function CH_CLS_LESS_THAN() {return 4}
 function CH_CLS_GRTR_THAN() {return 5}
 function CH_CLS_NEW_LINE() {return 6}
 function CH_CLS_EOI() {return 7}
-function CH_CLS_AUTO_1_() {return 8}
-function CH_CLS_AUTO_2_() {return 9}
+function CH_CLS_SLASH() {return 8}
+function CH_CLS_AUTO_1_() {return 9}
+function CH_CLS_AUTO_2_() {return 10}
 # </lex_constants>
 
 # read the next character; advance the input
@@ -157,7 +160,9 @@ function lex_next() {
 			continue
 		} else if (7 == _B_lex_curr_ch_cls_cache) { # CH_CLS_EOI()
 			_B_lex_curr_tok = TOK_EOI()
-		} else if (8 == _B_lex_curr_ch_cls_cache) { # CH_CLS_AUTO_1_()
+		} else if (8 == _B_lex_curr_ch_cls_cache) { # CH_CLS_SLASH()
+			_B_lex_curr_tok = lex_usr_handle_slash()
+		} else if (9 == _B_lex_curr_ch_cls_cache) { # CH_CLS_AUTO_1_()
 			_B_lex_curr_tok = "="
 			_B_lex_peeked_ch_cache = lex_peek_ch()
 			if ("!" == _B_lex_peeked_ch_cache) {
@@ -175,7 +180,7 @@ function lex_next() {
 					_B_lex_curr_tok = "==="
 				} 
 			} 
-		} else if (9 == _B_lex_curr_ch_cls_cache) { # CH_CLS_AUTO_2_()
+		} else if (10 == _B_lex_curr_ch_cls_cache) { # CH_CLS_AUTO_2_()
 			_B_lex_curr_tok = "&"
 		} else {
 			_B_lex_curr_tok = lex_usr_on_unknown_ch()
@@ -264,6 +269,7 @@ function _lex_init_ch_tbl() {
 	_B_lex_ch_tbl[">"] = CH_CLS_GRTR_THAN()
 	_B_lex_ch_tbl["\n"] = CH_CLS_NEW_LINE()
 	_B_lex_ch_tbl[""] = CH_CLS_EOI()
+	_B_lex_ch_tbl["/"] = CH_CLS_SLASH()
 	_B_lex_ch_tbl["="] = CH_CLS_AUTO_1_()
 	_B_lex_ch_tbl["&"] = CH_CLS_AUTO_2_()
 }

@@ -69,6 +69,12 @@ tok_id lex_usr_get_number(lex_state * lex)
 	return TOK_NUMBER;
 }
 
+tok_id lex_usr_handle_slash(lex_state * lex)
+{
+	// does nothing here; important in unit_test.c
+	return TOK_SLASH;
+}
+
 tok_id lex_usr_on_unknown_ch(lex_state * lex)
 {
 	printf("error: line %d, pos %d: unknown char '%c'\n",
