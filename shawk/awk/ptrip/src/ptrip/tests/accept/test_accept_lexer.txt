@@ -38,16 +38,16 @@ STRING "file.info"
 
 input ../data/tree_tok_with_err.txt
 WORD 'thisIsWord'
-ptrip-lex.awk: error: file '../data/tree_tok_with_err.txt', line 2, pos 10: I am Error
+ptrip-lex.awk: error: file '../data/tree_tok_with_err.txt', line 2, pos 10: error
 #includont ; comment
          ^
 INCLUDE '#include'
 WORD 'thisIsPatrick'
-ptrip-lex.awk: error: file '../data/tree_tok_with_err.txt', line 8, pos 4: I am Error
+ptrip-lex.awk: error: file '../data/tree_tok_with_err.txt', line 8, pos 4: error
 	foo
 	  ^
 '{'
-ptrip-lex.awk: error: file '../data/tree_tok_with_err.txt', line 10, pos 19: I am Error
+ptrip-lex.awk: error: file '../data/tree_tok_with_err.txt', line 10, pos 19: error
   "I am not complet
                   ^
 '}'

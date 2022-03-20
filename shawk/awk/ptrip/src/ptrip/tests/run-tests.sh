@@ -36,7 +36,7 @@ function test_versions
 	
 	L_RES="$(run -vVersion=1)"
 	bt_assert_success
-	bt_diff_ok "<(echo '$L_RES') <(echo 'ptrip.awk 1.01')"
+	bt_diff_ok "<(echo '$L_RES') <(echo 'ptrip.awk 1.1')"
 }
 # </test_versions>
 
