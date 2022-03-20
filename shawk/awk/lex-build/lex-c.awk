@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.9"}
+function SCRIPT_VERSION() {return "1.91"}
 # </script>
 
 # <out_signature>
@@ -60,7 +60,9 @@ function out_header(    _hdr) {
 	out_line(sprintf("#ifndef %s", _hdr))
 	out_line(sprintf("#define %s", _hdr))
 	out_line()
+	out_line("// <lex_includes>")
 	out_line("#include <stdbool.h>")
+	out_line("// </lex_includes>")
 	out_line()
 	out_tok_enum()
 	out_line()
@@ -94,11 +96,9 @@ function out_lex_init_info(    _set, _i, _end, _str) {
 		N_LEX_USR_GET_INPUT()))
 	out_line(sprintf("char * write_buff;   // %s() saves here",
 		N_LEX_SAVE_CH()))
-	out_line("uint write_buff_len; // includes the '\\0'")
+	out_line("unsigned int write_buff_len; // includes the '\\0'")
 	tabs_dec()
-	out_line(sprintf("} %s;", N_LEX_INIT_INFO()))
-	out_line()
-	
+	out_line(sprintf("} %s;", N_LEX_INIT_INFO()))	
 }
 function out_lex_save_ch(save_fn, args, save_ch) {
 	out_line("// call this to write to the lexer write space")
@@ -115,27 +115,31 @@ function out_lex_save_ch(save_fn, args, save_ch) {
 	out_line("}")
 }
 function out_lex_define(    _set, _i, _end, _str) {
-	out_line("typedef unsigned int uint;")
+	out_line("// <lex_structs>")
 	out_line(sprintf("typedef struct %s {", N_LEX_STATE()))
 	tabs_inc()
 	out_line("const char * input;")
-	out_line("uint input_pos;")
+	out_line("unsigned int input_pos;")
 	out_line("int curr_ch;")
 	out_line(sprintf("%s curr_tok;", N_TOK_ID()))
-	out_line("uint input_line;")
+	out_line("unsigned int input_line;")
 	out_line("void * usr_arg;")
 	out_line("char * write_buff;")
-	out_line("uint write_buff_len;")
-	out_line("uint write_buff_pos;")
+	out_line("unsigned int write_buff_len;")
+	out_line("unsigned int write_buff_pos;")
 	tabs_dec()
 	out_line(sprintf("} %s;", N_LEX_STATE()))
 	out_line()
 	out_lex_init_info()
+	out_line("// </lex_structs>")
+
+	out_line()
 	out_line("// <lex_usr_defined>")
 	out_lex_cls_events_memb()
 	out_line("// </lex_usr_defined>")
 	out_line()
-	
+
+	out_line("// <lex_static_inline>")
 	out_line("// read the next character, advance the input")
 	out_line(sprintf("static inline int %s(%s * lex)",
 		N_LEX_READ_CH(), N_LEX_STATE()))
@@ -183,7 +187,7 @@ function out_lex_define(    _set, _i, _end, _str) {
 	out_line("{return lex->write_buff;}")
 	out_line()
 	out_line("// see how long it is")
-	out_line(sprintf("static inline uint %s(%s * lex)",
+	out_line(sprintf("static inline unsigned int %s(%s * lex)",
 		N_LEX_GET_SAVED_LEN(), N_LEX_STATE()))
 	out_line("{return lex->write_buff_pos;}")
 	out_line()
@@ -193,12 +197,12 @@ function out_lex_define(    _set, _i, _end, _str) {
 	out_line("{return lex->usr_arg;}")
 	out_line()
 	out_line("// get the character position on the current input line")
-	out_line(sprintf("static inline uint %s(%s * lex)",
+	out_line(sprintf("static inline unsigned int %s(%s * lex)",
 		N_LEX_GET_INPUT_POS(), N_LEX_STATE()))
 	out_line("{return lex->input_pos;}")
 	out_line()
 	out_line("// get the number of the current input line")
-	out_line(sprintf("static inline uint %s(%s * lex)",
+	out_line(sprintf("static inline unsigned int %s(%s * lex)",
 		N_LEX_GET_INPUT_LINE_NO(), N_LEX_STATE()))
 	out_line("{return lex->input_line;}")
 	out_line()
@@ -233,8 +237,10 @@ function out_lex_define(    _set, _i, _end, _str) {
 	out_line("lex->write_buff_pos = 0;")
 	tabs_dec()
 	out_line("}")
+	out_line("// </lex_static_inline>")
 
 	out_line()
+	out_line("// <lex_public>")
 	out_line("// returns the string representation of tok")
 	out_line(sprintf("const char * %s(%s tok);",
 		N_LEX_TOK_TO_STR(), N_TOK_ID()))
@@ -249,6 +255,7 @@ function out_lex_define(    _set, _i, _end, _str) {
 		out_line(sprintf("// keyword; lookup method: %s", get_kw_type()))
 		out_line(sprintf("%s;", IS_KW_HEAD()))
 	}
+	out_line("// </lex_public>")
 }
 function out_tok_enum(    _set, _set_const, _set_str, _i, _end, _line_len, _j) {
 	lb_vect_make_set(_set, G_symbols_vect, 2)
@@ -264,7 +271,8 @@ function out_tok_enum(    _set, _set_const, _set_str, _i, _end, _line_len, _j) {
 	lb_vect_append(_set_str, _set)
 	lb_vect_make_set(_set, G_patterns_vect, 1)
 	lb_vect_append(_set_str, _set)
-	
+
+	out_line("// <lex_tok_id_enum>")
 	out_line(sprintf("typedef enum %s {", N_TOK_ID()))
 
 	# Print _line_len enum values per line.
@@ -292,6 +300,7 @@ function out_tok_enum(    _set, _set_const, _set_str, _i, _end, _line_len, _j) {
 	out_line(sprintf("/* \"%s\" */", TOK_ERR_STR()))
 
 	out_line(sprintf("} %s;", N_TOK_ID()))
+	out_line("// </lex_tok_id_enum>")
 }
 # </out_header>
 
@@ -847,8 +856,8 @@ function out_kw_bsrch() {
 	out_line(sprintf("%s tok = base;", N_TOK_ID()))
 	out_line("const char * txt = lex->write_buff;")
 	out_line("byte first = (byte)*txt;")
-	out_line("uint vlens = kwlen[first].valid_lengths;")
-	out_line("uint txt_len = lex->write_buff_pos;")
+	out_line("unsigned int vlens = kwlen[first].valid_lengths;")
+	out_line("unsigned int txt_len = lex->write_buff_pos;")
 	
 	# Call bsearch() only if a keyword with length(input) exists and limit the
 	# search to the range of keywords with exactly that length.
@@ -859,8 +868,8 @@ function out_kw_bsrch() {
 	tabs_dec()
 
 	out_line()
-	out_line("uint start = kwlen[first].start;")
-	out_line("uint span = kwlen[first].span;")
+	out_line("unsigned int start = kwlen[first].start;")
+	out_line("unsigned int span = kwlen[first].span;")
 	
 	out_line("switch (span)")
 	out_line("{")
@@ -1046,10 +1055,10 @@ _ch) {
 	out_line()
 	
 	out_line("const char * txt = lex->write_buff;")
-	out_line("uint txt_len = lex->write_buff_pos;")
+	out_line("unsigned int txt_len = lex->write_buff_pos;")
 	out_line("const kw_info * pkwi = kwinf+((byte)*txt);")
-	out_line("uint vlens = pkwi->valid_lengths;")
-	out_line("uint target = pkwi->target;")
+	out_line("unsigned int vlens = pkwi->valid_lengths;")
+	out_line("unsigned int target = pkwi->target;")
 	out_line()
 	
 	out_line(sprintf("if (vlens && (%s))", KW_LEN_CHECK()))

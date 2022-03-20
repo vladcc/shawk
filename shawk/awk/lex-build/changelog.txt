@@ -1,4 +1,9 @@
 2022-03-20
+	lex-c.awk 1.9 -> 1.91
+	'typedef unsigned int uint;' removed
+	more detailed comment tags in header
+
+2022-03-20
 	_lb_lib_common.awk 1.111 -> 1.2
 	First column of input is now everything but the last field, second column of
 	input is the last field. E.g.
