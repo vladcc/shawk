@@ -1,4 +1,13 @@
 2022-03-20
+	'I am Error' now plain 'error'
+	lex-c.awk 1.91 -> 1.92
+	lex-awk.awk 1.6 -> 1.61
+
+	lex-first.awk 1.4 -> 1.41
+	check_field_num() removed
+	doc updated to reflect how fields get separated
+
+2022-03-20
 	lex-c.awk 1.9 -> 1.91
 	'typedef unsigned int uint;' removed
 	more detailed comment tags in header

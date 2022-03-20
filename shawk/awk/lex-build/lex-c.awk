@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.91"}
+function SCRIPT_VERSION() {return "1.92"}
 # </script>
 
 # <out_signature>
@@ -326,7 +326,7 @@ function out_source() {
 	out_line("// </lex_source>")
 }
 # <tok_tbl>
-function TOK_ERR_STR() {return "I am Error"}
+function TOK_ERR_STR() {return "error"}
 function TOK_ERR_ENUM() {return (toupper(npref_get()) "TOK_ERROR")}
 function out_tok_tbl(    _set, _set_str, _set_const, _i, _end, _line_len, _j) {
 	lb_vect_make_set(_set, G_symbols_vect, 1)

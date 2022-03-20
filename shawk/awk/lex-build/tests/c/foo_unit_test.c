@@ -150,8 +150,7 @@ static bool test_lex(void)
 	check('\0' == foo_lex_peek_ch(lex));
 	check(18 == foo_lex_get_input_pos(lex));
 	check(2 == foo_lex_get_input_line_no(lex));
-	check(strcmp(foo_lex_tok_to_str(foo_lex_get_curr_tok(lex)),
-		"I am Error") == 0);
+	check(strcmp(foo_lex_tok_to_str(foo_lex_get_curr_tok(lex)), "error") == 0);
 	check(foo_lex_match(lex, FOO_TOK_ERROR));
 	check(strcmp(foo_lex_get_saved(lex), "@") == 0);
 	check(1 == foo_lex_get_saved_len(lex));

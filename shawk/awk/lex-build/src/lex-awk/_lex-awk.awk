@@ -11,7 +11,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.6"}
+function SCRIPT_VERSION() {return "1.61"}
 # </script>
 
 # <out_signature>
@@ -21,7 +21,7 @@ function out_signature() {
 # </out_signature>
 
 # <out_ch_tbl>
-function TOK_ERR() {return "I am Error"}
+function TOK_ERR() {return "error"}
 
 function ch_esc_esc(ch) {
 	if (CH_ESC_SPACE() == ch) ch = " "

@@ -150,7 +150,7 @@ static bool test_lex(void)
 	check('\0' == lex_peek_ch(lex));
 	check(18 == lex_get_input_pos(lex));
 	check(2 == lex_get_input_line_no(lex));
-	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "I am Error") == 0);
+	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "error") == 0);
 	check(lex_match(lex, TOK_ERROR));
 	check(strcmp(lex_get_saved(lex), "@") == 0);
 	check(1 == lex_get_saved_len(lex));

@@ -10,17 +10,10 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-first.awk"}
-function SCRIPT_VERSION() {return "1.4"}
+function SCRIPT_VERSION() {return "1.41"}
 # </script>
 
 # <misc>
-function check_field_num() {
-	# Makes sure input has exactly two fields.
-	
-	if (!is_range_word($0) && (NF != 2))
-		err_quit(sprintf("2 fields expected, got %d", NF))
-}
-
 # First field of the char table can only be <char>|<char>-<char>|\<char>
 function CHAR_TBL_F1() {return "^(.|.-.|\\\\.)$"}
 

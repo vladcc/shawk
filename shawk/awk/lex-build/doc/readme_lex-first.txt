@@ -49,9 +49,26 @@ them all, and makes sure tokens, keywords, etc. do not repeat.
 
 The front end and the back ends read the same form of syntax. It constitutes of
 five parts, each of which marked by a beginning delimiter and the string "end"
-The data for each part consists of two fields separated by white space. Comments
-can only be full lines beginning with a '#', possibly preceded by white space.
-Empty lines are ignored.
+
+The data for each data part is split into two fields - the first filed is all
+space delimited fields but the last, the second field is only the last space
+delimited field. E.g.
+
+id TOK_ID
+
+creates a token identified by the constant TOK_ID and the string "id".
+
+function call TOK_FCALL
+
+creates a token identified by the constant TOK_FCALL and the string
+"function call".
+
+This field separation is implied in the text below, including the syntax
+definitions. Note that it is useful mostly for the 'patterns' data part and can
+be safely ignored where it does not make sense.
+
+Comments can only appear outside of data parts and be full lines which
+begin with a '#', possibly preceded by white space. Empty lines are ignored.
 
 These actual data parts are:
 
