@@ -7,11 +7,11 @@ awkson.awk: error: expected ':', got 'string' instead
   "lastName" "lastName" : "Smith",
                       ^
 awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 4, pos 3
-awkson.awk: error: expected 'string', got 'I am Error' instead
+awkson.awk: error: expected 'string', got 'error' instead
   x"isAlive": true,
   ^
 awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 8, pos 13
-awkson.awk: error: expected '{ [ string number true false null', got 'I am Error' instead
+awkson.awk: error: expected '{ [ string number true false null', got 'error' instead
     "city": x"New York",
             ^
 awkson.awk: error: file './test-inputs/parser-tests/parser_test_err.json', line 19, pos 14

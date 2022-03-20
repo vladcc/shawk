@@ -145,22 +145,22 @@ file './test-inputs/lex_tests.txt', line 36, pos 1: unknown characters
 file './test-inputs/lex_tests.txt', line 36, pos 6: true
 @ true felse noll
      ^
-file './test-inputs/lex_tests.txt', line 36, pos 12: I am Error
+file './test-inputs/lex_tests.txt', line 36, pos 12: error
 @ true felse noll
            ^
-file './test-inputs/lex_tests.txt', line 36, pos 17: I am Error
+file './test-inputs/lex_tests.txt', line 36, pos 17: error
 @ true felse noll
                 ^
-file './test-inputs/lex_tests.txt', line 37, pos 4: I am Error
+file './test-inputs/lex_tests.txt', line 37, pos 4: error
 TRUE FALSE NULL
    ^
-file './test-inputs/lex_tests.txt', line 37, pos 10: I am Error
+file './test-inputs/lex_tests.txt', line 37, pos 10: error
 TRUE FALSE NULL
          ^
-file './test-inputs/lex_tests.txt', line 37, pos 15: I am Error
+file './test-inputs/lex_tests.txt', line 37, pos 15: error
 TRUE FALSE NULL
               ^
-file './test-inputs/lex_tests.txt', line 38, pos 3: I am Error
+file './test-inputs/lex_tests.txt', line 38, pos 3: error
 foo
   ^
 file './test-inputs/lex_tests.txt', line 39, pos 1: unknown characters

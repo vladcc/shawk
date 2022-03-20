@@ -1,3 +1,7 @@
+2022-03-20
+	awkson.awk 1.12 -> 1.13
+	updated to new lex-build
+
 2022-01-18
 	awkson.awk 1.11 -> 1.12
 	updated to awklib_prefix_tree.awk 1.3
