@@ -21,3 +21,4 @@
 'id' 'im_id4' line 5, pos 18
 'number' '12345' line 5, pos 24
 'id' 'ifid' line 5, pos 29
+'function call'

@@ -100,6 +100,9 @@ static void output(lex_state * lex)
 
 		putchar('\n');
 	}
+
+	// make sure spaces in token strings are handled correctly
+	printf("'%s'\n", lex_tok_to_str(TOK_FCALL));
 }
 
 #define REAL_BSZ (BUFF_SZ+1)

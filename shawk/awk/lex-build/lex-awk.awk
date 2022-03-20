@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-27
+# 2022-03-20
 
 # Generates a lexer in awk. It determines the next token by branching on the
 # character class of the current input character, and then branches on the next
@@ -11,7 +11,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.5"}
+function SCRIPT_VERSION() {return "1.6"}
 # </script>
 
 # <out_signature>
@@ -531,19 +531,33 @@ BEGIN {lex_lib_is_included()}
 # </misc>
 # <lb_common>
 # Common lex-build functionality
-# v1.111
+# v1.2
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-02-05
+# 2022-03-20
 
 # <misc>
 function join(a, b) {return (a SUBSEP b)}
 function unjoin(arr_out, str) {return split(str, arr_out, SUBSEP)}
-function save_to(vect) {
+function save_to(vect,    _first, _last) {
 	# Usually called from user handlers. Makes sure you don't save delimiters.
-	if (!is_range_word($0))
+	if (!is_range_word($0)) {
+
+		# Separate the input into the last field and everything else.
+		_last = $NF
+		$NF = ""
+
+		_first = $0
+		gsub("^[[:space:]]+|[[:space:]]+$", "", _first)
+
+		# Pretend there always have been two fields.
+		NF = 2
+		$1 = _first
+		$2 = _last
+
 		vect_push(vect, join($1, $2))
+	}
 }
 function out_line(str) {if (str) tabs_print_str(str); print ""}
 function out_str(str) {tabs_print_str(str)}

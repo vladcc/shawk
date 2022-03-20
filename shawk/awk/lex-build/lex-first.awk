@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-27
+# 2022-03-20
 
 # This is the first step of the lex building process. It makes sure no first
 # fields of the input repeat, expands character ranges, and generates character
@@ -10,7 +10,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-first.awk"}
-function SCRIPT_VERSION() {return "1.3"}
+function SCRIPT_VERSION() {return "1.4"}
 # </script>
 
 # <misc>
@@ -180,19 +180,33 @@ function on_end()      {generate()}
 # </misc>
 # <lb_common>
 # Common lex-build functionality
-# v1.111
+# v1.2
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-02-05
+# 2022-03-20
 
 # <misc>
 function join(a, b) {return (a SUBSEP b)}
 function unjoin(arr_out, str) {return split(str, arr_out, SUBSEP)}
-function save_to(vect) {
+function save_to(vect,    _first, _last) {
 	# Usually called from user handlers. Makes sure you don't save delimiters.
-	if (!is_range_word($0))
+	if (!is_range_word($0)) {
+
+		# Separate the input into the last field and everything else.
+		_last = $NF
+		$NF = ""
+
+		_first = $0
+		gsub("^[[:space:]]+|[[:space:]]+$", "", _first)
+
+		# Pretend there always have been two fields.
+		NF = 2
+		$1 = _first
+		$2 = _last
+
 		vect_push(vect, join($1, $2))
+	}
 }
 function out_line(str) {if (str) tabs_print_str(str); print ""}
 function out_str(str) {tabs_print_str(str)}

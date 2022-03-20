@@ -1,5 +1,7 @@
 #!/bin/usr/awk -f
 
+function foo_lex_usr_handle_slash() {}
+
 function foo_lex_usr_get_word() {
 	foo_lex_save_init()
 	
@@ -94,6 +96,9 @@ function process(    _tok, _ccls, _ncls) {
 				foo_lex_curr_tok(), foo_lex_get_line_no(), foo_lex_get_pos())
 		}
 	}
+
+	# make sure spaces in token strings are handled correctly
+	print sprintf("'%s'", FOO_TOK_FCALL())
 }
 
 function set_file_name(str) {_B_file_name = str ? str : "/dev/stdin"}

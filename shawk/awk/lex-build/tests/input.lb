@@ -38,6 +38,7 @@ end
 patterns
 	id     TOK_ID
 	number TOK_NUMBER
+	function call TOK_FCALL
 end
 
 actions

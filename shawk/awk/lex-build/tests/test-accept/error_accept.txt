@@ -2,3 +2,4 @@
 error: line 1, pos 6: unknown char '#'
 'I am Error' line 1, pos 6
 'number' '1234' line 1, pos 11
+'function call'
