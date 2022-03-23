@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-03-20
+# 2022-03-23
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.92"}
+function SCRIPT_VERSION() {return "1.93"}
 # </script>
 
 # <out_signature>
@@ -316,9 +316,11 @@ function out_source() {
 	}
 	
 	out_line()
+	out_line("// <lex_token_str>")
 	out_tok_tbl()
 	out_line()
 	out_tok_to_str()
+	out_line("// </lex_token_str>")
 	out_line()
 	out_all_char_tbl()
 	out_line()
@@ -386,11 +388,15 @@ function out_tok_to_str() {
 # </lex_tok_to_str>
 # <char_tbls>
 function out_all_char_tbl() {
+	out_line("// <lex_char_cls_enum>")
 	out_ch_cls_enum()
+	out_line("// </lex_char_cls_enum>")
 	out_line()
 	out_char_tbl()
 	out_line()
+	out_line("// <lex_next>")
 	out_lex_next()
+	out_line("// </lex_next>")
 }
 function out_ch_cls_enum(    _i, _end, _cls_set, _line_len) {
 	lb_vect_make_set(_cls_set, G_char_tbl_vect, 2)
@@ -416,14 +422,22 @@ function out_ch_cls_enum(    _i, _end, _cls_set, _line_len) {
 	
 	out_line("};")
 }
-function out_char_tbl(    _i, _end, _ch, _str, _map_ch_cls,
-_zero_line_len, _zero_new_line, _j, _ch_out) {
+function out_src_defines() {
 	out_line("#define CHAR_TBL_SZ (0xFF+1)")
 	out_line("typedef unsigned char byte;")
-
+}
+function out_char_tbl(    _i, _end, _ch, _str, _map_ch_cls,
+_zero_line_len, _zero_new_line, _j, _ch_out) {
+	
+	out_line("// <lex_src_defines>")
+	out_src_defines()
+	out_line("// </lex_src_defines>")
+	
 	# Print a static constant table for the character classes.
 	# Prints at most 16 zeroes, or two char classes along with their values as
 	# comments per line.
+	
+	out_line("// <lex_char_tbl>")
 	out_line("static const byte char_cls_tbl[CHAR_TBL_SZ] = {")
 
 	lb_vect_to_map(_map_ch_cls, G_char_tbl_vect)
@@ -493,6 +507,7 @@ _zero_line_len, _zero_new_line, _j, _ch_out) {
 	out_line("};")
 	
 	out_line("#define char_cls_get(ch) ((byte)char_cls_tbl[(byte)(ch)])")
+	out_line("// </lex_char_tbl>")
 }
 
 function out_kw_const() {

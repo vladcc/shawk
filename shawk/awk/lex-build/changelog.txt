@@ -1,3 +1,7 @@
+2022-03-23
+	lex-c.awk 1.92 -> 1.93
+	tags added to the generated source
+
 2022-03-20
 	'I am Error' now plain 'error'
 	lex-c.awk 1.91 -> 1.92
