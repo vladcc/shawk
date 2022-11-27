@@ -36,7 +36,7 @@ function test_versions
 	
 	L_RES="$(run -vVersion=1)"
 	bt_assert_success
-	bt_diff_ok "<(echo '$L_RES') <(echo 'ptrip.awk 1.1')"
+	bt_diff_ok "<(echo '$L_RES') <(echo 'ptrip.awk 1.2')"
 }
 # </test_versions>
 
@@ -298,11 +298,37 @@ function test_parser_base
 	bt_diff_ok "<(echo '$L_RES') <(echo '$L_EXP')"
 }
 
+function test_parser_multiple_files
+{
+	local L_DIR="../data"
+	local L_RES=""
+	local L_EXP=""
+
+	L_EXP=\
+'-|../data/file.a.info
+-|../data/file.a.info:-:;FILE_BEGIN = ../data/file.a.info
+-|../data/file.a.info:1:foo = {null}
+-|../data/file.a.info:1:foo.bar = {null}
+-|../data/file.a.info:-:;FILE_END = ../data/file.a.info
+-|../data/file.b.info
+-|../data/file.b.info:-:;FILE_BEGIN = ../data/file.b.info
+-|../data/file.b.info:1:zig = {null}
+-|../data/file.b.info:1:zig.zag = {null}
+-|../data/file.b.info:2:zog = {null}
+-|../data/file.b.info:2:zog.zeg = {null}
+-|../data/file.b.info:-:;FILE_END = ../data/file.b.info'
+
+	L_RES="$(run $L_DIR/file.a.info $L_DIR/file.b.info)"
+	bt_assert_success
+	bt_diff_ok "<(echo '$L_RES') <(echo '$L_EXP')"
+}
+
 function test_parser
 {
 	bt_eval test_parser_errors
 	bt_eval test_parser_complex
 	bt_eval test_parser_base
+	bt_eval test_parser_multiple_files
 }
 # </test_ptrip_parser>
 

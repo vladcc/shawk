@@ -5,6 +5,7 @@ help:
 	@echo 'make parser - generates the parser'
 	@echo 'make test   - run tests'
 	@echo 'make testv  - like test but verbose'
+	@echo 'make sure   - make sure all tests run'
 	@echo 'make help   - this screen'
 
 LB_DIR = ../../../lex-build
@@ -53,6 +54,11 @@ LEX_ALL = $(LEX_AWK) $(LEX_USR) $(LEX_HACK)
 ptrip: $(PTRIP)
 $(PTRIP): $(MAIN) $(PRS_ALL) $(LEX_ALL) $(LIBS)
 	cat $^ > $@
+
+.PHONY: sure
+sure: SHELL := bash
+sure:
+	diff <($(MAKE) testv | grep '^test_' | sort) <(cat $(TEST_DIR)/run-tests.sh | grep 'function test_' | awk '{print $$NF}' | sort)
 
 TEST_DIR = ./tests
 .PHONY: test

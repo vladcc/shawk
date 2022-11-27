@@ -1,3 +1,7 @@
+2022-11-27
+	ptrip.awk 1.1 -> 1.2
+	bugfix - wrong output when multiple files are given on the command line
+
 2022-03-20
 	ptrip.awk 1.01 -> 1.1
 	updated to the lex-build

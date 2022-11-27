@@ -1,5 +1,17 @@
 # <ptrip_parser_usr>
+
+function _parser_usr_state_init() {
+	_key_init()
+	_val_init()
+}
+
 # <key_functions>
+function _key_init() {
+	_stack_init(_B_ptree_stack_tree_key_lvl)
+	_stack_init(_B_ptree_stack_key_lines)
+	_B_ptree_current_key_num = 0
+	_B_ptree_current_key_str = ""
+}
 function _key_path_push() {
 	if (_stack_size(_B_ptree_stack_tree_key_lvl)) {
 		_stack_push(_B_ptree_stack_tree_key_lvl,
@@ -24,6 +36,9 @@ function _key_save(key) {
 # </key_functions>
 
 # <value_functions>
+function _val_init() {
+	_stack_init(_B_ptree_map_values)
+}
 function _val_save(val) {_B_ptree_map_values[_key_get_count()] = val}
 function _val_get(key_no) {
 	if (key_no in _B_ptree_map_values)
@@ -34,7 +49,9 @@ function _val_get(key_no) {
 
 # <output_preparation>
 function _OUTPUT_LINE_RESERVED() {return "\034"}
-function _output_clear() {_stack_init(_B_ptree_stack_output)}
+function _output_clear() {
+	_stack_init(_B_ptree_stack_output)
+}
 function _output_line_push(str) {_stack_push(_B_ptree_stack_output, str)}
 function _output_line_reserve_slot() {
 	_stack_push(_B_ptree_stack_output, _OUTPUT_LINE_RESERVED())
@@ -261,6 +278,7 @@ function _parse_ptree_info(fname) {
 }
 function parse_ptree_info(fname) {
 	_output_clear()
+	_parser_usr_state_init()
 	_parse_ptree_info(fname)
 	_ptree_dump()
 }
