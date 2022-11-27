@@ -2658,11 +2658,11 @@ function _VECT_LEN() {return "len"}
 #@ <awklib_map>
 #@ Library: map
 #@ Description: Encapsulates map operations.
-#@ Version: 2.0
+#@ Version: 2.1
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2021-11-30
+## 2022-11-27
 #@
 
 #
@@ -2684,6 +2684,17 @@ function map_init(map) {
 function map_set(map, key, val) {
 
 	map[key] = val
+}
+
+#
+#@ Description: Sets the values for all keys in 'map' to 'val'.
+#@ Returns: Nothing.
+#@ Complexity: O(n)
+#
+function map_set_vals_to(map, val,    _n) {
+
+	for (_n in map)
+		map[_n] = val
 }
 
 #
@@ -3401,7 +3412,7 @@ print "</awklib_vect>"
 print "<awklib_map>"
 print "Library: map"
 print "Description: Encapsulates map operations."
-print "Version: 2.0"
+print "Version: 2.1"
 print ""
 print "Description: Clears 'map'."
 print "Returns: Nothing."
@@ -3412,6 +3423,11 @@ print "Description: Does \"map[key] = val\". Overwrites existing values."
 print "Returns: Nothing."
 print "Complexity: O(1)"
 print "function map_set(map, key, val)"
+print ""
+print "Description: Sets the values for all keys in 'map' to 'val'."
+print "Returns: Nothing."
+print "Complexity: O(n)"
+print "function map_set_vals_to(map, val)"
 print ""
 print "Description: Does \"delete map[key]\" if 'key' exists in 'map'."
 print "Returns: Nothing."

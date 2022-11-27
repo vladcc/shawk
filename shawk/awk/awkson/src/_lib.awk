@@ -1606,11 +1606,11 @@ function _VECT_LEN() {return "len"}
 #@ <awklib_map>
 #@ Library: map
 #@ Description: Encapsulates map operations.
-#@ Version: 2.0
+#@ Version: 2.1
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2021-11-30
+## 2022-11-27
 #@
 
 #
@@ -1632,6 +1632,17 @@ function map_init(map) {
 function map_set(map, key, val) {
 
 	map[key] = val
+}
+
+#
+#@ Description: Sets the values for all keys in 'map' to 'val'.
+#@ Returns: Nothing.
+#@ Complexity: O(n)
+#
+function map_set_vals_to(map, val,    _n) {
+
+	for (_n in map)
+		map[_n] = val
 }
 
 #

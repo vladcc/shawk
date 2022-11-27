@@ -1,3 +1,7 @@
+2022-11-27
+	awklib_map.awk 2.0 -> 2.1
+	map_set_vals_to() added
+
 2022-02-07
 	awklib_graph.awk 1.0 added
 	

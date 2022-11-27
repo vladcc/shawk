@@ -21,6 +21,23 @@ function test_map_set(    _map) {
 	at_true("bar" == map_get(_map, "foo"))
 }
 
+function test_map_set_vals_to(    _map) {
+	at_test_begin("map_set_vals_to()")
+
+	map_init(_map)
+	_map["foo"] = 1
+	_map["bar"] = 2
+	_map["baz"] = 3
+
+	at_true(1 == _map["foo"])
+	at_true(2 == _map["bar"])
+	at_true(3 == _map["baz"])
+	map_set_vals_to(_map, "zig")
+	at_true("zig" == _map["foo"])
+	at_true("zig" == _map["bar"])
+	at_true("zig" == _map["baz"])
+}
+
 function test_map_del(    _map) {
 	at_test_begin("map_del()")
 
@@ -354,6 +371,7 @@ function main() {
 	at_awklib_awktest_required()
 	test_map_init()
 	test_map_set()
+	test_map_set_vals_to()
 	test_map_del()
 	test_map_get()
 	test_map_has_key()
