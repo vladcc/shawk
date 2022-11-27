@@ -28,14 +28,19 @@ print_nl()
 print "To run the example:"
 print "# get the parser description"
 print "awk -f " SCRIPT_NAME() " -v ExampleInput=1 > example.smpg"
+print_nl()
 print "# generate the parser from the description"
 print "awk -f " SCRIPT_NAME() " example.smpg > example.smpg.awk"
+print_nl()
 print "# get example data for the generated parser"
 print "awk -f " SCRIPT_NAME() " -v ExampleData=1 > example.data.txt"
+print_nl()
 print "# give the data to the parser to generate a runnable test program"
 print "awk -f example.smpg.awk example.data.txt > example.test.awk"
+print_nl()
 print "# finally, run the test program"
 print "awk -f example.test.awk"
+print_nl()
 print "# clean up"
 print "rm example.smpg example.smpg.awk example.data.txt example.test.awk"
 }
@@ -102,10 +107,10 @@ print_nl()
 print DESCRIPT()
 print_nl()
 print "The included files are libraries and other functionality. The fsm rules"
-print "are prepended by a '%', so they are distinguishable from their data. Lines"
+print "are prepended by a '@', so they are distinguishable from their data. Lines"
 print "which begin with a ';' are comments. Comments are only single line and take"
 print "the whole line. The 'begin' and 'generate' state must appear alone on a line."
-print "All other states are block oriented and delimited by '%end'. The full syntax"
+print "All other states are block oriented and delimited by '@END'. The full syntax"
 print "is described below:"
 print_nl()
 print_template_code()
@@ -114,7 +119,7 @@ print_nl()
 
 function print_template_code() {
 print "; any line which begins with a ';' is a comment"
-print "; the '%begin' states tells the parser to initialize its data structures"
+print "; the '@BEGIN' states tells the parser to initialize its data structures"
 print_begin()
 print_nl()
 print_include()
@@ -125,7 +130,7 @@ print "; this is one way to get libraries and other code in your parser"
 print_end()
 print_nl()
 print_fsm("<fsm-name>")
-print "; the syntax for the '%fsm' state is '%fsm <fsm-name>'"
+print "; the syntax for the '@FSM' state is '@FSM <fsm-name>'"
 print "; the <fsm-name> is prepended to all generated fsm functions"
 print "; the rest of the text in this block is the fsm specification for the"
 print "; parser which is to be generated"
@@ -137,41 +142,41 @@ print "; for details on the fsm description syntax see examples, or awklib_fsm.a
 print_end()
 print_nl()
 print_handler("<regex> [args]")
-print "; <regex> is matched against the state names specified in the '%fsm' state"
+print "; <regex> is matched against the state names specified in the '@FSM' state"
 print "; the non-comment text in this block then appears in the body of the handlers"
 print "; for the state names which matched"
 print "; any appearance of '{&}' in this text is replaced by the state name which"
 print "; matched once for each match"
 print "; [args], if given, are pasted verbatim in each handler's argument list"
 print "; e.g., given:"
-print "; '%handler a|b _foo, _bar"
+print "; '@HANDLER a|b _foo, _bar"
 print "; \t{&}_save($0)"
-print "; %end"
+print "; @END"
 print "; function m_on_a(    _foo, _bar) {"
 print "; \ta_save($0)"
 print "; }"
 print "; function m_on_b(    _foo, _bar) {"
 print "; \tb_save($0)"
 print "; }"
-print "; is generated, assuming 'm' is the name given in '%fsm' and 'a' and 'b' are"
+print "; is generated, assuming 'm' is the name given in '@FSM' and 'a' and 'b' are"
 print "; state names which appear in the specification for 'm'"
-print "; an arbitrary number of '%handler' blocks can appear after each other,"
+print "; an arbitrary number of '@HANDLER' blocks can appear after each other,"
 print "; however, once a state name is matched, it is not consider in subsequent"
-print "; '%handler' blocks"
+print "; '@HANDLER' blocks"
 print_end()
 print_nl()
 print_template("<regex>")
-print "; the '%template' block works much like the '%handler' block, except that"
-print "; the '%template' block is used to generate functions, rather than source"
+print "; the '@TEMPLATE' block works much like the '@HANDLER' block, except that"
+print "; the '@TEMPLATE' block is used to generate functions, rather than source"
 print "; for a specific function, e.g."
-print "; %template a|b"
+print "; @TEMPLATE a|b"
 print "; \tfunction {&}_save(str) {_{&}_arr[++_{&}_arr_len] = str}"
-print "; %end"
+print "; @END"
 print "; will generate"
 print "; function a_save(str) {_a_arr[++_a_arr_len] = str}"
 print "; function b_save(str) {_b_arr[++_b_arr_len] = str}"
 print "; again, assuming 'a' and 'b' are states of 'm' as above"
-print "; like '%handler', an arbitrary number of '%template' blocks can appear after"
+print "; like '@HANDLER', an arbitrary number of '@TEMPLATE' blocks can appear after"
 print "; each other and once a state has matched it is not considered in any further"
 print "; matching"
 print_end()
@@ -181,21 +186,21 @@ print "; any non-comment text which appears in this block is pasted verbatim in"
 print "; the final script"
 print_end()
 print_nl()
-print "; source generation begins when the '%generate' state is reached"
-print "; since the parser is a fsm, '%generate' is reached only if all input"
+print "; source generation begins when the '@GENERATE' state is reached"
+print "; since the parser is a fsm, '@GENERATE' is reached only if all input"
 print "; is correct"
 print_generate()
 }
 
 function print_nl() {print ""}
-function print_begin() {print "%begin"}
-function print_generate() {print "%generate"}
-function print_include() {print "%include"}
-function print_fsm(str) {print ("%fsm " str)}
-function print_handler(str) {print ("%handler " str)}
-function print_template(str) {print ("%template " str)}
-function print_other() {print "%other"}
-function print_end() {print "%end"}
+function print_begin() {print "@BEGIN"}
+function print_generate() {print "@GENERATE"}
+function print_include() {print "@INCLUDE"}
+function print_fsm(str) {print ("@FSM " str)}
+function print_handler(str) {print ("@HANDLER " str)}
+function print_template(str) {print ("@TEMPLATE " str)}
+function print_other() {print "@OTHER"}
+function print_end() {print "@END"}
 
 function print_example_input() {
 
@@ -224,7 +229,7 @@ tabs_dec()
 print_end()
 print_nl()
 
-print "; the syntax for the fsm block is '%fsm <fsm-name>'"
+print "; the syntax for the fsm block is '@FSM <fsm-name>'"
 print "; <fsm-name> prefixes the generated fsm functions"
 print_fsm("stm")
 tabs_inc()
@@ -237,7 +242,7 @@ tabs_dec()
 print_end()
 print_nl()
 
-print "; the syntax for the handler block is '%handler <name> [args]'"
+print "; the syntax for the handler block is '@HANDLER <name> [args]'"
 print "; <name> is a regular expression which gets matched against all"
 print "; state machine states in order"
 print "; if [args] appear, they are pasted literally in the"
@@ -279,7 +284,7 @@ print_nl()
 print "; the template block works much like the handler blocks, except that a"
 print "; template blocks generates general awk source code, while the handler"
 print "; block generates the source for a specific handler function"
-print "; the syntax for a template block is '%template <regex>'"
+print "; the syntax for a template block is '@TEMPLATE <regex>'"
 print_template("func_name|input|output")
 print "function {&}_save(str) {_{&}_data[++_{&}_num] = str}"
 print "function {&}_count() {return _{&}_num}"
@@ -288,7 +293,7 @@ print "function {&}_clear() {delete _{&}_data; _{&}_num = 0}"
 print_end()
 print_nl()
 
-print "; everything in the '%other' block gets pasted as is in the final script"
+print "; everything in the '@OTHER' block gets pasted as is in the final script"
 print "; except any ';' line comments"
 print "; here's where all the plumbing can get defined"
 print_other()

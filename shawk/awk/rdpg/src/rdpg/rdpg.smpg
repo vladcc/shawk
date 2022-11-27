@@ -1,6 +1,6 @@
-%begin
+@BEGIN
 
-%include
+@INCLUDE
 	./_check.awk
 	./_misc.awk
 	./_rdpg_pft.awk
@@ -13,17 +13,17 @@
 	../../../awklib/src/awklib_vect.awk
 	../../../awklib/src/awklib_tabs.awk
 	../../../awklib/src/awklib_prefix_tree.awk
-%end
+@END
 
-%fsm fsm
+@FSM fsm
 	rule -> defn
 	defn -> defn | goal | fail | end
 	goal -> defn | fail | end
 	fail -> end
 	end -> rule
-%end
+@END
 
-%handler rule _rule
+@HANDLER rule _rule
 	data_or_err()
 	
 	_rule = remove_first_field($0)
@@ -39,9 +39,9 @@
 		
 	rule_line_map_save(_rule)
 	{&}_save(_rule)
-%end
+@END
 
-%handler defn _rule, _defn, _full_path
+@HANDLER defn _rule, _defn, _full_path
 	data_or_err()
 	
 	gsub("^\"|\"$", "", $0)
@@ -54,38 +54,38 @@
 	
 	{&}_save(_full_path)
 	add_defn_to_rule(G_tree, _rule, _defn)
-%end
+@END
 
-%handler goal
+@HANDLER goal
 	data_or_err()
 	goal_add(get_current_defn(), remove_first_field($0))
-%end
+@END
 
-%handler fail
+@HANDLER fail
 	data_or_err()
 	fail_add(get_current_rule(), remove_first_field($0))
-%end
+@END
 
-%handler end
+@HANDLER end
 	# nothing to do
-%end
+@END
 
-%handler error
+@HANDLER error
 	error_qfpos(sprintf("'%s' expected, but got '%s' instead", expected, got))
-%end
+@END
 
-%template rule|defn
+@TEMPLATE rule|defn
 function {&}_save(str) {vect_push(_B_vect_{&}, str)}
 function {&}_get(n) {return _B_vect_{&}[n]}
 function {&}_get_count() {return vect_len(_B_vect_{&})}
-%end
+@END
 
-%template goal|fail
+@TEMPLATE goal|fail
 function {&}_add(path, val) {_B_map_{&}[path] = val}
 function {&}_get(path) {return _B_map_{&}[path]}
-%end
+@END
 
-%other
+@OTHER
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
 # 2022-01-18
@@ -126,6 +126,6 @@ END {
 function error_qfpos(msg) {
 	error_quit(sprintf("file '%s' line %d: %s", FILENAME, FNR, msg))
 }
-%end
+@END
 
-%generate
+@GENERATE

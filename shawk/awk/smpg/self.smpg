@@ -1,9 +1,9 @@
-%begin
+@BEGIN
 
 ;
 ; All needed external sources.
 ;
-%include
+@INCLUDE
 	./src/_smpg_doc.awk
 	./src/_smpg_generate.awk
 	../awklib/src/awklib_fsm.awk
@@ -13,42 +13,42 @@
 	../awklib/src/awklib_tabs.awk
 	../awklib/src/awklib_prog.awk
 	../awklib/src/awklib_read.awk
-%end
+@END
 
 ;
 ; The finite state machine definition.
 ;
-%fsm stm
-	begin -> include
-	include -> fsm
-	fsm -> handler
-	handler -> handler | template
-	template -> template | other
-	other -> generate
-	generate -> begin
-%end
+@FSM stm
+	BEGIN -> INCLUDE
+	INCLUDE -> FSM
+	FSM -> HANDLER
+	HANDLER -> HANDLER | TEMPLATE
+	TEMPLATE -> TEMPLATE | OTHER
+	OTHER -> GENERATE
+	GENERATE -> BEGIN
+@END
 
 ;
 ; Generate source code for each fsm handler. The syntax is
-; %handler <regex> [args]
+; @HANDLE <regex> [args]
 ; <regex> is matched against all fsm state names and the code is
 ; generated for each match. The '{&}' is replaced by the state name.
 ; After generation, the state which matched is not considered for any
 ; further matches. I.e if you have
-; %handler .+
+; @HANDLE .+
 ; before
-; %handler begin
-; then '%handler begin' will not get generated, because 'begin' was
+; @HANDLE begin
+; then '@HANDLE begin' will not get generated, because 'begin' was
 ; already matched by '.+'. If it's the other way around, 'begin' will
 ; first be generated and then all other states except 'begin', since all
 ; of them will match '.+'. If '[args]' exists, it is considered a list
 ; of local variables to the handler and will be pasted as is.
 ;
-%handler begin
+@HANDLER BEGIN
 	init()
-%end
+@END
 
-%handler include _arr, _len, _fnr, _i, _line
+@HANDLER INCLUDE _arr, _len, _fnr, _i, _line
 	_fnr = FNR
 	_len = get_block(_arr)
 	for (_i = 1; _i <= _len; ++_i) {
@@ -56,16 +56,16 @@
 		if (_line)
 			{&}_save_line(_arr[_i], _fnr+_i)
 	}
-%end
+@END
 
-%handler fsm _arr, _len, _fnr, _i, _line
+@HANDLER FSM _arr, _len, _fnr, _i, _line
 	if (NF > 1) {
 		{&}_save_name($2)
 		_fnr = FNR
 		_len = get_block(_arr)
 		
 		if (!_len)
-			equit("'fsm' block empty")
+			equit("'FSM' block empty")
 		
 		for (_i = 1; _i <= _len; ++_i) {
 			_line = _arr[_i]
@@ -75,9 +75,9 @@
 	} else {
 		{&}_syntax_error()
 	}
-%end
+@END
 
-%handler handler
+@HANDLER HANDLER
 	if (NF > 1) {
 		{&}_save_rx($2)
 		{&}_map_rx_args($2, $0)
@@ -85,36 +85,36 @@
 	} else {
 		{&}_syntax_error()
 	}
-%end
+@END
 
-%handler template
+@HANDLER TEMPLATE
 	if (NF > 1) {
 		{&}_save_rx($2)
 		{&}_map_rx_src($2, get_src())
 	} else {
 		{&}_syntax_error()
 	}
-%end
+@END
 
-%handler other
+@HANDLER OTHER
 	{&}_save_src(get_src())
-%end
+@END
 
-%handler generate
+@HANDLER GENERATE
 	main()
-%end
+@END
 
-%handler error
+@HANDLER error
 ; the error handler has these implicit arguments as per awklib_fsm
 	err_expect(expected, got)
-%end
+@END
 
 ;
 ; Generate all code associated with each fsm state and its data. Much
-; like %handler, but generates arbitrary code, rather than source code
+; like @HANDLE, but generates arbitrary code, rather than source code
 ; for a particular function.
 ;
-%template fsm
+@TEMPLATE FSM
 function {&}_init() {
 	vect_init(B_vect_{&})
 	vect_init(B_vect_{&}_line_no)
@@ -130,12 +130,12 @@ function {&}_get_{&}_src(arr_out) {
 function {&}_get_line_no(n) {return B_vect_{&}_line_no[n]}
 function {&}_get_name() {return B_{&}_name}
 function {&}_syntax_error() {
-	equit(sprintf("syntax should be '%%%s <fsm-name>'",
+	equit(sprintf("syntax should be '@%s <fsm-name>'",
 				STM_FSM()))
 }
-%end
+@END
 
-%template include
+@TEMPLATE INCLUDE
 function {&}_init() {
 	vect_init(B_vect_{&})
 	vect_init(B_vect_{&}_line_no)
@@ -150,15 +150,15 @@ function {&}_get_fname(n) {return B_vect_{&}[n]}
 function {&}_get_file_names(arr_out) {
 	return arr_copy(arr_out, B_vect_{&}, vect_len(B_vect_{&}))
 }
-%end
+@END
 
-%template handler
+@TEMPLATE HANDLER
 function {&}_init() {
 	B_map_{&}[""]
 	delete B_map_{&}
 }
 function {&}_map_rx_args(rx, arg_str,    _arr, _len, _args) {
-	# str is assumed to be '%handler <regex> [args]'
+	# str is assumed to be '@HANDLE <regex> [args]'
 	_len = split(arg_str, _arr)
 	_arr[1] = _arr[2] = " "
 	_args = arr_to_str(_arr, _len, " ")
@@ -175,12 +175,12 @@ function {&}_get_rx_all(arr_out) {
 	return split(B_{&}_rx_list, arr_out, SUBSEP)
 }
 function {&}_syntax_error() {
-	equit(sprintf("syntax should be '%%%s <regex> [args]'",
+	equit(sprintf("syntax should be '@%s <regex> [args]'",
 				STM_HANDLER()))
 }
-%end
+@END
 
-%template template
+@TEMPLATE TEMPLATE
 function {&}_init() {
 	B_map_{&}[""]
 	delete B_map_{&}
@@ -194,36 +194,36 @@ function {&}_get_rx_all(arr_out) {
 	return split(B_{&}_rx_list, arr_out, SUBSEP)
 }
 function {&}_syntax_error() {
-	equit(sprintf("syntax should be '%%%s <regex>'", STM_TEMPLATE()))
+	equit(sprintf("syntax should be '@%s <regex>'", STM_TEMPLATE()))
 }
-%end
+@END
 
-%template other
+@TEMPLATE OTHER
 function {&}_init() {B_{&}_src = ""}
 function {&}_save_src(str) {B_{&}_src = str}
 function {&}_get_src() {return B_{&}_src}
-%end
+@END
 
 ;
 ; This gets pasted in the final script as is, excluding any empty lines.
 ;
-%other
+@OTHER
 # smpg.awk
 # Vladimir Dinev
 # vld.dinev@gmail.com
-# 2021-10-02
+# 2022-11-27
 
 # <awk_loop>
 BEGIN {enter()}
 END {leave()}
 /^;|^[[:space:]]*$/ {next}
-/^%/ {transition(remove_perc($1)); next}
+/^@/ {transition(remove_ats($1)); next}
 {equit("line not source or a comment")}
 # </awk_loop>
 
 # <script_main>
 function SCRIPT_NAME() {return "smpg.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "2.0"}
 
 function main() {
 	# called in the 'generate' state
@@ -270,8 +270,8 @@ function leave(    _st) {
 }
 function get_state() {return stm_get_state(B_the_fsm)}
 function transition(st) {stm_next(B_the_fsm, st)}
-function remove_perc(str) {
-	sub("^%", "", str)
+function remove_ats(str) {
+	sub("^@", "", str)
 	return str
 }
 function str_cat(a, b, sep) {
@@ -286,13 +286,13 @@ function err_expect(expect, got, line_no) {
 	equit(sprintf("expected '%s', got '%s' instead", expect, got), line_no)
 }
 function init() {
-	fsm_init()
-	include_init()
-	handler_init()
-	template_init()
-	other_init()
+	FSM_init()
+	INCLUDE_init()
+	HANDLER_init()
+	TEMPLATE_init()
+	OTHER_init()
 }
-function BLOCK_END() {return "^%end"}
+function BLOCK_END() {return "^@END"}
 function BLOCK_COMMENT() {return "^[[:space:]]*;"}
 function get_src(    _arr, _len) {
 	_len = read_lines(_arr, BLOCK_END(), BLOCK_COMMENT())
@@ -314,6 +314,6 @@ function out_append_arr(arr, len) {
 	vect_push_arr(B_vect_output, arr, len)
 }
 # </misc>
-%end
+@END
 
-%generate
+@GENERATE

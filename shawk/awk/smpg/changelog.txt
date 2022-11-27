@@ -1,0 +1,4 @@
+2022-11-27
+	smpg 2.0
+	%[a-z] (%begin, %handler, etc.) now @[A-Z] (@BEGIN, @HANDLER, etc.)
+	The parser doc description is split in include files and a fsm description.
