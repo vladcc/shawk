@@ -38,10 +38,10 @@ function DESCRIPT() {
 # <other>
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-01-18
+# 2023-01-16
 
 function SCRIPT_NAME() {return "rdpg.awk"}
-function SCRIPT_VERSION() {return "1.312"}
+function SCRIPT_VERSION() {return "1.4"}
 
 # <awk_rules>
 function init() {
@@ -69,8 +69,15 @@ END {
 		generate_ir(G_tree)
 	}
 }
-/^[[:space:]]*(#|$)/ {next} # ignore empty lines and comments
-{fsm_next(G_the_fsm, $1)}
+
+# ignore empty lines and comments
+/^[[:space:]]*(#|$)/ {next}
+
+# strip spaces and fsm
+{
+	gsub("^[[:space:]]+|[[:space:]]+$", "", $0)
+	fsm_next(G_the_fsm, $1)
+}
 # </awk_rules>
 
 function error_qfpos(msg) {
