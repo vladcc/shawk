@@ -4,6 +4,7 @@ end
 
 rule foo
 defn bar
+defn zag
 end
 
 rule bar

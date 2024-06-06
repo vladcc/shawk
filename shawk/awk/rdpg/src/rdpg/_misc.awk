@@ -19,14 +19,20 @@ function save_raw_definition(rule, defn, _str) {
 }
 function get_raw_definition(rule) {return _B_plain_defn[rule]}
 
-function null_set_place(rule) {_B_null_set[rule] = 1}
-function null_set_has(rule) {return _B_null_set[rule]}
+function null_set_place(rule) {_B_null_set[rule]}
+function null_set_has(rule) {return (rule in _B_null_set)}
+
 function is_rule_nullable(rule) {return null_set_has(rule)}
-function rule_set_place(rule) {_B_rule_set[rule] = 1}
-function rule_set_has(rule) {return _B_rule_set[rule]}
+
+function rule_set_place(rule) {_B_rule_set[rule]}
+function rule_set_has(rule) {return (rule in _B_rule_set)}
+
 function rule_line_map_save(rule) {_B_rule_line[rule] = FNR}
-function rule_line_map_get(rule) {return _B_rule_line[rule]}
+function rule_line_map_get(rule) {
+	return (rule in _B_rule_line) ? _B_rule_line[rule] : 0
+}
 function is_a_rule(str){return rule_line_map_get(str)}
+
 function get_current_rule() {return rule_get(rule_get_count())}
 function is_terminal(str) {
 	return match(str, "^[_[:upper:]][[:upper:][:digit:]_]*$")
@@ -38,7 +44,7 @@ function is_non_terminal(symb) {
 }
 function rule_process_name(rule,    _rule) {
 	_rule = rule
-	
+
 	if ((get_last_ch(_rule) == NULLABLE())) {
 		_rule = remove_last_ch(_rule)
 		null_set_place(_rule)
@@ -67,14 +73,14 @@ function syntax_check_defn(str,    _i, _len, _arr, _tmp) {
 	_len = split(str, _arr)
 	for (_i = 1; _i <= _len; ++_i) {
 		_tmp = _arr[_i]
-		
+
 		if (!is_non_terminal(_tmp) && !is_terminal(_tmp)) {
 			error_qfpos(\
 				sprintf("bad syntax: '%s' not a terminal or a non-terminal",
 				_tmp))
 		}
 	}
-	
+
 	return str
 }
 # </misc>

@@ -11,7 +11,7 @@ function rdpg_pft_insert(tree, rule, defn,    _path) {
 	pft_insert(tree, _path)
 	pft_mark(tree, _path)
 }
-function rdpg_pft_is_marked(tree, ind) {
+function rdpg_pft_is_endpoint(tree, ind) {
 	return pft_is_marked(tree, _rdpg_str_to_pft_str(ind))
 }
 function rdpg_pft_split(root, out_arr) {
@@ -35,5 +35,8 @@ function rdpg_pft_cat(a, b) {
 }
 function rdpg_pft_arr_has(arr, len, what) {
 	return arr_find(arr, len, what)
+}
+function rdpg_pft_dbg_print(tree) {
+	pft_print_dump(tree)
 }
 # </rdpg_pft>

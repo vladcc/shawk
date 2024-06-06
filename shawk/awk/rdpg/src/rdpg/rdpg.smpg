@@ -7,7 +7,7 @@
 	./_generate.awk
 	./_doc.awk
 	../common/_rdpg_ir.awk
-	
+
 	../../../awklib/src/awklib_prog.awk
 	../../../awklib/src/awklib_array.awk
 	../../../awklib/src/awklib_vect.awk
@@ -25,33 +25,33 @@
 
 @HANDLER rule _rule
 	data_or_err()
-	
+
 	_rule = remove_first_field($0)
 	syntax_check_rule(_rule)
 	_rule = rule_process_name(_rule)
-	
+
 	save_raw_definition(_rule, $0)
-	
+
 	if (rule_set_has(_rule))
 		error_qfpos(sprintf("rule '%s' redefined", _rule))
 	else
 		rule_set_place(_rule)
-		
+
 	rule_line_map_save(_rule)
 	{&}_save(_rule)
 @END
 
 @HANDLER defn _rule, _defn, _full_path
 	data_or_err()
-	
+
 	gsub("^\"|\"$", "", $0)
 	_rule = get_current_rule()
 	save_raw_definition(_rule, $0)
-	
+
 	_defn = remove_first_field($0)
 	_defn = syntax_check_defn(_defn)
 	_full_path = get_full_path(_rule, _defn)
-	
+
 	{&}_save(_full_path)
 	add_defn_to_rule(G_tree, _rule, _defn)
 @END
@@ -88,10 +88,15 @@ function {&}_get(path) {return _B_map_{&}[path]}
 @OTHER
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2023-01-16
+# 2024-06-06
 
 function SCRIPT_NAME() {return "rdpg.awk"}
-function SCRIPT_VERSION() {return "1.4"}
+function SCRIPT_VERSION() {return "1.5"}
+
+# <opts>
+function opt_strict_set(val) {_B_rdpg_opt_strict = val}
+function opt_strict_get()    {return _B_rdpg_opt_strict}
+# </opts>
 
 # <awk_rules>
 function init() {
@@ -105,8 +110,9 @@ function init() {
 		print_example()
 	if (ARGC != 2)
 		print_use_try()
-	Strict = (Strict) ? Strict : ""
-	
+
+	opt_strict_set(Strict)
+
 	# G_tree has to be a global variable
 	rdpg_pft_init(G_tree)
 }

@@ -22,7 +22,7 @@ function test_all
 	test_bug_fixes
 	test_rdpg
 	test_rdpg_opt"
-	
+
 	bt_eval test_end_to_end	"$@"
 }
 
@@ -31,8 +31,8 @@ function test_version_checks
 {
 	local L_TO_C="../rdpg-to-c.awk"
 	local L_TO_AWK="../rdpg-to-awk.awk"
-	
-	bt_diff_ok "<($G_AWK -f $G_RDPG -vVersion=1)" "<(echo 'rdpg.awk 1.4')"
+
+	bt_diff_ok "<($G_AWK -f $G_RDPG -vVersion=1)" "<(echo 'rdpg.awk 1.5')"
 	bt_diff_ok "<($G_AWK -f $G_RDPG_OPT -vVersion=1)" "<(echo 'rdpg-opt.awk 1.2')"
 	bt_diff_ok "<($G_AWK -f $L_TO_C -vVersion=1)" "<(echo 'rdpg-to-c.awk 1.1')"
 	bt_diff_ok "<($G_AWK -f $L_TO_AWK -vVersion=1)" "<(echo 'rdpg-to-awk.awk 1.1')"
@@ -52,7 +52,7 @@ function test_rdpg_awk_tok_call_prefix
 	"| $G_AWK -f ../rdpg-to-awk.awk"\
 	"> $G_TEST_RES"
 	bt_assert_success
-	
+
 	bt_diff_ok "<(echo 0)"\
 	"<(cat $G_TEST_RES | grep -Eo '\<foo_tok_[[:alpha:]_]+' | wc -l)"
 
@@ -62,13 +62,13 @@ function test_rdpg_awk_tok_call_prefix
 
 	bt_diff_ok "<(echo 0)" "<(grep -c '\<foo_tok_err_exp(_arr, 2)' $G_TEST_RES)"
 	bt_diff_ok "<(echo 1)" "<(grep -c '\<tok_err_exp(_arr, 2)' $G_TEST_RES)"
-	
+
 	run_rdpg \
 	"$G_TEST_GEN"\
 	"| $G_AWK -f ../rdpg-to-awk.awk -vTokCallPrefix='foo_'"\
 	"> $G_TEST_RES"
 	bt_assert_success
-	
+
 	bt_diff_ok "<(echo 0)"\
 	"<(cat $G_TEST_RES | grep -Eo '\<tok_[[:alpha:]_]+' | wc -l)"
 
@@ -99,7 +99,7 @@ function opt_olvl_3_inf_loop_fix
 function pft_add_bug_fix
 {
 	local L_RUN="$G_AWK -f $G_RDPG"
-	
+
 	bt_diff_ok "<($L_RUN ./test_rdpg/test_pft_add_bug_fix.rdpg)" \
 		"./test_rdpg/accept_pft_add_bug_fix.txt"
 }
@@ -108,7 +108,7 @@ function spaces_after_defn
 {
 	local L_INPUT="$(printf "rule foo\ndefn bar\nend\n")"
 	local L_RUN="$G_AWK -f $G_RDPG"
-	
+
 	local L_EXPECT=\
 'func foo
 block_open foo_1
@@ -141,7 +141,7 @@ function run_rdpg_opt
 {
 	local L_FILE="$1"
 	shift
-	
+
 	local L_AUX="$@"
 	local L_RUN="$G_AWK -f $G_RDPG_OPT $L_AUX"
 	run_rdpg "$L_FILE" | bt_eval "$L_RUN"
@@ -162,11 +162,11 @@ function test_rdpg_opt_olvl_5
 	run_rdpg_opt "$G_TEST_GEN" "-vOlvl=5 -vInlineLength=1" " > $G_TEST_RES"
 	bt_assert_success
 	diff_result "./test_rdpg_opt/accept_olvl_5.txt"
-	
+
 	run_rdpg_opt "$G_TEST_GEN" "-vOlvl=5" " > $G_TEST_RES"
 	bt_assert_success
 	diff_result "./test_rdpg_opt/accept_olvl_5_default_inline_len.txt"
-	
+
 	run_rdpg_opt "$G_TEST_GEN" "-vOlvl=5 -vInlineLength=29" " > $G_TEST_RES"
 	bt_assert_success
 	diff_result "./test_rdpg_opt/accept_olvl_5_inline_len_29.txt"
@@ -237,11 +237,11 @@ function test_rdpg_bad_input
 function test_rdpg_bad_input_misc
 {
 	> "$G_TEST_RES"
-	
+
 	# trivial fsm error
 	run_rdpg '<(echo foo) 2>>"$G_TEST_RES"'
 	bt_assert_failure
-	
+
 	local L_INPUT=\
 'rule zig
 defn zag
@@ -250,21 +250,22 @@ end
 rule foo
 defn bar
 defn bar foo
+defn baz
 end'
-	
+
 	# CFG obvious ambiguity
 	run_rdpg "<(echo \"$L_INPUT\") 2>>$G_TEST_RES"
 	bt_assert_failure
-	
+
 	# no data after rule
 	run_rdpg "<(echo rule) 2>>$G_TEST_RES"
 	bt_assert_failure
-	
-	
+
+
 	# bad rule syntax
 	run_rdpg "<(echo rule 00f) 2>>$G_TEST_RES"
 	bt_assert_failure
-	
+
 	L_INPUT=\
 'rule zig
 defn 00f2
@@ -273,7 +274,7 @@ end'
 	# bad defn syntax
 	run_rdpg "<(echo \"$L_INPUT\") 2>>$G_TEST_RES"
 	bt_assert_failure
-	
+
 	L_INPUT=\
 'rule zig
 defn zag
@@ -286,18 +287,18 @@ end'
 	# redefined rule
 	run_rdpg "<(echo \"$L_INPUT\") 2>>$G_TEST_RES"
 	bt_assert_failure
-	
+
 	local L_RES="$(cat $G_TEST_RES | sed -E "s/file '[^']+'/file 'myfile'/")"
-	
+
 	local L_EXPT="rdpg.awk: error: file 'myfile' line 1: 'rule' expected, but got 'foo' instead
-rdpg.awk: error: file 'myfile', line 5, rule 'foo': ambiguity detected
-'foo -> bar -> foo'
+rdpg.awk: error: file 'myfile', line 5, rule 'foo': ambiguity detected; cannot factor out
 'foo -> bar'
+'foo -> bar -> foo'
 rdpg.awk: error: file 'myfile' line 1: no data after 'rule'
 rdpg.awk: error: file 'myfile' line 1: bad rule syntax '00f'; has to match '^[_[:lower:]][[:lower:][:digit:]_]*\??$'
 rdpg.awk: error: file 'myfile' line 2: bad syntax: '00f2' not a terminal or a non-terminal
 rdpg.awk: error: file 'myfile' line 5: rule 'zig' redefined"
-	
+
 	bt_diff_ok "<(echo \"$L_RES\") <(echo \"$L_EXPT\")"
 	rm "$G_TEST_RES"
 }
@@ -306,14 +307,14 @@ function test_rdpg_left_recursion_indirect
 {
 	local L_FILE="./test_rdpg/test_left_recursion_indirect.rdpg"
 	local L_OUT=""
-	
+
 	L_OUT="$(run_rdpg "$L_FILE" 2>&1)"
 	bt_assert_failure
-	
+
 	local L_MSG="rdpg.awk: error: file './test_rdpg/test_left_recursion_indirect.rdpg', line 5, rule 'foo': left recursion: foo -> bar -> baz -> foo
-rdpg.awk: error: file './test_rdpg/test_left_recursion_indirect.rdpg', line 9, rule 'bar': left recursion: bar -> baz -> foo -> bar
-rdpg.awk: error: file './test_rdpg/test_left_recursion_indirect.rdpg', line 13, rule 'baz': left recursion: baz -> foo -> bar -> baz"
-	
+rdpg.awk: error: file './test_rdpg/test_left_recursion_indirect.rdpg', line 10, rule 'bar': left recursion: bar -> baz -> foo -> bar
+rdpg.awk: error: file './test_rdpg/test_left_recursion_indirect.rdpg', line 14, rule 'baz': left recursion: baz -> foo -> bar -> baz"
+
 	bt_diff_ok "<(echo \"$L_OUT\")" "<(echo \"$L_MSG\")"
 }
 
@@ -321,12 +322,12 @@ function test_rdpg_left_recursion_direct
 {
 	local L_FILE="./test_rdpg/test_left_recursion_direct.rdpg"
 	local L_OUT=""
-	
+
 	L_OUT="$(run_rdpg "$L_FILE" 2>&1)"
 	bt_assert_failure
-	
+
 	local L_MSG="rdpg.awk: error: file './test_rdpg/test_left_recursion_direct.rdpg', line 1, rule 'foo': left recursion: foo -> foo"
-	
+
 	bt_diff_ok "<(echo \"$L_OUT\")" "<(echo \"$L_MSG\")"
 }
 
@@ -334,12 +335,12 @@ function test_rdpg_strict_undefn_rule
 {
 	local L_FILE="./test_rdpg/test_strict_undefn_rule.rdpg"
 	local L_OUT=""
-	
+
 	L_OUT="$(run_rdpg "-vStrict=1 $L_FILE" 2>&1)"
 	bt_assert_failure
-	
+
 	local L_MSG="rdpg.awk: error: file './test_rdpg/test_strict_undefn_rule.rdpg', line 5, rule 'bar': call to an undefined rule 'baz'"
-	
+
 	bt_diff_ok "<(echo \"$L_OUT\")" "<(echo \"$L_MSG\")"
 }
 
@@ -351,7 +352,7 @@ function test_rdpg_example
 function test_rdpg_generate
 {
 	local L_ACCEPT_GEN="./test_rdpg/accept_generate.txt"
-	
+
 	run_rdpg "$G_TEST_GEN > $G_TEST_RES"
 	bt_assert_success
 	diff_result "$L_ACCEPT_GEN"
@@ -366,15 +367,15 @@ function diff_result
 function main
 {
 	source "$(dirname $(realpath $0))/../../../bash/bashtest/bashtest.sh"
-	
+
 	if [ "$#" -gt 0 ]; then
 		bt_set_verbose
 	fi
-	
+
 	bt_enter
-	
+
 	bt_eval "test_all \"$@\""
-	
+
 	bt_exit_success
 }
 

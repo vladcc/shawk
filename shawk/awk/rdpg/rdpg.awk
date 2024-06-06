@@ -38,10 +38,15 @@ function DESCRIPT() {
 # <other>
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2023-01-16
+# 2024-06-06
 
 function SCRIPT_NAME() {return "rdpg.awk"}
-function SCRIPT_VERSION() {return "1.4"}
+function SCRIPT_VERSION() {return "1.5"}
+
+# <opts>
+function opt_strict_set(val) {_B_rdpg_opt_strict = val}
+function opt_strict_get()    {return _B_rdpg_opt_strict}
+# </opts>
 
 # <awk_rules>
 function init() {
@@ -55,8 +60,9 @@ function init() {
 		print_example()
 	if (ARGC != 2)
 		print_use_try()
-	Strict = (Strict) ? Strict : ""
-	
+
+	opt_strict_set(Strict)
+
 	# G_tree has to be a global variable
 	rdpg_pft_init(G_tree)
 }
@@ -107,32 +113,32 @@ function fail_get(path) {return _B_map_fail[path]}
 # <handlers>
 function fsm_on_rule(    _rule) {
 	data_or_err()
-	
+
 	_rule = remove_first_field($0)
 	syntax_check_rule(_rule)
 	_rule = rule_process_name(_rule)
-	
+
 	save_raw_definition(_rule, $0)
-	
+
 	if (rule_set_has(_rule))
 		error_qfpos(sprintf("rule '%s' redefined", _rule))
 	else
 		rule_set_place(_rule)
-		
+
 	rule_line_map_save(_rule)
 	rule_save(_rule)
 }
 function fsm_on_defn(    _rule, _defn, _full_path) {
 	data_or_err()
-	
+
 	gsub("^\"|\"$", "", $0)
 	_rule = get_current_rule()
 	save_raw_definition(_rule, $0)
-	
+
 	_defn = remove_first_field($0)
 	_defn = syntax_check_defn(_defn)
 	_full_path = get_full_path(_rule, _defn)
-	
+
 	defn_save(_full_path)
 	add_defn_to_rule(G_tree, _rule, _defn)
 }
@@ -221,29 +227,29 @@ function fsm_next(fsm, next_st,    _st) {
 # ./_check.awk
 # <check>
 function perform_input_checks(tree) {
-	if (Strict)
+	if (opt_strict_get())
 		check_undefined_rules(tree)
 	check_reachability(tree)
 	check_left_recursion(tree)
 }
 # <check_left_recursion>
 function left_rec_seen_reset() {_B_left_rec_set[""]; delete _B_left_rec_set}
-function left_rec_was_seen(symb) {return _B_left_rec_set[symb] }
-function left_rec_mark(symb) {_B_left_rec_set[symb] = 1}
-function check_left_rec_rule(tree, rule,
-    _next, _prev, _val, _arr, _len, _i, _trace) {
-	
+function left_rec_was_seen(symb) {return (symb in _B_left_rec_set)}
+function left_rec_mark(symb) {_B_left_rec_set[symb]}
+function check_left_rec_rule(tree, rule,    _next, _path, _val, _arr, _len, _i,
+_trace) {
+
 	if (!_next) {
 		# first time; reset symbols, start from rule
 		left_rec_seen_reset()
 		_next = rule
 	}
-	
+
 	if (!rdpg_pft_has(tree, _next)) {
 		# guard against non-existent rule
 		return ""
 	}
-	
+
 	if (left_rec_was_seen(_next)) {
 		# _next has already been considered and did not result in an error
 		return ""
@@ -251,27 +257,27 @@ function check_left_rec_rule(tree, rule,
 		# _next has not been considered, needs a check
 		left_rec_mark(_next)
 	}
-	
-	if (!_prev) {
+
+	if (!_path) {
 		# first time; begin the trace path with the top rule
-		_prev = _next
+		_path = _next
 	} else {
 		# not first time; add _next to the trace path
-		_prev = sprintf("%s -> %s", _prev, _next)
+		_path = sprintf("%s -> %s", _path, _next)
 	}
-	
+
 	_val = rdpg_pft_get(tree, _next)
 	_len = rdpg_pft_split(_val, _arr)
-	
+
 	if (rdpg_pft_arr_has(_arr, _len, rule)) {
 		# if the top rule exists in any of its own leftmost derivations, or
 		# in any of the leftmost derivations of its leftmost derivations
 		# return the trace
-		return sprintf("%s -> %s", _prev, _val)
+		return sprintf("%s -> %s", _path, rule)
 	}
-	
+
 	for (_i = 1; _i <= _len; ++_i) {
-		if (_trace = check_left_rec_rule(tree, rule, _arr[_i], _prev)) {
+		if (_trace = check_left_rec_rule(tree, rule, _arr[_i], _path)) {
 			# if a non-empty trace has occurred, we have leftmost recursion
 			return _trace
 		}
@@ -284,60 +290,92 @@ function print_left_rec(rule, trace) {
 function check_left_recursion(tree,    _rule, _i, _end, _trace, _err) {
 	_err = 0
 	_end = rule_get_count()
-	
+
 	for (_i = 1; _i <= _end; ++_i) {
 		_rule = rule_get(_i)
-		
+
 		if (_trace = check_left_rec_rule(tree, _rule)) {
 			_err = 1
 			print_left_rec(_rule, _trace)
 		}
 	}
-	
+
 	if (_err)
 		exit_failure()
 }
 # </check_left_recursion>
 
 # <check_reachability>
-function check_reachability_rule(tree, rule, _root,    _val, _path, _err) {
-	
+function reachability_error(rule, root, path,    _line) {
+	_line = rule_line_map_get(rule)
+
+	chk_err_fpos(_line, rule, "ambiguity detected; cannot factor out")
+
+	gsub(("\\" RDPG_PFT_SEP()), " -> ", root)
+	pstderr(sprintf("'%s'", root))
+	gsub(("\\" RDPG_PFT_SEP()), " -> ", path)
+	pstderr(sprintf("'%s'", path))
+}
+
+function check_reachability_rule(tree, rule, _root,    _val, _path, _err, _i,
+_len, _arr) {
+
+	#
+	# Endpoints must have no further productions; e.g. in grammar
+	# rule a
+	# defn b
+	# defn b c
+	# end
+	#
+	# the prefix tree is:
+	#
+	# pft["a.b"] = "c"
+	# pft["a.b.c"] = ""
+	# pft[".a.b.c"] = ""
+	# pft["a"] = "b"
+	# pft[".a.b"] = ""
+	#
+	# a -> b is an endpoint as indicated by
+	# pft[".a.b"] = ""
+	# but
+	# pft["a.b"] = "c"
+	#
+
 	if (!_root)
 		_root = rule
-	
+
 	if (!_err)
 		_err = 0
-	
+
 	if (!rdpg_pft_has(tree, _root))
 		return
-	
+
 	_val = rdpg_pft_get(tree, _root)
-	_path = rdpg_pft_cat(_root, _val)
-	
-	if (_val && rdpg_pft_is_marked(tree, _root)) {
-		
-		chk_err_fpos(rule_line_map_get(rule), rule, "ambiguity detected")
-		
-		gsub(("\\" RDPG_PFT_SEP()), " -> ", _path)
-		pstderr(sprintf("'%s'", _path))
-		gsub(("\\" RDPG_PFT_SEP()), " -> ", _root)
-		pstderr(sprintf("'%s'", _root))
-		
-		_err = 1
+	_len = rdpg_pft_split(_val, _arr)
+
+	for (_i = 1; _i <= _len; ++_i) {
+		_path = rdpg_pft_cat(_root, _arr[_i])
+
+		if (_val && rdpg_pft_is_endpoint(tree, _root)) {
+			reachability_error(rule, _root, _path)
+			++_err
+		}
+
+		_err += check_reachability_rule(tree, rule, _path)
 	}
-	
-	return _err + check_reachability_rule(tree, rule, _path)
+
+	return _err
 }
 
 function check_reachability(tree,    _rule, _i, _end, _err) {
 	_err = 0
 	_end = rule_get_count()
-	
+
 	for (_i = 1; _i <= _end; ++_i) {
 		_rule = rule_get(_i)
 		_err = check_reachability_rule(tree, _rule)
 	}
-	
+
 	if (_err)
 		exit_failure()
 }
@@ -346,31 +384,31 @@ function check_reachability(tree,    _rule, _i, _end, _err) {
 # <check_undefined_rules>
 function check_undefined_rule(tree, rule,    _root, _i, _val, _arr_val,
 _len_val, _symb, _err) {
-	
+
 	if (!_err)
 		_err = 0
-	
+
 	if (!_root)
 		_root = rule
 
 	if (!rdpg_pft_has(tree, _root))
 		return 0
-	
+
 	_val = rdpg_pft_get(tree, _root)
 	_len_val = rdpg_pft_split(_val, _arr_val)
-	
+
 	for (_i = 1; _i <= _len_val; ++_i) {
 		_symb = _arr_val[_i]
-		
+
 		if (!is_terminal(_symb) && !is_a_rule(_symb)) {
 			chk_err_fpos(rule_line_map_get(rule), rule,
 				sprintf("call to an undefined rule '%s'", _symb))
 			_err = 1
 		}
-		
+
 		_err += check_undefined_rule(tree, rule, rdpg_pft_cat(_root, _symb))
 	}
-	
+
 	return _err
 }
 
@@ -382,12 +420,12 @@ function chk_err_fpos(line, rule, msg) {
 function check_undefined_rules(tree,    _rule, _i, _end, _err) {
 	_err = 0
 	_end = rule_get_count()
-	
+
 	for (_i = 1; _i <= _end; ++_i) {
 		_rule = rule_get(_i)
 		_err += check_undefined_rule(tree, _rule)
 	}
-	
+
 	if (_err)
 		exit_failure()
 }
@@ -415,14 +453,20 @@ function save_raw_definition(rule, defn, _str) {
 }
 function get_raw_definition(rule) {return _B_plain_defn[rule]}
 
-function null_set_place(rule) {_B_null_set[rule] = 1}
-function null_set_has(rule) {return _B_null_set[rule]}
+function null_set_place(rule) {_B_null_set[rule]}
+function null_set_has(rule) {return (rule in _B_null_set)}
+
 function is_rule_nullable(rule) {return null_set_has(rule)}
-function rule_set_place(rule) {_B_rule_set[rule] = 1}
-function rule_set_has(rule) {return _B_rule_set[rule]}
+
+function rule_set_place(rule) {_B_rule_set[rule]}
+function rule_set_has(rule) {return (rule in _B_rule_set)}
+
 function rule_line_map_save(rule) {_B_rule_line[rule] = FNR}
-function rule_line_map_get(rule) {return _B_rule_line[rule]}
+function rule_line_map_get(rule) {
+	return (rule in _B_rule_line) ? _B_rule_line[rule] : 0
+}
 function is_a_rule(str){return rule_line_map_get(str)}
+
 function get_current_rule() {return rule_get(rule_get_count())}
 function is_terminal(str) {
 	return match(str, "^[_[:upper:]][[:upper:][:digit:]_]*$")
@@ -434,7 +478,7 @@ function is_non_terminal(symb) {
 }
 function rule_process_name(rule,    _rule) {
 	_rule = rule
-	
+
 	if ((get_last_ch(_rule) == NULLABLE())) {
 		_rule = remove_last_ch(_rule)
 		null_set_place(_rule)
@@ -463,14 +507,14 @@ function syntax_check_defn(str,    _i, _len, _arr, _tmp) {
 	_len = split(str, _arr)
 	for (_i = 1; _i <= _len; ++_i) {
 		_tmp = _arr[_i]
-		
+
 		if (!is_non_terminal(_tmp) && !is_terminal(_tmp)) {
 			error_qfpos(\
 				sprintf("bad syntax: '%s' not a terminal or a non-terminal",
 				_tmp))
 		}
 	}
-	
+
 	return str
 }
 # </misc>
@@ -488,7 +532,7 @@ function rdpg_pft_insert(tree, rule, defn,    _path) {
 	pft_insert(tree, _path)
 	pft_mark(tree, _path)
 }
-function rdpg_pft_is_marked(tree, ind) {
+function rdpg_pft_is_endpoint(tree, ind) {
 	return pft_is_marked(tree, _rdpg_str_to_pft_str(ind))
 }
 function rdpg_pft_split(root, out_arr) {
@@ -513,6 +557,9 @@ function rdpg_pft_cat(a, b) {
 function rdpg_pft_arr_has(arr, len, what) {
 	return arr_find(arr, len, what)
 }
+function rdpg_pft_dbg_print(tree) {
+	pft_print_dump(tree)
+}
 # </rdpg_pft>
 # ./_generate.awk
 # <generate>
@@ -531,9 +578,9 @@ function emit_return(str) {tabs_print(sprintf("%s %s", IR_RETURN(), str))}
 function expose_return(str,    _arr, _tmp, _ret) {
 	# expose the return only if it has valid IR syntax, so it can be considered
 	# in the optimization stage
-	
+
 	_ret = str
-	
+
 	split(str, _arr)
 	_tmp = _arr[1]
 	if (IR_GOAL() == _tmp || IR_FAIL() == _tmp) {
@@ -581,7 +628,7 @@ function get_list_of_terminals(arr, len,    _symb, _i, _count, _str) {
 	return (_count) ? sprintf("%d %s", _count, _str) : ""
 }
 function did_only_nullables_fail(arr, len,    _i) {
-	for (_i = 1; _i <= len; ++_i) {	
+	for (_i = 1; _i <= len; ++_i) {
 		if (!is_rule_nullable(arr[_i]))
 			return 0
 	}
@@ -592,70 +639,70 @@ function tok_match_call(val) {return sprintf("%s %s", IR_TOK_MATCH(), val)}
 
 function generate_ir_rule(tree, rule,    _current, _path, _i, _val, _arr_val,
 _len_val, _is_term, _has, _is_last, _symb) {
-	
+
 	if (!_current) # first time
 		_current = rule
-	
+
 	if (!rdpg_pft_has(tree, _current))
 		return
-	
+
 	_val = rdpg_pft_get(tree, _current)
 	_len_val = rdpg_pft_split(_val, _arr_val)
-	
+
 	for (_i = 1; _i <= _len_val; ++_i) {
 		_val = _arr_val[_i]
 		_is_term = is_terminal(_val)
-		
+
 		# if the current symbol is a terminal, make a tok_match call
 		# else make an ordinary function call
 		_symb = (_is_term) ? tok_match_call(_val) : _val
-		
+
 		if (_i == 1)
 			emit_if(_symb)        # if
-		else 
+		else
 			emit_else_if(_symb)   # else if
-			
+
 		emit_block_open(rule)         # {
-		
-		_path = rdpg_pft_cat(_current, _val) # current path and value is 
+
+		_path = rdpg_pft_cat(_current, _val) # current path and value is
 		                                     # exactly where we are
-		
-		_is_last = rdpg_pft_is_marked(tree, _path) # are we at the last call of
-		                                           # a definition?
-		
+
+		_is_last = rdpg_pft_is_endpoint(tree, _path) # are we at the last call
+		                                             # of a definition?
+
 		if (_is_last) {                # if last call of definition
 			_has = goal_get(_path)     # and a goal was defined
 			if (_has)
 				emit_goal(_has)        # execute the definition goal
-		
+
 			if (_is_term)
 				emit_call(IR_TOK_NEXT()) # consume the token after tok_match
 
 			emit_return(IR_TRUE())       # definition match successful
-		
+
 		} else {
 			if (_is_term)                # not last call of definition
 				emit_call(IR_TOK_NEXT()) # consume the token after tok_match
-			
+
 			generate_ir_rule(tree, rule, _path)  # the same thing again until
 			                                     # the end of the definition
 			                                     # is reached
 		}
-		
+
 		emit_block_close(rule)    # }
 	}
 
 	emit_else()                   # else
 	emit_block_open(rule)         # {
-	
+
 	if (!is_rule_nullable(rule)) {    # if the rule has no epsilon production
 	                                  # it can produces errors; otherwise not
-	                                  
+
 		_has = get_list_of_terminals(_arr_val, _len_val)
 		if (_has)
 			emit_call(sprintf("%s %s", IR_TOK_ERR(), _has))
 	}
-	
+
 	_has = fail_get(_current)         # execute rule failure procedure
 	if (_has)
 		emit_fail(_has)
@@ -665,7 +712,7 @@ _len_val, _is_term, _has, _is_last, _symb) {
 	                                  # trigger an error further up the chain;
 	                                  # epsilon productions trigger no errors on
 	                                  # failure by definition
-	
+
 	emit_return(did_only_nullables_fail(_arr_val, _len_val) ? \
 		IR_TRUE() : IR_FALSE())
 	emit_block_close(rule)        # }
@@ -686,16 +733,16 @@ function generate_ir(tree,    _rule, _i, _end) {
 	_end = rule_get_count()
 	for (_i = 1; _i <= _end; ++_i) {
 		_rule = rule_get(_i)
-			
+
 		emit_func(_rule)                         # function _rule()
 		emit_block_open(_rule)                   # {
 		emit_comment(definition_comment(_rule))  # rule definition comment
-		
+
 		if (1 == _i)                             # start the tokenizer if first
 			emit_call(IR_TOK_NEXT())             # call in the parsing process
-		
+
 		generate_ir_rule(tree, _rule)            # generate the function content
-		
+
 		emit_block_close(_rule)                  # }
 		emit_func_end() # mark end of func, so it becomes a paragraph
 	}
