@@ -26,6 +26,7 @@ function _PFT_LAST_NODE() {
 }
 
 # <public>
+#
 #@ Description: The prefix tree path delimiter.
 #@ Returns: Some non-printable character.
 #

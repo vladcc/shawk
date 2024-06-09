@@ -1,22 +1,26 @@
+2024-06-10
+	awklib_str_set.awk 1.0 added with tests
+	awklib_eos.awk 1.0.1 - minor improvements
+
 2022-11-27
 	awklib_map.awk 2.0 -> 2.1
 	map_set_vals_to() added
 
 2022-02-07
 	awklib_graph.awk 1.0 added
-	
+
 2022-01-27
 	awklib_ch_num.awk 1.0 -> 1.1
 	hex constants replaced with decimals; portable across awk implementations
 
 2022-01-24
 	added awklib_bitwise.awk 1.0
-	
+
 2022-01-18
 	awklib_prefix_tree.awk 1.2 -> 1.3
 	pft_insert(), pft_path_has(), pft_rm() optimized
 	_pft_add() returns result
-	
+
 2022-01-14
 	awklib_prefix_tree.awk 1.1 -> 1.2
 	pft_insert() optimized; no more array transformations
