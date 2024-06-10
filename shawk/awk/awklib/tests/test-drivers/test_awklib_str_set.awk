@@ -3,6 +3,8 @@
 function test_str_set_init(    _sset) {
 	at_test_begin("test_str_set_init")
 
+	at_true(STR_SET_SEP() != _sset)
+
 	_sset = str_set_init()
 	at_true(STR_SET_SEP() == _sset)
 }
@@ -139,6 +141,44 @@ function test_str_set_add_find_del_count_empty(    _sset) {
 	at_true(str_set_find(_sset, "foo bar"))
 	at_true(str_set_find(_sset, " foo bar "))
 	at_true(str_set_find(_sset, "foo"))
+}
+
+function test_str_set_init_add_del_arr(    _sset, _arr, _len) {
+	at_test_begin("test_str_set_init_add_del_arr")
+
+	_len = 0
+	_arr[++_len] = "foo"
+	_arr[++_len] = "bar"
+	_arr[++_len] = ""
+	_arr[++_len] = "bar"
+	_arr[++_len] = "baz"
+
+	at_true("" == _sset)
+
+	_sset = str_set_init_arr(_arr, _len)
+	at_true(4 == str_set_count(_sset))
+	at_true(str_set_find(_sset, "foo"))
+	at_true(str_set_find(_sset, ""))
+	at_true(str_set_find(_sset, "bar"))
+	at_true(str_set_find(_sset, "baz"))
+
+	_len = 0
+	_arr[++_len] = "foo"
+	_arr[++_len] = "bar"
+	_arr[++_len] = "bar"
+
+	_sset = str_set_del_arr(_sset, _arr, _len)
+	at_true(2 == str_set_count(_sset))
+	at_true(str_set_find(_sset, ""))
+	at_true(str_set_find(_sset, "baz"))
+
+	_sset = str_set_add_arr(_sset, _arr, _len)
+	at_true(4 == str_set_count(_sset))
+	at_true(str_set_find(_sset, "foo"))
+	at_true(str_set_find(_sset, ""))
+	at_true(str_set_find(_sset, "bar"))
+	at_true(str_set_find(_sset, "baz"))
+
 }
 
 function test_str_set_split(    _sset, _len, _arr) {
@@ -604,6 +644,7 @@ function main() {
 	at_awklib_awktest_required()
 	test_str_set_init()
 	test_str_set_add_find_del_count_empty()
+	test_str_set_init_add_del_arr()
 	test_str_set_split()
 	test_str_set_get()
 	test_str_set_is_eq()

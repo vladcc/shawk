@@ -1,11 +1,11 @@
 #@ <awklib_str_set>
 #@ Library: str_set
 #@ Description: Treats a string as a set of values.
-#@ Version: 1.0
+#@ Version: 1.1
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2024-06-09
+## 2024-06-10
 #@
 
 # <public>
@@ -29,11 +29,21 @@ function STR_SET_PRINT_SEP() {
 
 #
 #@ Description: Initializes a string to the empty set.
-#@ Returns: The str_set initialization value.
+#@ Returns: The string set initialization value.
 #
 function str_set_init() {
 
 	return STR_SET_SEP()
+}
+
+#
+#@ Description: Makes a set from an array.
+#@ Returns: A string set from the elements of 'arr'.
+#@ Complexity: O(add*len)
+#
+function str_set_init_arr(arr, len) {
+
+	return str_set_add_arr(str_set_init(), arr, len)
 }
 
 #
@@ -59,8 +69,20 @@ function str_set_add(sset, val) {
 }
 
 #
+#@ Description: Adds 'arr' to 'sset'.
+#@ Returns: A new string set to replace 'sset'.
+#@ Complexity: O(add*len)
+#
+function str_set_add_arr(sset, arr, len) {
+
+	while (len)
+		sset = str_set_add(sset, arr[len--])
+	return sset
+}
+
+#
 #@ Description: Removes 'val' from 'sset' if 'val' is in 'sset'.
-#@ Returns: A new string set to replace the passed string set.
+#@ Returns: A new string set to replace 'sset'.
 #@ Complexity: O(n)
 #
 function str_set_del(sset, val,    _start) {
@@ -68,6 +90,19 @@ function str_set_del(sset, val,    _start) {
 	return (_start = str_set_find(sset, val)) ? \
 		(substr(sset, 1, _start) substr(sset, _start+length(val)+2)) : sset
 }
+
+#
+#@ Description: Removes 'arr' from 'sset'.
+#@ Returns: A new string set to replace 'sset'.
+#@ Complexity: O(del*len)
+#
+function str_set_del_arr(sset, arr, len) {
+
+	while (len)
+		sset = str_set_del(sset, arr[len--])
+	return sset
+}
+
 
 #
 #@ Description: Gets the size of 'sset'.
@@ -81,7 +116,7 @@ function str_set_count(sset) {
 
 #
 #@ Description: Tells you whether 'sset' is empty.
-#@ Returns: Zero if 'sset' is empty, non-zero otherwise.
+#@ Returns: 1 if 'sset' is empty, 0 otherwise.
 #@ Complexity: O(1)
 #
 function str_set_is_empty(sset) {
@@ -90,21 +125,12 @@ function str_set_is_empty(sset) {
 }
 
 #
-#@ Description: Splits 'sset' into 'arr'.
-#@ Returns: The number of elements in 'arr'.
-#@ Complexity: O(n)
-#
-function str_set_split(sset, arr) {
-
-	return (str_set_is_empty(sset)) ? 0 : \
-		split(substr(sset, 2), arr,  STR_SET_SEP())-1
-}
-
-#
 #@ Description: Extracts the 'n'-th element from 'sset'. 'n' is assumed to be in
 #@ the bounds of 'sset'. A check whether or not it is should be performed before
 #@ the call.
-#@ Returns: The element at position 'n' in 'sset'.
+#@ Returns: The element at position 'n' in 'sset'. The empty string if 'n' is
+#@ out of bounds. NOTE: The element at position 'n' could also be the empty
+#@ string.
 #@ Complexity: O(n)
 #
 function str_set_get(sset, n,    _pos) {
@@ -116,6 +142,17 @@ function str_set_get(sset, n,    _pos) {
 		}
 	}
 	return ""
+}
+
+#
+#@ Description: Splits 'sset' into 'arr'.
+#@ Returns: The number of elements in 'arr'.
+#@ Complexity: O(n)
+#
+function str_set_split(sset, arr) {
+
+	return (str_set_is_empty(sset)) ? 0 : \
+		split(substr(sset, 2), arr,  STR_SET_SEP())-1
 }
 
 #

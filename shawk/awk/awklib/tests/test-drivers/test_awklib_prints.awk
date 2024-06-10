@@ -110,6 +110,18 @@ function test_str_set(    _sset) {
 	str_set_print(_sset)
 }
 
+function test_str_list(    _slist) {
+
+	_slist = str_list_init()
+	_slist = str_list_add(_slist, "foo")
+	_slist = str_list_add(_slist, "")
+	_slist = str_list_add(_slist, "foo")
+	_slist = str_list_add(_slist, "bar")
+
+	str_list_print(_slist)
+	str_list_print(_slist, "|")
+}
+
 function main() {
 
 	if (Unpredictable) {
@@ -121,6 +133,7 @@ function main() {
 		test_tabs_print()
 		test_pftree()
 		test_str_set()
+		test_str_list()
 	}
 }
 

@@ -190,7 +190,9 @@ this that thank
 t-h-i-s -> t-h-a-t -> t-h-a-n -> t-h-a-n-k
 this that than thank
 @
-|1|2||3|'
+|1|2||3|
+@foo@@foo@bar@
+|foo||foo|bar|'
 
 	L_RES="$(eval $G_AWK"\
 		"-f '$(get_src array)'"\
@@ -201,6 +203,7 @@ this that than thank
 		"-f '$(get_src prefix_tree)'"\
 		"-f '$(get_src tabs)'"\
 		"-f '$(get_src str_set)'"\
+		"-f '$(get_src str_list)'"\
 		"-f '$(get_driver prints)')"
 	bt_assert_success
 	L_RES="$(echo "$L_RES" | sort)"
@@ -342,12 +345,12 @@ function get_driver { echo "./test-drivers/test_awklib_${1}.awk"; }
 function test_functional
 {
 	local L_LIBS=(
-		'array'   'vect'   'eos'          'heap'
-		'map'     'set'    'prefix_tree'  'exec_cmd'
-		'read'    'tabs'   'fsm'          'prep'
-		'ch_num'  'sort'   'psplit'       'str_check'
-		'gtree'   'dotnot' 'bitwise'      'graph'
-		'str_set'
+		'array'   'vect'     'eos'          'heap'
+		'map'     'set'      'prefix_tree'  'exec_cmd'
+		'read'    'tabs'     'fsm'          'prep'
+		'ch_num'  'sort'     'psplit'       'str_check'
+		'gtree'   'dotnot'   'bitwise'      'graph'
+		'str_set' 'str_list'
 	)
 	local L_DEPENDS=(
 		""
@@ -359,7 +362,7 @@ function test_functional
 		"" "" ""
 		"" "" "" ""
 		"" "" "" ""
-		""
+		"" ""
 	)
 	local L_NUM_UNIQ_TESTS=(
 		18 12 12 7
@@ -367,7 +370,7 @@ function test_functional
 		1  1  5  1
 		3  6  1  3
 		9  2  8  17
-		11
+		12 9
 	)
 	local L_THIS_LIB=""
 	local L_RES=""
