@@ -1,4 +1,5 @@
 2024-06-11
+	awklib_ch_num.awk  1.1.1 - check before indexing the tables
 	awklib_str_set.awk 1.1 - str_set_*_arr() function added
 	awklib_str_set.awk 1.0 added with tests
 

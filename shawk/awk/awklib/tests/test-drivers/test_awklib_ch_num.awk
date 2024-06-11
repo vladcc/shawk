@@ -3,9 +3,9 @@
 function test_ch_num_init() {
 	at_test_begin("ch_num_init()")
 
-	at_true(0 == ch_to_num("a"))
+	at_true(-1 == ch_to_num("a"))
 	at_true("" == num_to_ch(97))
-	
+
 	ch_num_init()
 	at_true(97 == ch_to_num("a"))
 	at_true("a" == num_to_ch(97))
@@ -16,7 +16,7 @@ function test_ch_to_num(    _i) {
 
 	ch_num_init()
 	for (_i = 0; _i <= 127; ++_i) {
-		
+
 		if (0 == _i) at_true(ch_to_num("\\0") == 0)
 		else if (7 == _i) at_true(ch_to_num("\\a") == 7)
 		else if (8 == _i) at_true(ch_to_num("\\b") == 8)
@@ -35,7 +35,7 @@ function test_num_to_ch() {
 
 	ch_num_init()
 	for (_i = 0; _i <= 127; ++_i) {
-	
+
 		if (0 == _i) at_true(num_to_ch(0) == "\\0")
 		else if (7 == _i) at_true(num_to_ch(7) == "\\a")
 		else if (8 == _i) at_true(num_to_ch(8) == "\\b")
