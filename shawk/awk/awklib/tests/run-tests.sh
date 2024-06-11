@@ -54,76 +54,76 @@ function test_awklib_test
 {
 
 	local L_TEST_SRC_OK=\
-'function test_1() {
-	at_test_begin("test_1()")
+'function ftest_1() {
+	at_test_begin("ftest_1()")
 	at_true(1)
 	at_true(!0)
 	at_true(1)
 }
-function test_2() {
-	at_test_begin("test_2()")
+function ftest_2() {
+	at_test_begin("ftest_2()")
 	at_true(1)
 	at_true(!0)
 }
 BEGIN {
 	at_awklib_awktest_required()
-	test_1()
-	test_2()
+	ftest_1()
+	ftest_2()
 }'
 
 	local L_TEST_SRC_LOG=\
-'function test_1() {
-	at_test_begin("test_1()")
+'function ftest_1() {
+	at_test_begin("ftest_1()")
 	at_true(1)
 	at_true(!0)
 	at_true(1)
 	at_dump_log()
 }
-function test_2() {
-	at_test_begin("test_2()")
+function ftest_2() {
+	at_test_begin("ftest_2()")
 	at_true(1)
 	at_true(!0)
 	at_dump_log()
 }
 BEGIN {
 	at_awklib_awktest_required()
-	test_1()
-	test_2()
+	ftest_1()
+	ftest_2()
 	at_report()
 }'
 	local L_ACCEPT_OK_LOG=\
-'###### test_1() ######
-1 true test_1()
-2 true test_1()
-3 true test_1()
-###### test_2() ######
-1 true test_2()
-2 true test_2()
-test_1()
-test_2()'
+'###### ftest_1() ######
+1 true ftest_1()
+2 true ftest_1()
+3 true ftest_1()
+###### ftest_2() ######
+1 true ftest_2()
+2 true ftest_2()
+ftest_1()
+ftest_2()'
 
 	local L_TEST_SRC_FAIL=\
-'function test_1() {
-	at_test_begin("test_1()")
+'function ftest_1() {
+	at_test_begin("ftest_1()")
 	at_true(1)
 	at_true(!0)
 	at_true(1)
 }
-function test_2() {
-	at_test_begin("test_2()")
+function ftest_2() {
+	at_test_begin("ftest_2()")
 	at_true(1)
 	at_true(0)
 	at_true(1)
 }
 BEGIN {
 	at_awklib_awktest_required()
-	test_1()
-	test_2()
+	ftest_1()
+	ftest_2()
 }'
 	local L_ACCEPT_FAIL=\
-'###### test_2() ######
-1 true test_2()
-error: 2 false test_2()'
+'###### ftest_2() ######
+1 true ftest_2()
+error: 2 false ftest_2()'
 
 	bt_eval "$G_AWK -f $G_AWK_TEST -f <(echo '$L_TEST_SRC_OK')"
 	bt_assert_success
