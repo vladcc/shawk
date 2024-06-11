@@ -350,7 +350,7 @@ function test_functional
 		'read'    'tabs'     'fsm'          'prep'
 		'ch_num'  'sort'     'psplit'       'str_check'
 		'gtree'   'dotnot'   'bitwise'      'graph'
-		'str_set' 'str_list'
+		'str_set' 'str_list' 'hex2dec'
 	)
 	local L_DEPENDS=(
 		""
@@ -362,7 +362,7 @@ function test_functional
 		"" "" ""
 		"" "" "" ""
 		"" "" "" ""
-		"" ""
+		"" "" ""
 	)
 	local L_NUM_UNIQ_TESTS=(
 		18 12 12 7
@@ -370,7 +370,7 @@ function test_functional
 		1  1  5  1
 		3  6  1  3
 		9  2  8  17
-		12 9
+		12 9  1
 	)
 	local L_THIS_LIB=""
 	local L_RES=""

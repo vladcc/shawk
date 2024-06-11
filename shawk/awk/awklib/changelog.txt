@@ -1,8 +1,9 @@
 2024-06-11
 	awklib - static variable prefixes updated
+	awklib_hex2dec.awk  1.0 added with tests
+	awklib_str_list.awk 1.0 added with tests
 	awklib_ch_num.awk  1.1.1 - check before indexing the tables
 	awklib_str_set.awk 1.1 - str_set_*_arr() function added
-	awklib_str_set.awk 1.0 added with tests
 
 2024-06-10
 	awklib_str_set.awk 1.0 added with tests
