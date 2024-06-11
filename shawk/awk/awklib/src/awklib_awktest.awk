@@ -29,7 +29,7 @@ function at_awklib_awktest_required() {}
 #@ Returns: Nothing.
 #
 function at_test_begin(test_name) {
-	
+
 	_at_init_test(test_name)
 }
 
@@ -39,9 +39,9 @@ function at_test_begin(test_name) {
 #@ Returns: Nothing.
 #
 function at_true(val) {
-	
+
 	_at_inc_calls()
-	
+
 	if (val) {
 		_at_log(sprintf("%d true %s",
 			_at_get_calls(), _at_get_test_name()))
@@ -68,13 +68,13 @@ function at_dump_log() {
 #
 function at_report(    _i) {
 
-	for (_i = 1; _i <= __LB_at_test_num__; ++_i)
-		print __LB_at_test_name__[_i]
+	for (_i = 1; _i <= _AWKLIB_at__test_num; ++_i)
+		print _AWKLIB_at__test_name[_i]
 }
 # </public>
 
 function _at_init_test(name) {
-	
+
 	_at_clear_calls()
 	_at_clear_log()
 	_at_set_test_name(name)
@@ -82,29 +82,29 @@ function _at_init_test(name) {
 }
 function _at_set_test_name(name) {
 
-	__LB_at_test_name__[++__LB_at_test_num__] = name
+	_AWKLIB_at__test_name[++_AWKLIB_at__test_num] = name
 }
 function _at_get_test_name() {
 
-	return __LB_at_test_name__[__LB_at_test_num__]
+	return _AWKLIB_at__test_name[_AWKLIB_at__test_num]
 }
 
-function _at_inc_calls() {++__LB_at_at_true_num_calls__}
-function _at_get_calls() {return __LB_at_at_true_num_calls__}
-function _at_clear_calls() {__LB_at_at_true_num_calls__ = 0}
+function _at_inc_calls() {++_AWKLIB_at__at_true_num_calls}
+function _at_get_calls() {return _AWKLIB_at__at_true_num_calls}
+function _at_clear_calls() {_AWKLIB_at__at_true_num_calls = 0}
 
 function _at_clear_log() {
 
-	__LB_at_result_log_len__ = 0
-	delete __LB_at_result_log__
+	_AWKLIB_at__result_log_len = 0
+	delete _AWKLIB_at__result_log
 }
 function _at_log(str) {
 
-	__LB_at_result_log__[++__LB_at_result_log_len__] = str
+	_AWKLIB_at__result_log[++_AWKLIB_at__result_log_len] = str
 }
 function _at_dump_log(    _i) {
-	
-	for (_i = 1; _i <= __LB_at_result_log_len__; ++_i)
-		print __LB_at_result_log__[_i]
+
+	for (_i = 1; _i <= _AWKLIB_at__result_log_len; ++_i)
+		print _AWKLIB_at__result_log[_i]
 }
 #@ </awklib_awktest>

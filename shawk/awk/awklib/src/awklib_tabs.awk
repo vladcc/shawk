@@ -14,8 +14,8 @@
 #
 function tabs_inc() {
 
-	++__LB_tabs_tabs_num__
-	__LB_tabs_tabs_str__ = (__LB_tabs_tabs_str__ "\t")
+	++_AWKLIB_tabs__tabs_num
+	_AWKLIB_tabs__tabs_str = (_AWKLIB_tabs__tabs_str "\t")
 }
 
 #
@@ -24,10 +24,10 @@ function tabs_inc() {
 #
 function tabs_dec() {
 
-	if (__LB_tabs_tabs_num__) {
-		--__LB_tabs_tabs_num__
-		__LB_tabs_tabs_str__ = substr(__LB_tabs_tabs_str__, 1,
-			__LB_tabs_tabs_num__)
+	if (_AWKLIB_tabs__tabs_num) {
+		--_AWKLIB_tabs__tabs_num
+		_AWKLIB_tabs__tabs_str = substr(_AWKLIB_tabs__tabs_str, 1,
+			_AWKLIB_tabs__tabs_num)
 	}
 }
 
@@ -37,7 +37,7 @@ function tabs_dec() {
 #
 function tabs_num() {
 
-	return __LB_tabs_tabs_num__
+	return _AWKLIB_tabs__tabs_num
 }
 
 #
@@ -46,7 +46,7 @@ function tabs_num() {
 #
 function tabs_get() {
 
-	return (__LB_tabs_tabs_str__ "")
+	return (_AWKLIB_tabs__tabs_str "")
 }
 
 #
@@ -55,7 +55,7 @@ function tabs_get() {
 #
 function tabs_indent(str) {
 
-	return (__LB_tabs_tabs_str__ str)
+	return (_AWKLIB_tabs__tabs_str str)
 }
 
 #

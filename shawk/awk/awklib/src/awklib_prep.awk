@@ -62,11 +62,11 @@ function prep_str(str, map, fmt) {
 #@ call to 'prep_str()'
 #@ Returns: The number of substitutions made.
 #
-function prep_num_of_subs() {return __LB_prep_number_of_substitutions__}
+function prep_num_of_subs() {return _AWKLIB_prep__number_of_substitutions}
 # </public>
 
 function _prep_str(str, map, fmt,    _n, _subs) {
-	
+
 	_subs = 0
 	for (_n in map)
 		_subs += gsub(sprintf(fmt, _n), map[_n], str)
@@ -74,6 +74,6 @@ function _prep_str(str, map, fmt,    _n, _subs) {
 	return str
 }
 
-function _prep_set_subs(n) {__LB_prep_number_of_substitutions__ = n}
+function _prep_set_subs(n) {_AWKLIB_prep__number_of_substitutions = n}
 
 #@ </awklib_prep>
