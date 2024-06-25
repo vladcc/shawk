@@ -191,8 +191,13 @@ t-h-i-s -> t-h-a-t -> t-h-a-n -> t-h-a-n-k
 this that than thank
 @
 |1|2||3|
+
+1 2  3
+1@2@@3
 @foo@@foo@bar@
-|foo||foo|bar|'
+|foo||foo|bar|
+foo  foo bar
+foo||foo|bar'
 
 	L_RES="$(eval $G_AWK"\
 		"-f '$(get_src array)'"\
@@ -370,7 +375,7 @@ function test_functional
 		1  1  5  1
 		3  6  1  3
 		9  2  8  17
-		12 9  1
+		13 10 1
 	)
 	local L_THIS_LIB=""
 	local L_RES=""

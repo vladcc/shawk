@@ -311,6 +311,21 @@ function test_str_list_make_printable(    _slist) {
 
 }
 
+function test_str_list_pretty(    _slist) {
+	at_test_begin("test_str_list_pretty")
+
+	_slist = str_list_init()
+	at_true("" == str_list_pretty(_slist))
+
+	_slist = str_list_add(_slist, "foo")
+	_slist = str_list_add(_slist, "")
+	_slist = str_list_add(_slist, "foo")
+	_slist = str_list_add(_slist, "bar")
+
+	at_true("foo  foo bar" == str_list_pretty(_slist))
+	at_true("foo||foo|bar" == str_list_pretty(_slist, "|"))
+}
+
 function main() {
 	at_awklib_awktest_required()
 	test_str_list_init()
@@ -322,6 +337,7 @@ function main() {
 	test_str_list_append_list()
 	test_str_list_split()
 	test_str_list_make_printable()
+	test_str_list_pretty()
 
 	if (Report)
 		at_report()

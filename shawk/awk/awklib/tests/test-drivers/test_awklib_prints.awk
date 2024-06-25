@@ -102,12 +102,15 @@ function test_str_set(    _sset) {
 
 	_sset = str_set_init()
 	str_set_print(_sset, "@")
+	str_set_pretty_print(_sset)
 
 	_sset = str_set_add(_sset, "1")
 	_sset = str_set_add(_sset, "2")
 	_sset = str_set_add(_sset, "")
 	_sset = str_set_add(_sset, "3")
 	str_set_print(_sset)
+	str_set_pretty_print(_sset)
+	str_set_pretty_print(_sset, "@")
 }
 
 function test_str_list(    _slist) {
@@ -120,6 +123,8 @@ function test_str_list(    _slist) {
 
 	str_list_print(_slist)
 	str_list_print(_slist, "|")
+	str_list_pretty_print(_slist)
+	str_list_pretty_print(_slist, "|")
 }
 
 function main() {

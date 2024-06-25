@@ -1,3 +1,7 @@
+2024-06-25
+	awklib_str_set.awk 1.1 - str_set_pretty() + str_set_pretty_print() added
+	awklib_str_list.awk 1.0 - str_list_pretty() + str_list_pretty_print() added
+
 2024-06-11
 	'make sure' added
 	awklib - static variable prefixes updated

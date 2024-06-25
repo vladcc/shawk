@@ -1,11 +1,11 @@
 #@ <awklib_str_list>
 #@ Library: str_list
 #@ Description: Treats a string as a list of elements.
-#@ Version: 1.0
+#@ Version: 1.1
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2024-06-10
+## 2024-06-25
 #@
 
 # <public>
@@ -219,12 +219,37 @@ function str_list_make_printable(slist, delim) {
 }
 
 #
-#@ Description: Make printable + print.
+#@ Description: Replaces the default non-printable delimiter character with
+#@ 'delim'. If 'delim' is not given, it defaults to a single space.
+#@ Returns: A printable representation of 'slist'.
+#@ Complexity: O(n)
+#
+function str_list_pretty(slist, delim) {
+
+	if (!delim)
+		delim = " "
+
+	slist = substr(slist, 2, length(slist)-2)
+	gsub(STR_LIST_SEP(), delim, slist)
+	return slist
+}
+
+#
+#@ Description: str_list_make_printable() + print.
 #@ Returns: Nothing.
 #
 function str_list_print(slist, delim) {
 
 	print str_list_make_printable(slist, delim)
+}
+
+#
+#@ Description: str_list_pretty() + print.
+#@ Returns: Nothing.
+#
+function str_list_pretty_print(slist, delim) {
+
+	print str_list_pretty(slist, delim)
 }
 
 # </public>

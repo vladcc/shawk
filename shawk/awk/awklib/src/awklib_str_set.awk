@@ -1,11 +1,11 @@
 #@ <awklib_str_set>
 #@ Library: str_set
 #@ Description: Treats a string as a set of values.
-#@ Version: 1.1
+#@ Version: 1.2
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2024-06-10
+## 2024-06-25
 #@
 
 # <public>
@@ -265,12 +265,37 @@ function str_set_make_printable(sset, delim) {
 }
 
 #
-#@ Description: Make printable + print.
+#@ Description: Replaces the default non-printable delimiter character with
+#@ 'delim'. If 'delim' is not give, it defaults to a single space.
+#@ Returns: A printable representation of 'sset'.
+#@ Complexity: O(n)
+#
+function str_set_pretty(sset, delim) {
+
+	if (!delim)
+		delim = " "
+
+	sset = substr(sset, 2, length(sset)-2)
+	gsub(STR_SET_SEP(), delim, sset)
+	return sset
+}
+
+#
+#@ Description: str_set_make_printable() + print.
 #@ Returns: Nothing.
 #
 function str_set_print(sset, delim) {
 
 	print str_set_make_printable(sset, delim)
+}
+
+#
+#@ Description: str_set_pretty() + print.
+#@ Returns: Nothing.
+#
+function str_set_pretty_print(sset, delim) {
+
+	print str_set_pretty(sset, delim)
 }
 
 # </public>

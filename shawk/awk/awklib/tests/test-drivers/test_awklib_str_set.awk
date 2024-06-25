@@ -640,6 +640,28 @@ function test_str_set_make_printable(    _sset) {
 	at_true("|1|2|3|" == str_set_make_printable(_sset))
 }
 
+function test_str_set_pretty(    _sset) {
+	at_test_begin("test_str_set_pretty")
+
+	_sset = str_set_init()
+	at_true("" == str_set_pretty(_sset))
+	at_true("" == str_set_pretty(_sset, "@"))
+
+	_sset = str_set_add(_sset, "1")
+	_sset = str_set_add(_sset, "2")
+	_sset = str_set_add(_sset, "")
+	_sset = str_set_add(_sset, "3")
+
+	at_true("1 2  3" == str_set_pretty(_sset))
+	at_true("1-2--3" == str_set_pretty(_sset, "-"))
+
+	_sset = str_set_del(_sset, "")
+	at_true("1 2 3" == str_set_pretty(_sset))
+
+	_sset = str_set_add(_sset, "777")
+	at_true("1 - 2 - 3 - 777" == str_set_pretty(_sset, " - "))
+}
+
 function main() {
 	at_awklib_awktest_required()
 	test_str_set_init()
@@ -654,6 +676,7 @@ function main() {
 	test_str_set_are_disjoint()
 	test_str_set_is_subset()
 	test_str_set_make_printable()
+	test_str_set_pretty()
 
 	if (Report)
 		at_report()
