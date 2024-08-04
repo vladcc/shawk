@@ -1,0 +1,10 @@
+start
+
+type list
+has head
+
+type node
+has data
+has next_
+
+end

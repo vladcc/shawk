@@ -1,0 +1,2 @@
+Use: structs.awk <structs-file>
+Try: structs.awk -vHelp=1

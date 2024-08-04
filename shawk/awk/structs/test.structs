@@ -1,0 +1,13 @@
+start
+
+#prefix ast
+
+#type foo
+#has bar
+#has baz
+
+type btree
+has left
+has right
+
+end

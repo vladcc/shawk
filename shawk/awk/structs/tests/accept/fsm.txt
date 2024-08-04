@@ -1,0 +1,9 @@
+fsm rules:
+start  -> prefix | type
+prefix -> type
+type   -> has
+has    -> has | type | end
+end    -> start
+
+'->' is read as 'must be followed by'
+'|' is read as 'or'

@@ -1,0 +1,7 @@
+test_all
+test_err_files
+test_fsm
+test_help
+test_opts
+test_runs
+test_ver

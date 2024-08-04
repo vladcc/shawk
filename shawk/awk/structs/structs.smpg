@@ -1,0 +1,83 @@
+@BEGIN
+
+@INCLUDE
+	../awklib/src/awklib_prog.awk
+@END
+
+@FSM fsm
+	start  -> prefix | type
+	prefix -> type
+	type   -> has
+	has    -> has | type | end
+	end    -> start
+@END
+
+@HANDLER start
+	prefix_save("ent")
+@END
+
+@HANDLER prefix|type|has
+	data_or_err()
+	on_{&}($2)
+@END
+
+@HANDLER end
+	tag_open(tag_structs())
+	generate()
+	tag_close(tag_structs())
+	exit_success()
+@END
+
+@HANDLER error
+	error_qfpos(sprintf("'%s' expected, but got '%s' instead", expected, got))
+@END
+
+@TEMPLATE prefix|type|has
+function on_{&}(v) {{&}_save(v)}
+@END
+
+@OTHER
+# Author: Vladimir Dinev
+# vld.dinev@gmail.com
+# 2024-08-03
+
+function SCRIPT_NAME() {return "structs.awk"}
+function SCRIPT_VERSION() {return "1.0"}
+
+# <awk_rules>
+function init() {
+	set_program_name(SCRIPT_NAME())
+
+	if (Fsm)
+		print_fsm()
+	if (Help)
+		print_help()
+	if (Version)
+		print_version()
+	if (ARGC != 2)
+		print_use_try()
+}
+BEGIN {
+	init()
+}
+
+# ignore empty lines and comments
+/^[[:space:]]*(#|$)/ {next}
+
+# strip spaces and fsm
+{
+	gsub("^[[:space:]]+|[[:space:]]+$", "", $0)
+	fsm_next(G_the_fsm, $1)
+}
+# </awk_rules>
+
+function data_or_err() {
+	if (NF < 2)
+		error_qfpos(sprintf("no data after '%s'", $1))
+}
+function error_qfpos(msg) {
+	error_quit(sprintf("file '%s' line %d: %s", FILENAME, FNR, msg))
+}
+@END
+
+@GENERATE

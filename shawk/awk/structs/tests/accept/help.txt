@@ -1,0 +1,20 @@
+structs.awk 1.0 - type compiler
+
+Use: structs.awk <structs-file>
+
+Compiles type descriptions into a type system in awk. 'Compiles in awk'
+means it generates awk source code for setters/getters for each type's
+members, along with facilities to create an entity of a certain type, check
+its type, and a table to remember what values all type variables have. For
+an example use the following as an input file:
+
+start
+type btree
+has left
+has right
+end
+
+Options:
+-vFsm=1     - print the fsm 'grammar'
+-vVersion=1 - version information
+-vHelp=1    - this screen

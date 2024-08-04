@@ -1,0 +1,1 @@
+error: entity '_n2' expected type 'list', actual type 'node'
