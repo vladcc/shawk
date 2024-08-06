@@ -2,6 +2,7 @@
 
 @INCLUDE
 	../awklib/src/awklib_prog.awk
+	../awklib/src/awklib_tabs.awk
 @END
 
 @FSM fsm
@@ -16,15 +17,18 @@
 	prefix_save("ent")
 @END
 
-@HANDLER prefix|type|has
+@HANDLER prefix|type
 	data_or_err()
 	on_{&}($2)
 @END
 
+@HANDLER has
+	data_or_err()
+	on_{&}($2, $3)
+@END
+
 @HANDLER end
-	tag_open(tag_structs())
 	generate()
-	tag_close(tag_structs())
 	exit_success()
 @END
 
@@ -32,17 +36,21 @@
 	error_qfpos(sprintf("'%s' expected, but got '%s' instead", expected, got))
 @END
 
-@TEMPLATE prefix|type|has
+@TEMPLATE prefix|type
 function on_{&}(v) {{&}_save(v)}
+@END
+
+@TEMPLATE has
+function on_{&}(memb, type) {{&}_save(memb, type)}
 @END
 
 @OTHER
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2024-08-03
+# 2024-08-06
 
 function SCRIPT_NAME() {return "structs.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.1"}
 
 # <awk_rules>
 function init() {

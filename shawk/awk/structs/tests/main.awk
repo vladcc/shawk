@@ -12,6 +12,7 @@ function node_make() {return ent_node_make()}
 function node_set_data(nd, data) {ent_node_set_data(nd, data)}
 function node_data(nd) {return ent_node_get_data(nd)}
 function node_next(nd) {return ent_node_get_next_(nd)}
+function node_set_next(nd, nxt) {return ent_node_set_next_(nd, nxt)}
 
 function ent_errq(msg) {
 	print sprintf("error: %s", msg) > "/dev/stderr"
@@ -24,6 +25,7 @@ function test_ok(    _lst, _node) {
 	list_push(_lst, "bar")
 	list_push(_lst, "foo")
 
+	print ent_is("zoing")
 	print ent_is(_lst)
 	print ent_type_of(_lst)
 
@@ -34,11 +36,18 @@ function test_ok(    _lst, _node) {
 	}
 }
 
-function test_bad_type(    _lst, _node) {
+function test_use_bad_type(    _lst, _node) {
 	_lst = list_make()
 	list_push(_lst, "foo")
 	_node = list_head(_lst)
 	list_push(_node, "bar")
+}
+
+function test_assign_bad_type(    _lst, _node) {
+	_lst = list_make()
+	list_push(_lst, "foo")
+	_node = list_head(_lst)
+	node_set_next(_node, _lst)
 }
 
 function test_no_ent() {
@@ -56,8 +65,10 @@ function test_clear() {
 function main() {
 	if (Ok)
 		test_ok()
-	else if (BadType)
-		test_bad_type()
+	else if (UseBadType)
+		test_use_bad_type()
+	else if (AssignBadType)
+		test_assign_bad_type()
 	else if (NoEnt)
 		test_no_ent()
 	else if (Clear)

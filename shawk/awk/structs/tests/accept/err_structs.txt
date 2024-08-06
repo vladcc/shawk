@@ -1,0 +1,1 @@
+structs.awk: error: struct 'node', member 'next_' 'foo' is not a type

@@ -1,4 +1,4 @@
-structs.awk 1.0 - type compiler
+structs.awk 1.1 - type compiler
 
 Use: structs.awk <structs-file>
 
@@ -10,8 +10,9 @@ an example use the following as an input file:
 
 start
 type btree
-has left
-has right
+has  data
+has  left  btree
+has  right btree
 end
 
 Options:

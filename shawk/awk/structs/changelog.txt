@@ -1,0 +1,5 @@
+2024-08-06
+	structs.awk 1.1
+	- added optional type for members; if it exists it's checked when set
+	- added struct definitions as comments in generated source
+	- refactored code generations with awklib_tabs.awk

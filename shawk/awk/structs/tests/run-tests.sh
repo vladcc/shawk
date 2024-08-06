@@ -70,12 +70,19 @@ function test_err_files
 	bt_assert_failure
 	diff_stderr "err_files.txt"
 }
+function test_err_structs
+{
+	run_structs "./test.err.structs"
+	bt_assert_failure
+	diff_stderr "err_structs.txt"
+}
 function test_opts
 {
 	bt_eval test_ver
 	bt_eval test_help
 	bt_eval test_fsm
 	bt_eval test_err_files
+	bt_eval test_err_structs
 }
 # </options>
 
@@ -90,9 +97,13 @@ function test_runs
 	bt_assert_success
 	diff_stdout "main_ok.txt"
 
-	run_main "-vBadType=1"
+	run_main "-vUseBadType=1"
 	bt_assert_failure
 	diff_stderr "main_err_bad_type.txt"
+
+	run_main "-vAssignBadType=1"
+	bt_assert_failure
+	diff_stderr "main_err_assign_bad_type.txt"
 
 	run_main "-vNoEnt=1"
 	bt_assert_failure

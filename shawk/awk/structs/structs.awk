@@ -7,6 +7,7 @@ function DESCRIPT_INCLUDES() {
 return \
 "included files:\n"\
 "awklib_prog.awk\n"\
+"awklib_tabs.awk\n"\
 }
 function DESCRIPT_FSM() {
 return \
@@ -28,10 +29,10 @@ function DESCRIPT() {
 # <other>
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2024-08-03
+# 2024-08-06
 
 function SCRIPT_NAME() {return "structs.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.1"}
 
 # <awk_rules>
 function init() {
@@ -70,12 +71,13 @@ function error_qfpos(msg) {
 # </other>
 
 # <templated>
-# 'prefix|type|has'
+# 'prefix|type'
 function on_prefix(v) {prefix_save(v)}
 
 function on_type(v) {type_save(v)}
 
-function on_has(v) {has_save(v)}
+# 'has'
+function on_has(memb, type) {has_save(memb, type)}
 # </templated>
 
 # <fsm>
@@ -93,12 +95,10 @@ function fsm_on_type() {
 }
 function fsm_on_has() {
 	data_or_err()
-	on_has($2)
+	on_has($2, $3)
 }
 function fsm_on_end() {
-	tag_open(tag_structs())
 	generate()
-	tag_close(tag_structs())
 	exit_success()
 }
 function fsm_on_error(curr_st, expected, got) {
@@ -306,11 +306,93 @@ function error_quit(msg, code) {
 	exit_failure(code)
 }
 #@ </awklib_prog>
+# ../awklib/src/awklib_tabs.awk
+#@ <awklib_tabs>
+#@ Library: tabs
+#@ Description: String indentation.
+#@ Version: 1.0
+##
+## Vladimir Dinev
+## vld.dinev@gmail.com
+## 2021-08-16
+#@
+
+#
+#@ Description: Adds a tab to the indentation string.
+#@ Returns: Nothing.
+#
+function tabs_inc() {
+
+	++_AWKLIB_tabs__tabs_num
+	_AWKLIB_tabs__tabs_str = (_AWKLIB_tabs__tabs_str "\t")
+}
+
+#
+#@ Description: Removes a tab from the indentation string.
+#@ Returns: Nothing.
+#
+function tabs_dec() {
+
+	if (_AWKLIB_tabs__tabs_num) {
+		--_AWKLIB_tabs__tabs_num
+		_AWKLIB_tabs__tabs_str = substr(_AWKLIB_tabs__tabs_str, 1,
+			_AWKLIB_tabs__tabs_num)
+	}
+}
+
+#
+#@ Description: Indicates the tab level.
+#@ Returns: The number of tabs used for indentation.
+#
+function tabs_num() {
+
+	return _AWKLIB_tabs__tabs_num
+}
+
+#
+#@ Description: Provides all indentation tabs as a string.
+#@ Returns: The indentation string.
+#
+function tabs_get() {
+
+	return (_AWKLIB_tabs__tabs_str "")
+}
+
+#
+#@ Description: Adds indentation to 'str'.
+#@ Returns: 'str' prepended with the current number of tabs.
+#
+function tabs_indent(str) {
+
+	return (_AWKLIB_tabs__tabs_str str)
+}
+
+#
+#@ Description: Prints the indented 'str' to stdout without a new line
+#@ at the end.
+#@ Returns: Nothing.
+#
+function tabs_print_str(str) {
+
+	printf("%s", tabs_indent(str))
+}
+
+#
+#@ Description: Prints the indented 'str' to stdout with a new line at
+#@ the end.
+#@ Returns: Nothing.
+#
+function tabs_print(str) {
+
+	print tabs_indent(str)
+}
+#@ </awklib_tabs>
 # </includes>
 # <generate>
 # <data>
 function _set(k, v) {_B_structs[k] = v}
 function _get(k) {return _B_structs[k]}
+function _has(k) {return (k in _B_structs)}
 
 function prefix_save(str) {_set("prefix", str)}
 function prefix_get() {return _get("prefix")}
@@ -318,20 +400,27 @@ function prefix_get() {return _get("prefix")}
 function type_save(str,    _n) {
 	_set("type.count", (_n = _get("type.count")+1))
 	_set(sprintf("type=%d", _n), str)
+	_set(sprintf("type.set=%s", str))
 }
 function type_count() {return _get("type.count")}
 function type_get(n) {return _get(sprintf("type=%d", n))}
 function type_last() {return type_get(type_count())}
+function type_is(str) {return _has(sprintf("type.set=%s", str))}
 
-function has_save(str,    _type, _n, _x) {
+function has_save(memb, mtype,    _type, _n, _x) {
 	_type = type_last()
 	_x = sprintf("has.count=%s", _type)
 	_set(_x, (_n = _get(_x)+1))
-	_x = sprintf("has.%d=%s", _n, _type)
-	_set(_x, str)
+	_x = sprintf("has.memb.%d=%s", _n, _type)
+	_set(_x, memb)
+	_x = sprintf("has.mtype.%d=%s", _n, _type)
+	_set(_x, mtype)
 }
 function has_count(type) {return _get(sprintf("has.count=%s", type))}
-function has_get(type, n) {return _get(sprintf("has.%d=%s", n, type))}
+function has_get_memb(type, n) {return _get(sprintf("has.memb.%d=%s", n, type))}
+function has_get_mtype(type, n) {
+	return _get(sprintf("has.mtype.%d=%s", n, type))
+}
 # </data>
 
 function tag_structs() {return ("structs-" prefix_get())}
@@ -340,93 +429,170 @@ function tag_close(tag) {print sprintf("# <\\%s>", tag)}
 function make_fnm(str,    _pref) {return (prefix_get() "_" str)}
 function make_dbnm() {return sprintf("_STRUCTS_%s_db", prefix_get())}
 
+function emit(str) {tabs_print(str)}
+
 function gen_base(    _fname, _db_nm) {
 	tag_open("private")
 	_db_nm = make_dbnm()
 
 	_fname = ("_" make_fnm("set"))
-	print sprintf("function %s(k, v) {%s[k] = v}", _fname, _db_nm)
+	emit(sprintf("function %s(k, v) {%s[k] = v}", _fname, _db_nm))
 
 	_fname = ("_" make_fnm("get"))
-	print sprintf("function %s(k) {return %s[k]}", _fname, _db_nm)
+	emit(sprintf("function %s(k) {return %s[k]}", _fname, _db_nm))
 
 	_fname = ("_" make_fnm("type_chk"))
-	print sprintf("function %s(ent, texp) {", _fname)
-	print sprintf("\tif (%s(ent) == texp)\n\t\treturn", make_fnm("type_of"))
-	print sprintf("\t%s_errq(sprintf(\"entity '%%s' expected type '%%s', actual type '%%s'\", ent, texp, %s(ent)))", prefix_get(), make_fnm("type_of"))
-	print "}"
+	emit(sprintf("function %s(ent, texp) {", _fname))
+	tabs_inc()
+		emit(sprintf("if (%s(ent) == texp)", make_fnm("type_of")))
+			tabs_inc()
+			emit("return")
+			tabs_dec()
+		emit(sprintf("%s_errq(sprintf(\"entity '%%s' expected type '%%s', " \
+			"actual type '%%s'\", \\\n\t\t ent, texp, %s(ent)))", \
+			prefix_get(), make_fnm("type_of")))
+	tabs_dec()
+	emit("}")
 	tag_close("private")
 
-	print ""
+	emit("")
 
 	_fname = make_fnm("clear")
-	print sprintf("function %s() {delete %s}", _fname, _db_nm)
+	emit(sprintf("function %s() {delete %s}", _fname, _db_nm))
 
 	_fname = make_fnm("is")
-	print sprintf("function %s(ent) {return (ent in %s)}", _fname, _db_nm)
+	emit(sprintf("function %s(ent) {return (ent in %s)}", _fname, _db_nm))
 
 	_fname = make_fnm("type_of")
-	print sprintf("function %s(ent) {", _fname)
-	print sprintf("\tif (ent in %s)\n\t\treturn %s[ent]", _db_nm, _db_nm)
-	print sprintf("\t%s_errq(sprintf(\"'%%s' not an entity\", ent))", prefix_get())
-	print "}"
+	emit(sprintf("function %s(ent) {", _fname))
+	tabs_inc()
+		emit(sprintf("if (ent in %s)", _db_nm))
+		tabs_inc()
+			emit(sprintf("return %s[ent]", _db_nm, _db_nm))
+		tabs_dec()
+		emit(sprintf("%s_errq(sprintf(\"'%%s' not an entity\", ent))", \
+			prefix_get()))
+	tabs_dec()
+	emit("}")
 
 	_fname = make_fnm("new")
-	print sprintf("function %s(type,    _ent) {", _fname)
-	print sprintf("\t_%s(\"ents\", (_ent = _%s(\"ents\")+1))", make_fnm("set"), make_fnm("get"))
-	print "\t_ent = (\"_n\" _ent)"
-	print sprintf("\t_%s(_ent, type)", make_fnm("set"))
-	print "\treturn _ent"
-	print "}"
+	emit(sprintf("function %s(type,    _ent) {", _fname))
+	tabs_inc()
+		emit(sprintf("\t_%s(\"ents\", (_ent = _%s(\"ents\")+1))", \
+			make_fnm("set"), make_fnm("get")))
+		emit("_ent = (\"_n\" _ent)")
+		emit(sprintf("_%s(_ent, type)", make_fnm("set")))
+		emit("return _ent")
+	tabs_dec()
+	emit("}")
 }
 
-function gen_type(type,    _i, _end, _memb, _pref) {
+function gen_type(type,    _i, _end, _memb, _mtype, _pref, _fname) {
 	_pref = prefix_get()
 	_end = has_count(type)
-	printf("function %s_make(", make_fnm(type))
+	_fname = sprintf("function %s_make(", make_fnm(type))
 	for (_i = 1; _i <= _end; ++_i)
-		printf("%s, ", has_get(type, _i))
-	print "   _ent) {"
-	print sprintf("\t_ent = %s(\"%s\")", make_fnm("new"), type)
-	for (_i = 1; _i <= _end; ++_i) {
-		_memb = has_get(type, _i)
-		print sprintf("\t%s_%s_set_%s(_ent, %s)", _pref, type, _memb, _memb)
-	}
-	print "\treturn _ent"
-	print "}"
-	print ""
+		_fname = (_fname sprintf("%s, ", has_get_memb(type, _i)))
+	emit(sprintf("%s    _ent) {", _fname))
+	tabs_inc()
+		emit(sprintf("_ent = %s(\"%s\")", make_fnm("new"), type))
+		for (_i = 1; _i <= _end; ++_i) {
+			_memb = has_get_memb(type, _i)
+			_fname = sprintf("%s_%s_set_%s", _pref, type, _memb)
+			emit(sprintf("%s(_ent, %s)", _fname, _memb))
+		}
+		emit("return _ent")
+	tabs_dec()
+	emit("}")
+	emit("")
 
 	for (_i = 1; _i <= _end; ++_i) {
-		_memb = has_get(type, _i)
-		print sprintf("function %s_%s_set_%s(ent, %s) {", _pref, type, _memb, _memb)
-		print sprintf("\t_%s(ent, \"%s\")", make_fnm("type_chk"), type)
-		print sprintf("\t_%s((\"%s=\" ent), %s)", make_fnm("set"), _memb, _memb)
-		print "}"
-		print sprintf("function %s_%s_get_%s(ent) {", _pref, type, _memb)
-		print sprintf("\t_%s(ent, \"%s\")", make_fnm("type_chk"), type)
-		print sprintf("\treturn _%s((\"%s=\" ent))", make_fnm("get"), _memb)
-		print "}"
-		print ""
+		_memb = has_get_memb(type, _i)
+		_mtype = has_get_mtype(type, _i)
+
+		_fname = sprintf("%s_%s_set_%s", _pref, type, _memb)
+		emit(sprintf("function %s(ent, %s) {", _fname, _memb))
+		tabs_inc()
+			emit(sprintf("_%s(ent, \"%s\")", make_fnm("type_chk"), type))
+			if (_mtype) {
+				emit(sprintf("if (%s)", _memb))
+				tabs_inc()
+					emit(sprintf("_%s(%s, \"%s\")", \
+						make_fnm("type_chk"), _memb, _mtype))
+				tabs_dec()
+			}
+			emit(sprintf("_%s((\"%s=\" ent), %s)", \
+				make_fnm("set"), _memb, _memb))
+		tabs_dec()
+		emit("}")
+
+		_fname = sprintf("%s_%s_get_%s", _pref, type, _memb)
+		emit(sprintf("function %s(ent) {", _fname))
+		tabs_inc()
+			emit(sprintf("_%s(ent, \"%s\")", make_fnm("type_chk"), type))
+			emit(sprintf("return _%s((\"%s=\" ent))", make_fnm("get"), _memb))
+		tabs_dec()
+		emit("}")
+		emit("")
 	}
 }
 
-function gen_types(    _i, _end, _type) {
+function gen_types(    _i, _end, _type, _fname) {
 	_end = type_count()
 	for (_i = 1; _i <= _end; ++_i) {
 		_type = type_get(_i)
+		_fname = toupper(make_fnm(_type))
 		tag_open(sprintf("type-%s", _type))
-		print sprintf("function %s() {return \"%s\"}", toupper(make_fnm(_type)), _type)
-		print ""
+		emit(sprintf("function %s() {return \"%s\"}", _fname, _type))
+		emit("")
 		gen_type(_type)
 		tag_close(sprintf("type-%s", _type))
 	}
 }
 
+function check_mtypes(    _i, _ie, _j, _je, _type, _mtype, _err) {
+	_ie = type_count()
+	for (_i = 1; _i <= _ie; ++_i) {
+		_type = type_get(_i)
+		_je = has_count(_type)
+		for (_j = 1; _j <= _je; ++_j) {
+			_mtype = has_get_mtype(_type, _j)
+			if (_mtype && !type_is(_mtype)) {
+				_err = sprintf("struct '%s', member '%s' '%s' is not a type", \
+					_type, has_get_memb(_type, _j), _mtype)
+				error_quit(_err)
+			}
+		}
+	}
+}
+function checks() {check_mtypes()}
+
+function gen_struct_cmnts(    _i, _ie, _j, _je, _type, _memb, _mtype) {
+	emit("# structs:")
+	_ie = type_count()
+	for (_i = 1; _i <= _ie; ++_i) {
+		_type = type_get(_i)
+		emit("#")
+		emit(sprintf("# type %s", _type))
+		_je = has_count(_type)
+		for (_j = 1; _j <= _je; ++_j) {
+			_memb = has_get_memb(_type, _j)
+			_mtype = has_get_mtype(_type, _j)
+			emit(sprintf("# has  %s %s", _memb, _mtype))
+		}
+	}
+	emit("#")
+}
+
 function generate() {
+	checks()
+	tag_open(tag_structs())
+	gen_struct_cmnts()
 	gen_base()
 	tag_open("types")
 	gen_types()
 	tag_close("types")
+	tag_close(tag_structs())
 }
 # </generate>
 # <doc>
@@ -443,8 +609,9 @@ print "an example use the following as an input file:"
 print ""
 print "start"
 print "type btree"
-print "has left"
-print "has right"
+print "has  data"
+print "has  left  btree"
+print "has  right btree"
 print "end"
 print ""
 print "Options:"

@@ -5,6 +5,6 @@ has  head node
 
 type node
 has  data
-has  next_ node
+has  next_ foo
 
 end
