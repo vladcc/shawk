@@ -12,7 +12,7 @@ function run_tests_on_single_file
 	local L_EXEC="$@"
 	local L_INPUT=""
 	local L_ACCEPT=""
-	
+
 	for test in $G_TEST_CASES; do
 		L_INPUT="$(make_input_name $test)"
 		L_ACCEPT="$(make_accept_name $test)"
@@ -25,10 +25,10 @@ function run_tests_on_multiple_files
 	local L_EXEC="$@"
 	local L_INPUT=""
 	local L_ACCEPT=""
-	
+
 	for test in $G_TEST_CASES; do
 		L_INPUT="$(make_input_name $test)"
-		L_ACCEPT="$(make_accept_name $test)"	
+		L_ACCEPT="$(make_accept_name $test)"
 		eval_success "diff <($L_EXEC $L_INPUT $L_INPUT) "\
 		"<(cat $L_ACCEPT $L_ACCEPT)"
 	done
@@ -44,11 +44,11 @@ function run_test_version_info
 function gen_lex
 {
 	local L_REDIRECT=""
-	 
+
 	if [ ! "$G_IS_VERBOSE" ]; then
 		L_REDIRECT=" > /dev/null"
 	fi
-	
+
 	bt_eval "bash ./generate-lex.sh $L_REDIRECT"
 }
 
@@ -62,7 +62,7 @@ function eval_success
 # <awk>
 function test_awk_ver
 {
-	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.61"
+	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.6.2"
 }
 function test_awk_run_test
 {
@@ -89,7 +89,7 @@ function test_c_compile_lex
 {
 	local L_LEX_NO_FOO="lex_bsearch lex_ifs"
 	local L_LEX_FOO="foo_lex_bsearch foo_lex_ifs"
-	
+
 	for lexer in $L_LEX_NO_FOO; do
 		eval_success "gcc ./c/${lexer}.c ./c/lex_main.c -o ${lexer}0.bin -Wall"
 		eval_success \
@@ -125,7 +125,7 @@ function test_c_kw_len
 {
 	local L_MSG=""
 	local L_EXPECT="lex-c.awk: error: keyword 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': length cannot be greater than 31"
-	
+
 	L_MSG="$($G_AWK -f ../lex-first.awk input-err-lex-c-kw-len.lb | $G_AWK -f ../lex-c.awk 2>&1)"
 	bt_assert_failure
 
@@ -174,12 +174,12 @@ G_IS_VERBOSE=""
 function main
 {
 	source "$(dirname $(realpath $0))/../../../bash/bashtest/bashtest.sh"
-	
+
 	if [ "$#" -gt 0 ]; then
 		G_IS_VERBOSE="x"
 		bt_set_verbose
 	fi
-	
+
 	bt_enter
 	runf "test_all"
 	bt_exit_success

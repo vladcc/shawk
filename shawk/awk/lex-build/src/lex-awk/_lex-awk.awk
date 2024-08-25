@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-03-20
+# 2024-08-26
 
 # Generates a lexer in awk. It determines the next token by branching on the
 # character class of the current input character, and then branches on the next
@@ -11,7 +11,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.61"}
+function SCRIPT_VERSION() {return "1.6.2"}
 # </script>
 
 # <out_signature>
@@ -53,7 +53,7 @@ function out_const(    _set, _set_const, _set_str, _i, _end, _ch_cls) {
 	# function CH_CLS_FOO() {return 1}
 	# function CH_CLS_BAR() {return 2}
 	# ...
- 
+
 	lb_vect_make_set(_set, G_symbols_vect, 2)
 	lb_vect_copy(_set_const, _set)
 	lb_vect_make_set(_set, G_keywords_vect, 2)
@@ -80,7 +80,7 @@ function out_const(    _set, _set_const, _set_str, _i, _end, _ch_cls) {
 	out_line(sprintf("function %s() {return \"%s\"}",
 		toupper(cname("TOK_ERROR")), TOK_ERR()))
 	out_line()
-	
+
 	lb_vect_make_set(_set, G_char_tbl_vect, 2)
 
 	# Char classes.
@@ -109,11 +109,11 @@ function out_init_ch_tbl(    _i, _end, _ch, _cls, _split) {
 		unjoin(_split, G_char_tbl_vect[_i])
 		_ch = _split[1]
 		_cls = _split[2]
-		
+
 		_ch = ch_esc_esc(_ch)
 		out_line(sprintf("%s[\"%s\"] = %s()", vname("ch_tbl"), _ch, _cls))
 	}
-	
+
 	tabs_dec()
 	out_line("}")
 }
@@ -126,16 +126,16 @@ function out_kwds(    _set, _i, _end) {
 	# n["if"] = 1
 	# n["else"] = 1
 	# ...
-	
+
 	out_line(sprintf("%s() {", _fdecl("init_keywords")))
 	tabs_inc()
 
 	lb_vect_make_set(_set, G_keywords_vect, 1)
-	
+
 	_end = vect_len(_set)
 	for (_i = 1; _i <= _end; ++_i)
 		out_line(sprintf("%s[\"%s\"] = 1", vname("keywords_tbl"), _set[_i]))
-	
+
 	tabs_dec()
 	out_line("}")
 }
@@ -253,10 +253,10 @@ function out_lex_io() {
 function out_tree_symb(tree, root,    _next_str, _next_ch, _i, _end, _esc) {
 
 	if (ch_ptree_has(tree, root) || ch_ptree_is_word(tree, root)) {
-	
+
 		if (ch_ptree_is_word(tree, root))
 			out_line(sprintf("%s = \"%s\"", VAR_CURR_TOK(), ch_esc_esc(root)))
-			
+
 		_next_str = ch_ptree_get(tree, root)
 		_end = length(_next_str)
 		for (_i = 1; _i <= _end; ++_i) {
@@ -268,7 +268,7 @@ function out_tree_symb(tree, root,    _next_str, _next_ch, _i, _end, _esc) {
 					out_line(sprintf("%s = %s()",
 						VAR_PEEKED_CH_CACHE(), F_PEEK_CH()))
 					out_tabs()
-				}			
+				}
 				print sprintf("%s (\"%s\" == %s) {",
 					(_i == 1) ? "if" : "else if", _esc,
 					VAR_PEEKED_CH_CACHE())
@@ -276,7 +276,7 @@ function out_tree_symb(tree, root,    _next_str, _next_ch, _i, _end, _esc) {
 				out_line(sprintf("%s (\"%s\" == %s()) {",
 					(_i == 1) ? "if" : "else if", _esc, F_PEEK_CH()))
 			}
-			
+
 			tabs_inc()
 			out_line(sprintf("%s()", F_READ_CH()))
 			out_tree_symb(tree, (root _next_ch))
@@ -290,10 +290,10 @@ function out_tree_symb(tree, root,    _next_str, _next_ch, _i, _end, _esc) {
 	}
 }
 function out_lex_next(    _i, _end, _cls_set, _cls, _act, _map_cls_chr,
-_map_symb, _map_act, _tree, _tmp) {
+_map_symb, _map_act, _tree, _sym, _has_act, _if_tree, _n) {
 	# Outputs a big if - else if tree. Branches on character class first and on
 	# character value second.
-	
+
 	lb_vect_make_set(_cls_set, G_char_tbl_vect, 2)
 
 	out_line("# return the next token; constants are inlined for performance")
@@ -311,16 +311,23 @@ _map_symb, _map_act, _tree, _tmp) {
 	lb_vect_to_map(_map_act, G_actions_vect)
 	ch_ptree_init(_tree)
 
-	for (_tmp in _map_symb) {
-		if (!is_constant(_tmp))
-			ch_ptree_insert(_tree, _tmp)
+	for (_sym in _map_symb) {
+		if (!is_constant(_sym))
+			ch_ptree_insert(_tree, _sym)
 	}
-	
+
 	_end = vect_len(_cls_set)
 	for (_i = 1; _i <= _end; ++_i) {
 		_cls = _cls_set[_i]
+		_sym = _map_cls_chr[_cls]
 
-		if (1 == _i)
+		_has_act = (_cls in _map_act)
+		_if_tree = !_has_act && length(_sym) == 1 && ch_ptree_has(_tree, _sym)
+
+		if (!_has_act && !_if_tree)
+			continue
+
+		if (1 == ++_n)
 			out_tabs()
 
 		# Note: constants are inlined for performance. E.g.
@@ -334,47 +341,45 @@ _map_symb, _map_act, _tree, _tmp) {
 		# if (1 == curr_ch_cls) # CH_CLS_WORD()
 		# ...
 		# Same goes for tokens.
-		
+
 		print sprintf("%s (%s == %s) { # %s()",
-			(1 == _i) ? "if" : "else if",
+			(1 == _n) ? "if" : "else if",
 			ch_cls_to_const_map_get(_cls), VAR_CURR_CH_CLS_CACHE(), _cls)
-	
+
 		tabs_inc()
-		
-		if (_cls in _map_act) {
+
+		if (_has_act) {
 			_act = _map_act[_cls]
 			if (match(_act, FCALL())) {
 				# Any action which ends in '()' is assumed to be a callback.
-			
+
 				out_line(sprintf("%s = %s", VAR_CURR_TOK(), fname("usr_" _act)))
 			} else if (NEXT_CH() == _act) {
 				# Back to the top on white space.
-				
+
 				out_line("continue")
 			} else if (NEXT_LINE() == _act) {
 				# Count new lines.
-				
+
 				out_line(sprintf("++%s", VAR_LINE_NO()))
 				out_line(sprintf("%s = 1", VAR_LINE_POS()))
 				out_line("continue")
 			} else if (is_constant(_act)) {
 				# Constants are assumed to be function.
-				
+
 				out_line(sprintf("%s = %s()", VAR_CURR_TOK(), _act))
 			} else {
 				# Should never happen.
-				
+
 				out_line("!!! ERROR: UNKNOWN ACTION !!!")
 			}
-		} else {
+		} else if (_if_tree) {
 			# Generate if trees for all tokens which begin with the current
 			# character class and are longer than a single character. The
 			# class is assumed to represent a single character, i.e. not a
 			# range.
-			
-			_tmp = _map_cls_chr[_cls]
-			if (length(_tmp) == 1)
-				out_tree_symb(_tree, _tmp)
+
+			out_tree_symb(_tree, _sym)
 		}
 
 		tabs_dec()
@@ -397,7 +402,7 @@ _map_symb, _map_act, _tree, _tmp) {
 # </out_lex_next>
 
 # <out_init>
-function out_init() {	
+function out_init() {
 	out_line("# call this first")
 	out_line(sprintf("%s() {", fdecl("init")))
 	tabs_inc()

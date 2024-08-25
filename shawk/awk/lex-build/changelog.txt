@@ -1,3 +1,8 @@
+2024-08-26
+	lex-awk.awk 1.61 -> 1.6.2
+	doesn't generate empty if/else if statements for char classes which have no
+	actions or if trees
+
 2022-03-23
 	lex-c.awk 1.92 -> 1.93
 	tags added to the generated source
@@ -30,10 +35,10 @@
 2022-03-06
 	lex-c.awk 1.7 -> 1.8
 	lex_save_ch_usr(lex_state * lex, char ch) added
-	
+
 2022-02-06
 	c-vs-flex/generate-lex.sh now uses G_AWK
-	
+
 2022-02-05
 	lex-c.awk 1.6 -> 1.7
 		keyword bsearch optimization
@@ -50,12 +55,12 @@
 	lex-c.awk     1.5   -> 1.51
 	lex-first.awk 1.22  -> 1.3
 	updated to awklib_ch_num.awk 1.1
-	
+
 2022-01-26
 	lex-c.awk 1.42 -> 1.5
 	awklib_{sort,bitwise}.awk now used; doesn't depend on gawk anymore
 	'make regen' added to makefile
-	
+
 2022-01-18
 	lex-awk.awk   1.411 -> 1.412
 	lex-c.awk     1.41 -> 1.42
@@ -81,41 +86,41 @@
 	lex-awk.awk v1.3   -> v1.4
 	lex-c.awk v1.3     -> v1.4
 	lex-first.awk v1.1 -> v1.2
-	
+
 2021-10-09
 	lex_lib.awk v1.02 -> v1.1
 	lex_lib.awk migrated to awklib; now separate files
-	
+
 2021-10-05
 	lex-awk.awk v1.2 -> v1.3
 	'if (_B_lex_peek_ch != "")' instead of 'if (_B_lex_peek_ch)' allows to
 	remove two '(var "")' conversions. gawk is about a second faster.
 	'abc0' test added to the base case tests.
-	
+
 2021-06-20
 	lex-c.awk v1.2 -> v1.3:
 	bsearch keyword lookup now limits the number of lookups by first letter, not
 	by keyword length.
 	readme_lex-c.txt updated with new runs.
-	
+
 	misc:
 	Mass renamed arr_*() to vect_*(). Checked, but weird names might still
 	exist.
-	
+
 	lex_lib.awk v1.01 -> v1.02
 	vect_to_array() added
 
 	run-tests.sh:
 	c_test_kw_len added.
-	
+
 2021-06-08
 	lex-c.awk v1.11 -> v1.2:
 	-vNamePrefix added with 'foo_' prefix tests.
-	
+
 2021-06-07
 	lex-awk.awk v1.0 -> v1.2:
 	-vNamePrefix added with 'foo_' prefix tests.
-	
+
 2021-05-23
 	lex_lib.awk versioned to v1.01:
 	lex_lib_is_included() added.
@@ -135,11 +140,11 @@
 
 	run-tests.sh:
 	Version info, lex_lib_is_included(), and multiple file i/o tests added.
-	
+
 2021-05-21
 	lex-c.awk v1.0 -> v1.1:
 	User callbacks are no longer implement through function pointers. They are
 	now static functions provided on compile time.
-	
+
 2021-05-20
 	c-vs-flex/big_file.{zip,txt} is now shuffled. Minor edits on readmes.

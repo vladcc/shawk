@@ -28,9 +28,10 @@ const char * foo_lex_tok_to_str(foo_tok_id tok)
 
 // <lex_char_cls_enum>
 enum foo_char_cls {
-FOO_CH_CLS_SPACE = 1,FOO_CH_CLS_WORD,    FOO_CH_CLS_NUMBER,  FOO_CH_CLS_LESS_THAN,
-FOO_CH_CLS_GRTR_THAN,FOO_CH_CLS_NEW_LINE,FOO_CH_CLS_EOI,     FOO_CH_CLS_SLASH,   
-FOO_CH_CLS_AUTO_1_, FOO_CH_CLS_AUTO_2_, 
+FOO_CH_CLS_UNUSED_1 = 1,FOO_CH_CLS_SPACE,   FOO_CH_CLS_WORD,    FOO_CH_CLS_NUMBER,  
+FOO_CH_CLS_LESS_THAN,FOO_CH_CLS_UNUSED_2,FOO_CH_CLS_GRTR_THAN,FOO_CH_CLS_NEW_LINE,
+FOO_CH_CLS_EOI,     FOO_CH_CLS_SLASH,   FOO_CH_CLS_UNUSED_3,FOO_CH_CLS_AUTO_1_, 
+FOO_CH_CLS_AUTO_2_, 
 };
 // </lex_char_cls_enum>
 
@@ -46,9 +47,13 @@ static const byte char_cls_tbl[CHAR_TBL_SZ] = {
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 
 /* 032 0x20 ' ' */ FOO_CH_CLS_SPACE, 
-0, 0, 0, 0, 0, 
+0, 0, 0, 
+/* 036 0x24 '$' */ FOO_CH_CLS_UNUSED_3, 
+0, 
 /* 038 0x26 '&' */ FOO_CH_CLS_AUTO_2_, 
-0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 
+/* 042 0x2A '*' */ FOO_CH_CLS_UNUSED_1, 
+0, 0, 0, 0, 
 /* 047 0x2F '/' */ FOO_CH_CLS_SLASH, /* 048 0x30 '0' */ FOO_CH_CLS_NUMBER, 
 /* 049 0x31 '1' */ FOO_CH_CLS_NUMBER, /* 050 0x32 '2' */ FOO_CH_CLS_NUMBER, 
 /* 051 0x33 '3' */ FOO_CH_CLS_NUMBER, /* 052 0x34 '4' */ FOO_CH_CLS_NUMBER, 
@@ -72,8 +77,8 @@ static const byte char_cls_tbl[CHAR_TBL_SZ] = {
 /* 085 0x55 'U' */ FOO_CH_CLS_WORD, /* 086 0x56 'V' */ FOO_CH_CLS_WORD, 
 /* 087 0x57 'W' */ FOO_CH_CLS_WORD, /* 088 0x58 'X' */ FOO_CH_CLS_WORD, 
 /* 089 0x59 'Y' */ FOO_CH_CLS_WORD, /* 090 0x5A 'Z' */ FOO_CH_CLS_WORD, 
-0, 0, 0, 0, 
-/* 095 0x5F '_' */ FOO_CH_CLS_WORD, 
+0, 0, 0, 
+/* 094 0x5E '^' */ FOO_CH_CLS_UNUSED_2, /* 095 0x5F '_' */ FOO_CH_CLS_WORD, 
 0, 
 /* 097 0x61 'a' */ FOO_CH_CLS_WORD, /* 098 0x62 'b' */ FOO_CH_CLS_WORD, 
 /* 099 0x63 'c' */ FOO_CH_CLS_WORD, /* 100 0x64 'd' */ FOO_CH_CLS_WORD, 
@@ -102,6 +107,10 @@ foo_tok_id foo_lex_next(foo_lex_state * lex)
 	{
 		switch (char_cls_get(foo_lex_read_ch(lex)))
 		{
+			case FOO_CH_CLS_UNUSED_1:
+			{
+				goto done;
+			} break;
 			case FOO_CH_CLS_SPACE:
 			{
 				continue;
@@ -124,6 +133,10 @@ foo_tok_id foo_lex_next(foo_lex_state * lex)
 					foo_lex_read_ch(lex);
 					tok = FOO_TOK_LEQ;
 				}
+				goto done;
+			} break;
+			case FOO_CH_CLS_UNUSED_2:
+			{
 				goto done;
 			} break;
 			case FOO_CH_CLS_GRTR_THAN:
@@ -150,6 +163,10 @@ foo_tok_id foo_lex_next(foo_lex_state * lex)
 			case FOO_CH_CLS_SLASH:
 			{
 				tok = foo_lex_usr_handle_slash(lex);
+				goto done;
+			} break;
+			case FOO_CH_CLS_UNUSED_3:
+			{
 				goto done;
 			} break;
 			case FOO_CH_CLS_AUTO_1_: /* '=' */

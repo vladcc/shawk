@@ -1,5 +1,6 @@
 # comment
 char_tbl
+	*   CH_CLS_UNUSED_1
 	\s  CH_CLS_SPACE
 	\t  CH_CLS_SPACE
 	_   CH_CLS_WORD
@@ -7,10 +8,12 @@ char_tbl
 	A-Z CH_CLS_WORD
 	0-9 CH_CLS_NUMBER
 	<   CH_CLS_LESS_THAN
+	^   CH_CLS_UNUSED_2
 	>   CH_CLS_GRTR_THAN
 	\n  CH_CLS_NEW_LINE
 	\0  CH_CLS_EOI
 	/   CH_CLS_SLASH
+	$   CH_CLS_UNUSED_3
 end
 
 symbols
