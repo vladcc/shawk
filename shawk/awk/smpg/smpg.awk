@@ -1812,11 +1812,11 @@ function prep_str(str, map, fmt) {
 #@ call to 'prep_str()'
 #@ Returns: The number of substitutions made.
 #
-function prep_num_of_subs() {return __LB_prep_number_of_substitutions__}
+function prep_num_of_subs() {return _AWKLIB_prep__number_of_substitutions}
 # </public>
 
 function _prep_str(str, map, fmt,    _n, _subs) {
-	
+
 	_subs = 0
 	for (_n in map)
 		_subs += gsub(sprintf(fmt, _n), map[_n], str)
@@ -1824,7 +1824,7 @@ function _prep_str(str, map, fmt,    _n, _subs) {
 	return str
 }
 
-function _prep_set_subs(n) {__LB_prep_number_of_substitutions__ = n}
+function _prep_set_subs(n) {_AWKLIB_prep__number_of_substitutions = n}
 
 #@ </awklib_prep>
 # ../awklib/src/awklib_tabs.awk
@@ -1844,8 +1844,8 @@ function _prep_set_subs(n) {__LB_prep_number_of_substitutions__ = n}
 #
 function tabs_inc() {
 
-	++__LB_tabs_tabs_num__
-	__LB_tabs_tabs_str__ = (__LB_tabs_tabs_str__ "\t")
+	++_AWKLIB_tabs__tabs_num
+	_AWKLIB_tabs__tabs_str = (_AWKLIB_tabs__tabs_str "\t")
 }
 
 #
@@ -1854,10 +1854,10 @@ function tabs_inc() {
 #
 function tabs_dec() {
 
-	if (__LB_tabs_tabs_num__) {
-		--__LB_tabs_tabs_num__
-		__LB_tabs_tabs_str__ = substr(__LB_tabs_tabs_str__, 1,
-			__LB_tabs_tabs_num__)
+	if (_AWKLIB_tabs__tabs_num) {
+		--_AWKLIB_tabs__tabs_num
+		_AWKLIB_tabs__tabs_str = substr(_AWKLIB_tabs__tabs_str, 1,
+			_AWKLIB_tabs__tabs_num)
 	}
 }
 
@@ -1867,7 +1867,7 @@ function tabs_dec() {
 #
 function tabs_num() {
 
-	return __LB_tabs_tabs_num__
+	return _AWKLIB_tabs__tabs_num
 }
 
 #
@@ -1876,7 +1876,7 @@ function tabs_num() {
 #
 function tabs_get() {
 
-	return (__LB_tabs_tabs_str__ "")
+	return (_AWKLIB_tabs__tabs_str "")
 }
 
 #
@@ -1885,7 +1885,7 @@ function tabs_get() {
 #
 function tabs_indent(str) {
 
-	return (__LB_tabs_tabs_str__ str)
+	return (_AWKLIB_tabs__tabs_str str)
 }
 
 #
@@ -1911,9 +1911,7 @@ function tabs_print(str) {
 # ../awklib/src/awklib_prog.awk
 #@ <awklib_prog>
 #@ Library: prog
-#@ Description: Provides program name, error, and exit handling. Unlike
-#@ other libraries, the function names for this library are not
-#@ prepended.
+#@ Description: Provides program name, error, and exit handling.
 #@ Version 1.0
 ##
 ## Vladimir Dinev
@@ -1928,7 +1926,7 @@ function tabs_print(str) {
 #
 function set_program_name(str) {
 
-	__LB_prog_program_name__ = str
+	_AWKLIB_prog__program_name = str
 }
 
 #
@@ -1937,7 +1935,7 @@ function set_program_name(str) {
 #
 function get_program_name() {
 
-	return __LB_prog_program_name__
+	return _AWKLIB_prog__program_name
 }
 
 #
@@ -1956,7 +1954,7 @@ function pstderr(msg) {
 #
 function skip_end_set() {
 
-	__LB_prog_skip_end_flag__ = 1
+	_AWKLIB_prog__skip_end_flag = 1
 }
 
 #
@@ -1965,7 +1963,7 @@ function skip_end_set() {
 #
 function skip_end_clear() {
 
-	__LB_prog_skip_end_flag__ = 0
+	_AWKLIB_prog__skip_end_flag = 0
 }
 
 #
@@ -1974,7 +1972,7 @@ function skip_end_clear() {
 #
 function should_skip_end() {
 
-	return (__LB_prog_skip_end_flag__+0)
+	return (_AWKLIB_prog__skip_end_flag+0)
 }
 
 #
@@ -1984,7 +1982,7 @@ function should_skip_end() {
 #
 function error_flag_set() {
 
-	__LB_prog_error_flag__ = 1
+	_AWKLIB_prog__error_flag = 1
 }
 
 #
@@ -1993,7 +1991,7 @@ function error_flag_set() {
 #
 function error_flag_clear() {
 
-	__LB_prog_error_flag__ = 0
+	_AWKLIB_prog__error_flag = 0
 }
 
 #
@@ -2002,7 +2000,7 @@ function error_flag_clear() {
 #
 function did_error_happen() {
 
-	return (__LB_prog_error_flag__+0)
+	return (_AWKLIB_prog__error_flag+0)
 }
 
 #
@@ -2010,7 +2008,7 @@ function did_error_happen() {
 #@ Returns: Nothing.
 #
 function exit_success() {
-	
+
 	skip_end_set()
 	exit(0)
 }

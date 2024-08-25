@@ -316,9 +316,7 @@ END {
 # </main>
 #@ <awklib_prog>
 #@ Library: prog
-#@ Description: Provides program name, error, and exit handling. Unlike
-#@ other libraries, the function names for this library are not
-#@ prepended.
+#@ Description: Provides program name, error, and exit handling.
 #@ Version 1.0
 ##
 ## Vladimir Dinev
@@ -333,7 +331,7 @@ END {
 #
 function set_program_name(str) {
 
-	__LB_prog_program_name__ = str
+	_AWKLIB_prog__program_name = str
 }
 
 #
@@ -342,7 +340,7 @@ function set_program_name(str) {
 #
 function get_program_name() {
 
-	return __LB_prog_program_name__
+	return _AWKLIB_prog__program_name
 }
 
 #
@@ -361,7 +359,7 @@ function pstderr(msg) {
 #
 function skip_end_set() {
 
-	__LB_prog_skip_end_flag__ = 1
+	_AWKLIB_prog__skip_end_flag = 1
 }
 
 #
@@ -370,7 +368,7 @@ function skip_end_set() {
 #
 function skip_end_clear() {
 
-	__LB_prog_skip_end_flag__ = 0
+	_AWKLIB_prog__skip_end_flag = 0
 }
 
 #
@@ -379,7 +377,7 @@ function skip_end_clear() {
 #
 function should_skip_end() {
 
-	return (__LB_prog_skip_end_flag__+0)
+	return (_AWKLIB_prog__skip_end_flag+0)
 }
 
 #
@@ -389,7 +387,7 @@ function should_skip_end() {
 #
 function error_flag_set() {
 
-	__LB_prog_error_flag__ = 1
+	_AWKLIB_prog__error_flag = 1
 }
 
 #
@@ -398,7 +396,7 @@ function error_flag_set() {
 #
 function error_flag_clear() {
 
-	__LB_prog_error_flag__ = 0
+	_AWKLIB_prog__error_flag = 0
 }
 
 #
@@ -407,7 +405,7 @@ function error_flag_clear() {
 #
 function did_error_happen() {
 
-	return (__LB_prog_error_flag__+0)
+	return (_AWKLIB_prog__error_flag+0)
 }
 
 #
@@ -415,7 +413,7 @@ function did_error_happen() {
 #@ Returns: Nothing.
 #
 function exit_success() {
-	
+
 	skip_end_set()
 	exit(0)
 }
@@ -950,11 +948,11 @@ function _VECT_LEN() {return "len"}
 #@ Description: An entry order set. Implemented in terms of a vector.
 #@ The elements appear in the order they were entered.
 #@ Dependencies: awklib_vect.awk
-#@ Version: 1.0
+#@ Version: 1.0.1
 ##
 ## Vladimir Dinev
 ## vld.dinev@gmail.com
-## 2021-08-20
+## 2024-06-10
 #@
 
 #
@@ -963,7 +961,7 @@ function _VECT_LEN() {return "len"}
 #@ Complexity: O(1)
 #
 function eos_init(eos) {
-	
+
 	vect_init(eos)
 }
 
@@ -985,7 +983,7 @@ function eos_init_arr(eos, arr, len,    _i) {
 #@ Complexity: O(n)
 #
 function eos_add(eos, val) {
-	
+
 	if (!arr_find(eos, vect_len(eos), val))
 		vect_push(eos, val)
 }
@@ -997,7 +995,7 @@ function eos_add(eos, val) {
 #@ Complexity: O(n)
 #
 function eos_del(eos, val) {
-	
+
 	vect_del_val(eos, val)
 }
 
@@ -1008,7 +1006,7 @@ function eos_del(eos, val) {
 #@ Complexity: O(n)
 #
 function eos_has(eos, val) {
-	
+
 	return arr_find(eos, vect_len(eos), val)
 }
 
@@ -1018,7 +1016,7 @@ function eos_has(eos, val) {
 #@ Complexity: O(1)
 #
 function eos_size(eos) {
-	
+
 	return vect_len(eos)
 }
 
@@ -1036,16 +1034,12 @@ function eos_is_empty(eos) {
 #@ Description: 'eos_dest' gets all elements from both 'eos_a' and
 #@ 'eos_b'.
 #@ Returns: Nothing.
-#@ Complexity: O(n)
+#@ Complexity: O(n*m)
 #
 function eos_union(eos_dest, eos_a, eos_b,    _i, _len) {
-	
-	vect_init(eos_dest)
-	
-	_len = vect_len(eos_a)
-	for (_i = 1; _i <= _len; ++_i)
-		eos_add(eos_dest, eos_a[_i])
-	
+
+	vect_init_arr(eos_dest, eos_a, vect_len(eos_a))
+
 	_len = vect_len(eos_b)
 	for (_i = 1; _i <= _len; ++_i)
 		eos_add(eos_dest, eos_b[_i])
@@ -1055,12 +1049,12 @@ function eos_union(eos_dest, eos_a, eos_b,    _i, _len) {
 #@ Description: 'eos_dest' gets all elements from 'eos_a' which are also
 #@ in 'eos_b'.
 #@ Returns: Nothing.
-#@ Complexity: O(n)
+#@ Complexity: O(n*m)
 #
 function eos_intersect(eos_dest, eos_a, eos_b,    _i, _len) {
-	
+
 	vect_init(eos_dest)
-	
+
 	_len = vect_len(eos_a)
 	for (_i = 1; _i <= _len; ++_i) {
 		if (eos_has(eos_b, eos_a[_i]))
@@ -1072,12 +1066,12 @@ function eos_intersect(eos_dest, eos_a, eos_b,    _i, _len) {
 #@ Description: 'eos_dest' gets all elements from 'eos_a' which are not
 #@ in 'eos_b'.
 #@ Returns: Nothing.
-#@ Complexity: O(n)
+#@ Complexity: O(n*m)
 #
 function eos_subtract(eos_dest, eos_a, eos_b,    _i, _len) {
-	
+
 	vect_init(eos_dest)
-	
+
 	_len = vect_len(eos_a)
 	for (_i = 1; _i <= _len; ++_i) {
 		if (!eos_has(eos_b, eos_a[_i]))
@@ -1086,24 +1080,27 @@ function eos_subtract(eos_dest, eos_a, eos_b,    _i, _len) {
 }
 
 #
-#@ Description: Indicates if the intersection of 'eos_a' and 'eos_b' is
-#@ empty.
+#@ Description: Indicates if 'eos_a' and 'eos_b' have no elements in common.
 #@ Returns: 1 if it is, 0 otherwise.
-#@ Complexity: O(n)
+#@ Complexity: O(n*m)
 #
 function eos_are_disjoint(eos_a, eos_b,    _eos_tmp) {
-	
-	eos_intersect(_eos_tmp, eos_a, eos_b)
-	return eos_is_empty(_eos_tmp)
+
+	_len = vect_len(eos_b)
+	for (_i = 1; _i <= _len; ++_i) {
+		if (eos_has(eos_a, eos_b[_i]))
+			return 0
+	}
+	return 1
 }
 
 #
 #@ Description: Indicates if 'eos_a' is a subset of 'eos_b'.
 #@ Returns: 1 if it is, 0 otherwise.
-#@ Complexity: O(n)
+#@ Complexity: O(n*m)
 #
 function eos_is_subset(eos_a, eos_b,    _i, _len) {
-	
+
 	_len = vect_len(eos_a)
 	for (_i = 1; _i <= _len; ++_i) {
 		if (!eos_has(eos_b, eos_a[_i]))

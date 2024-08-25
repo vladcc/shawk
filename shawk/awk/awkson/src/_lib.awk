@@ -189,6 +189,7 @@ function _PFT_LAST_NODE() {
 }
 
 # <public>
+#
 #@ Description: The prefix tree path delimiter.
 #@ Returns: Some non-printable character.
 #
@@ -526,7 +527,7 @@ function dotnot_parse(str) {
 #@ Returns: The error string, or "" if no error occurred.
 #
 function dotnot_get_error_str() {
-	return _B_dotnot_error_str
+	return _AWKLIB_dotnot__error_str
 }
 
 #
@@ -535,7 +536,7 @@ function dotnot_get_error_str() {
 #@ dotnot_parse().
 #
 function dotnot_get_error_pos() {
-	return _B_dotnot_error_pos
+	return _AWKLIB_dotnot__error_pos
 }
 
 #
@@ -581,107 +582,107 @@ function _dotnot_set_state(_dotnot, next_st) {
 	_dotnot[__DOTNOT_STATE()] = next_st
 }
 
-function _dotnot_cache_has(key) {return (key in _B_dotnot_cache)}
-function _dotnot_cache_get(key) {return _B_dotnot_cache[key]}
-function _dotnot_cache_place(key, val) {_B_dotnot_cache[key] = val}
+function _dotnot_cache_has(key) {return (key in _AWKLIB_dotnot__cache)}
+function _dotnot_cache_get(key) {return _AWKLIB_dotnot__cache[key]}
+function _dotnot_cache_place(key, val) {_AWKLIB_dotnot__cache[key] = val}
 
 function _dotnot_set_error(str, pos) {
-	_B_dotnot_error_str = str
-	_B_dotnot_error_pos = pos
+	_AWKLIB_dotnot__error_str = str
+	_AWKLIB_dotnot__error_pos = pos
 	return ""
 }
 
 function _dotnot_parse(str,    _dotnot, _st, _i, _end, _ch, _arr, _path, _seg) {
-	
+
 	if (_dotnot_cache_has(str))
 		return _dotnot_cache_get(str)
-	
+
 	_dotnot_set_error("", 0)
 	_dotnot_set_state(_dotnot, _DOTNOT_BEGIN())
-	
+
 	_end = split(str, _arr, "")
 	_arr[++_end] = _DOTNOT_EOS()
 	_path = ""
-	
+
 	for (_i = 1; _i <= _end; ++_i) {
-		
+
 		_ch = _arr[_i]
 		_st = _dotnot_get_state(_dotnot)
 		if (_DOTNOT_BEGIN() == _st) {
 			_seg = ""
-			
+
 			if ("\"" == _ch) {
-			
+
 				# opening quote
 				_seg = (_seg _ch)
 				_dotnot_set_state(_dotnot, _DOTNOT_STRING())
 			} else if ("." != _ch && _DOTNOT_EOS() != _ch) {
-			
+
 				# read a word; i.e. not a quoted string
 				--_i
 				_dotnot_set_state(_dotnot, _DOTNOT_PLAIN())
 			} else {
-			
+
 				return _dotnot_set_error(_DOTNOT_ERR_NOTSTR(), _i)
 			}
 		}
 		else if (_DOTNOT_STRING() == _st) {
-			
+
 			if ("\"" == _ch) {
-			
-				# a quote is read while inside a string	
+
+				# a quote is read while inside a string
 				if ("\\" != _arr[_i-1]) {
-				
-					# if it wasn't an escape, it closes the string	
+
+					# if it wasn't an escape, it closes the string
 					_dotnot_set_state(_dotnot, _DOTNOT_NEXT())
 				}
 			} else if (_DOTNOT_EOS() == _ch) {
-			
+
 				# cannot end the input inside a quoted string
 				return _dotnot_set_error(_DOTNOT_ERR_NOCQ(), _i)
 			}
-			
+
 			_seg = (_seg _ch)
 		}
 		else if (_DOTNOT_PLAIN() == _st) {
-			
+
 			if (" " == _ch || "\t" == _ch || "\"" == _ch) {
-				
+
 				# cannot have spaces and quotes
 				return _dotnot_set_error(_DOTNOT_ERR_UNQ(), _i)
 			} else if ("." == _ch || _DOTNOT_EOS() == _ch) {
-			
+
 				--_i
 				_dotnot_set_state(_dotnot, _DOTNOT_NEXT())
 			} else {
-			
+
 				_seg = (_seg _ch)
 			}
 		}
 		else if (_DOTNOT_NEXT() == _st) {
-			
+
 			# a path segment has been read successfully
 			_path = (_path) ? (_path _DOTNOT_SEP() _seg) : _seg
-			
+
 			if (_DOTNOT_EOS() == _ch) {
-				
+
 				# success; here must be the only break statement
 				_dotnot_set_state(_dotnot, _DOTNOT_SUCCESS())
 				break
 			} else if ("." == _ch) {
-				
+
 				# read another path segment
 				_dotnot_set_state(_dotnot, _DOTNOT_BEGIN())
 			} else {
-			
+
 				return _dotnot_set_error(_DOTNOT_ERR_BADSEP(), _i)
 			}
 		}
 	}
-	
+
 	if (_dotnot_get_state(_dotnot) != _DOTNOT_SUCCESS())
 		return _dotnot_set_error(_DOTNOT_ERR_BUG(), _i)
-	
+
 	_dotnot_cache_place(str, _path)
 	return _path
 }
@@ -959,9 +960,7 @@ function _json_type_val_check(type, val) {
 #@ </awkson_json_api>
 #@ <awklib_prog>
 #@ Library: prog
-#@ Description: Provides program name, error, and exit handling. Unlike
-#@ other libraries, the function names for this library are not
-#@ prepended.
+#@ Description: Provides program name, error, and exit handling.
 #@ Version 1.0
 ##
 ## Vladimir Dinev
@@ -976,7 +975,7 @@ function _json_type_val_check(type, val) {
 #
 function set_program_name(str) {
 
-	__LB_prog_program_name__ = str
+	_AWKLIB_prog__program_name = str
 }
 
 #
@@ -985,7 +984,7 @@ function set_program_name(str) {
 #
 function get_program_name() {
 
-	return __LB_prog_program_name__
+	return _AWKLIB_prog__program_name
 }
 
 #
@@ -1004,7 +1003,7 @@ function pstderr(msg) {
 #
 function skip_end_set() {
 
-	__LB_prog_skip_end_flag__ = 1
+	_AWKLIB_prog__skip_end_flag = 1
 }
 
 #
@@ -1013,7 +1012,7 @@ function skip_end_set() {
 #
 function skip_end_clear() {
 
-	__LB_prog_skip_end_flag__ = 0
+	_AWKLIB_prog__skip_end_flag = 0
 }
 
 #
@@ -1022,7 +1021,7 @@ function skip_end_clear() {
 #
 function should_skip_end() {
 
-	return (__LB_prog_skip_end_flag__+0)
+	return (_AWKLIB_prog__skip_end_flag+0)
 }
 
 #
@@ -1032,7 +1031,7 @@ function should_skip_end() {
 #
 function error_flag_set() {
 
-	__LB_prog_error_flag__ = 1
+	_AWKLIB_prog__error_flag = 1
 }
 
 #
@@ -1041,7 +1040,7 @@ function error_flag_set() {
 #
 function error_flag_clear() {
 
-	__LB_prog_error_flag__ = 0
+	_AWKLIB_prog__error_flag = 0
 }
 
 #
@@ -1050,7 +1049,7 @@ function error_flag_clear() {
 #
 function did_error_happen() {
 
-	return (__LB_prog_error_flag__+0)
+	return (_AWKLIB_prog__error_flag+0)
 }
 
 #
@@ -1058,7 +1057,7 @@ function did_error_happen() {
 #@ Returns: Nothing.
 #
 function exit_success() {
-	
+
 	skip_end_set()
 	exit(0)
 }
