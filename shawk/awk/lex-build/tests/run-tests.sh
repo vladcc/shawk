@@ -20,6 +20,14 @@ function run_tests_on_single_file
 	done
 }
 
+function run_tests_str_pos
+{
+	local L_EXEC="$@"
+	local L_INPUT="$(make_input_name str_pos)"
+	local L_ACCEPT="$(make_accept_name str_pos)"
+	eval_success "diff <($L_EXEC $L_INPUT) $L_ACCEPT"
+}
+
 function run_tests_on_multiple_files
 {
 	local L_EXEC="$@"
@@ -62,18 +70,22 @@ function eval_success
 # <awk>
 function test_awk_ver
 {
-	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.6.2"
+	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.7"
 }
 function test_awk_run_test
 {
 	local L_LEX="$G_AWK -f ./awk/lex.awk -f ./awk/inc_lex.awk"
 	local L_LEX_PREF="$G_AWK -f ./awk/foo-lex.awk -f ./awk/foo_inc_lex.awk"
-	for lexer in $G_C_LEXERS; do
-		bt_eval run_tests_on_single_file "$L_LEX"
-		bt_eval run_tests_on_multiple_files "$L_LEX"
-		bt_eval run_tests_on_single_file "$L_LEX_PREF"
-		bt_eval run_tests_on_multiple_files "$L_LEX_PREF"
-	done
+
+	bt_eval run_tests_on_single_file "$L_LEX"
+	bt_eval run_tests_on_multiple_files "$L_LEX"
+	bt_eval run_tests_on_single_file "$L_LEX_PREF"
+	bt_eval run_tests_on_multiple_files "$L_LEX_PREF"
+
+	local L_LEX="$G_AWK -f ./awk/lex.awk -vStrPos=1 -f ./awk/inc_lex.awk"
+	local L_LEX_PREF="$G_AWK -f ./awk/foo-lex.awk -vStrPos=1 -f ./awk/foo_inc_lex.awk"
+	bt_eval run_tests_str_pos "$L_LEX"
+	bt_eval run_tests_str_pos "$L_LEX_PREF"
 }
 function test_awk
 {

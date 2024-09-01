@@ -1,3 +1,7 @@
+2024-09-01
+	lex-awk.awk 1.7
+	str_pos added + test
+
 2024-08-26
 	lex-awk.awk 1.61 -> 1.6.2
 	doesn't generate empty if/else if statements for char classes which have no

@@ -11,7 +11,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.6.2"}
+function SCRIPT_VERSION() {return "1.7"}
 # </script>
 
 # <out_signature>
@@ -146,6 +146,7 @@ function F_PEEK_CH() {return fname("peek_ch")}
 function F_READ_CH() {return fname("read_ch")}
 function F_USR_ON_UNKNOWN_CH() {return fname("usr_on_unknown_ch")}
 function F_USR_GET_LINE() {return fname("usr_get_line")}
+function F_GET_POS() {return fname("get_pos")}
 
 function fname(str) {return (npref_get() "lex_" str)}
 function fdecl(name) {return sprintf("function %s", fname(name))}
@@ -156,6 +157,7 @@ function VAR_ARE_TABLES_INIT() {return vname("are_tables_init")}
 function VAR_CH_TBL() {return vname("ch_tbl")}
 function VAR_CURR_CH() {return vname("curr_ch")}
 function VAR_CURR_CH_CLS_CACHE() {return vname("curr_ch_cls_cache")}
+function VAR_LINE_STR() {return vname("line_str")}
 function VAR_CURR_TOK() {return vname("curr_tok")}
 function VAR_LINE_NO() {return vname("line_no")}
 function VAR_LINE_POS() {return vname("line_pos")}
@@ -172,7 +174,7 @@ function vname(str,    _res) {
 function cname(str) {return (npref_get() str)}
 
 function LEX_NEXT_LINE() {
-	return sprintf("split(%s(), %s, \"\")",
+	return sprintf("split((%s = %s()), %s, \"\")", VAR_LINE_STR(), \
 		F_USR_GET_LINE(), VAR_INPUT_LINE())
 }
 function out_lex_io() {
@@ -245,6 +247,16 @@ function out_lex_io() {
 	out_line("# see if what's in the lexer's write space is a keyword")
 	out_line(sprintf("%s()\n{return (%s in %s)}",
 		fdecl("is_saved_a_keyword"), VAR_SAVED(), VAR_KEYWORDS_TBL()))
+	out_line()
+	out_line("# generate position string")
+	out_line(sprintf("%s(last_tok_txt,    _str, _offs) {", \
+		fdecl("get_pos_str")))
+	out_line("\t_offs = (last_tok_txt) ? length(last_tok_txt) : 1")
+	out_line(sprintf("\t_str = substr(%s, 1, %s()-_offs)", \
+		VAR_LINE_STR(), F_GET_POS()))
+	out_line("\tgsub(\"[^[:space:]]\", \" \", _str)")
+	out_line(sprintf("\treturn (%s (_str \"^\"))", VAR_LINE_STR()))
+	out_line("}")
 }
 # </out_input>
 

@@ -1,0 +1,92 @@
+line 1, pos 1:
+=
+^
+line 1, pos 1:
+=
+^
+line 2, pos 2:
+== # > @ foo
+ ^
+line 2, pos 1:
+== # > @ foo
+^
+error: line 2, pos 4: unknown char '#'
+line 2, pos 4:
+== # > @ foo
+   ^
+line 2, pos 4:
+== # > @ foo
+   ^
+line 2, pos 6:
+== # > @ foo
+     ^
+line 2, pos 6:
+== # > @ foo
+     ^
+error: line 2, pos 8: unknown char '@'
+line 2, pos 8:
+== # > @ foo
+       ^
+line 2, pos 8:
+== # > @ foo
+       ^
+line 2, pos 12:
+== # > @ foo
+           ^
+line 2, pos 10:
+== # > @ foo
+         ^
+line 3, pos 3:
+===
+  ^
+line 3, pos 1:
+===
+^
+line 4, pos 2:
+if while	_im1id 12345
+ ^
+line 4, pos 1:
+if while	_im1id 12345
+^
+line 4, pos 8:
+if while	_im1id 12345
+       ^
+line 4, pos 4:
+if while	_im1id 12345
+   ^
+line 4, pos 15:
+if while	_im1id 12345
+        	     ^
+line 4, pos 10:
+if while	_im1id 12345
+        	^
+line 4, pos 21:
+if while	_im1id 12345
+        	           ^
+line 4, pos 17:
+if while	_im1id 12345
+        	       ^
+line 5, pos 1:
+& 	12345 while
+^
+line 5, pos 1:
+& 	12345 while
+^
+line 5, pos 8:
+& 	12345 while
+  	    ^
+line 5, pos 4:
+& 	12345 while
+  	^
+line 5, pos 14:
+& 	12345 while
+  	          ^
+line 5, pos 10:
+& 	12345 while
+  	      ^
+line 6, pos 4:
+abc0
+   ^
+line 6, pos 1:
+abc0
+^

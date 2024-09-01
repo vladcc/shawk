@@ -4,9 +4,9 @@ function foo_lex_usr_handle_slash() {}
 
 function foo_lex_usr_get_word() {
 	foo_lex_save_init()
-	
+
 	while (1) {
-	
+
 		foo_lex_save_curr_ch()
 
 		if (foo_lex_is_next_ch_cls(G_CONST_ch_cls_word) ||
@@ -15,18 +15,18 @@ function foo_lex_usr_get_word() {
 		else
 			break
 	}
-	
+
 	return ((!foo_lex_is_saved_a_keyword()) ? \
 		G_CONST_tok_id : foo_lex_get_saved())
 }
 
 function foo_lex_usr_get_number() {
 	foo_lex_save_init()
-	
+
 	while (1) {
 
 		foo_lex_save_curr_ch()
-		
+
 		if (foo_lex_is_next_ch_cls(G_CONST_ch_cls_num))
 			foo_lex_read_ch()
 		else
@@ -37,7 +37,7 @@ function foo_lex_usr_get_number() {
 }
 
 function foo_lex_usr_on_unknown_ch() {
-	print sprintf("error: line %d, pos %d: unknown char '%s'", 
+	print sprintf("error: line %d, pos %d: unknown char '%s'",
 		foo_lex_get_line_no(), foo_lex_get_pos(), foo_lex_curr_ch())
 	return FOO_TOK_ERROR()
 }
@@ -45,7 +45,7 @@ function foo_lex_usr_on_unknown_ch() {
 function foo_lex_usr_get_line() {
 
 	G_getline_code = (getline G_current_line < get_file_name())
-	
+
 	if (G_getline_code > 0) {
 		return (G_current_line "\n")
 	} else if (0 == G_getline_code) {
@@ -54,7 +54,7 @@ function foo_lex_usr_get_line() {
 		print sprintf("error: file '%s': %s",
 			get_file_name(), ERRNO) > "/dev/stderr"
 		exit(1)
-	} 
+	}
 }
 
 function error_quit(msg) {
@@ -77,7 +77,7 @@ function process(    _tok, _ccls, _ncls) {
 
 		if (!foo_lex_is_ch_cls(foo_lex_curr_ch(), _ccls))
 			error_quit("class lookup is wrong")
-		
+
 		if (!foo_lex_is_curr_ch_cls(_ccls))
 			error_quit("current char class mismatch")
 
@@ -86,7 +86,7 @@ function process(    _tok, _ccls, _ncls) {
 
 		if (G_CONST_tok_if == _tok && !foo_lex_is_saved_a_keyword())
 			error_quit("keyword mismatch")
-		
+
 		if ((G_CONST_tok_id == _tok) || (G_CONST_tok_num == _tok)) {
 			print sprintf("'%s' '%s' line %d, pos %d",
 				foo_lex_curr_tok(), foo_lex_get_saved(),
@@ -101,19 +101,41 @@ function process(    _tok, _ccls, _ncls) {
 	print sprintf("'%s'", FOO_TOK_FCALL())
 }
 
+function str_pos(    _tok, _txt, _pos) {
+	foo_lex_init()
+	while ((_tok = foo_lex_next()) != G_CONST_tok_eoi) {
+
+		if ((G_CONST_tok_id == _tok) || (G_CONST_tok_num == _tok))
+			_txt = foo_lex_get_saved()
+		else if (G_CONST_tok_err == _tok)
+			_txt = "x" # single character
+		else
+			_txt = _tok
+
+		print sprintf("line %d, pos %d:", foo_lex_get_line_no(), \
+			foo_lex_get_pos())
+		print foo_lex_get_pos_str()
+
+		_pos = foo_lex_get_pos() - length(_txt) + 1
+		print sprintf("line %d, pos %d:", foo_lex_get_line_no(), _pos)
+		print foo_lex_get_pos_str(_txt)
+	}
+}
+
 function set_file_name(str) {_B_file_name = str ? str : "/dev/stdin"}
 function get_file_name() {return _B_file_name}
 
 function init() {
 	# global variables for performance
 	# avoids function calls and local variable creations
-	
+
 	G_CONST_ch_cls_word = FOO_CH_CLS_WORD()
 	G_CONST_ch_cls_num = FOO_CH_CLS_NUMBER()
 	G_CONST_tok_if = FOO_TOK_IF()
 	G_CONST_tok_id = FOO_TOK_ID()
 	G_CONST_tok_num = FOO_TOK_NUMBER()
 	G_CONST_tok_eoi = FOO_TOK_EOI()
+	G_CONST_tok_err = FOO_TOK_ERROR()
 	G_current_line
 	G_getline_code
 }
@@ -123,9 +145,12 @@ function main(    _i, _fname) {
 		for (_i = 1; _i < ARGC; ++_i) {
 			_fname = ARGV[_i]
 			ARGV[_i] = ""
-			
+
 			set_file_name(_fname)
-			process()
+			if (StrPos)
+				str_pos()
+			else
+				process()
 			close(get_file_name())
 		}
 	}
