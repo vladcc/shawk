@@ -11,7 +11,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.7"}
+function SCRIPT_VERSION() {return "1.7.1"}
 # </script>
 
 # <out_signature>
@@ -142,6 +142,7 @@ function out_kwds(    _set, _i, _end) {
 # </out_kwds>
 
 # <out_input>
+function F_READ_LN() {return fname("read_line")}
 function F_PEEK_CH() {return fname("peek_ch")}
 function F_READ_CH() {return fname("read_ch")}
 function F_USR_ON_UNKNOWN_CH() {return fname("usr_on_unknown_ch")}
@@ -179,7 +180,19 @@ function LEX_NEXT_LINE() {
 }
 function out_lex_io() {
 	# Generates the lexer public interface.
-
+	out_line("# read the next character; advance the input")
+	out_line(sprintf("%s() {", fdecl("read_line")))
+	tabs_inc()
+	out_line(sprintf("if (%s = %s()) {", VAR_LINE_STR(), F_USR_GET_LINE()))
+	tabs_inc()
+	out_line(sprintf("split(%s, %s, \"\")", VAR_LINE_STR(), VAR_INPUT_LINE()))
+	out_line(sprintf("++%s", VAR_LINE_NO()))
+	out_line(sprintf("%s = 1", VAR_LINE_POS()))
+	tabs_dec()
+	out_line("}")
+	tabs_dec()
+	out_line("}")
+	out_line()
 	out_line("# read the next character; advance the input")
 	out_line(sprintf("%s() {", fdecl("read_ch")))
 	tabs_inc()
@@ -195,7 +208,7 @@ function out_lex_io() {
 	tabs_dec()
 	out_line("else")
 	tabs_inc()
-	out_line(LEX_NEXT_LINE())
+	out_line(sprintf("%s()", F_READ_LN()))
 	tabs_dec()
 	out_line(sprintf("return %s", VAR_CURR_CH()))
 	tabs_dec()
@@ -371,10 +384,8 @@ _map_symb, _map_act, _tree, _sym, _has_act, _if_tree, _n) {
 
 				out_line("continue")
 			} else if (NEXT_LINE() == _act) {
-				# Count new lines.
-
-				out_line(sprintf("++%s", VAR_LINE_NO()))
-				out_line(sprintf("%s = 1", VAR_LINE_POS()))
+				# An awk lexer is line oriented. New lines are already handled
+				# in lex_read_line().
 				out_line("continue")
 			} else if (is_constant(_act)) {
 				# Constants are assumed to be function.
@@ -429,12 +440,12 @@ function out_init() {
 	out_line(sprintf("%s = \"\"", VAR_CURR_CH()))
 	out_line(sprintf("%s = \"\"", VAR_CURR_CH_CLS_CACHE()))
 	out_line(sprintf("%s = \"%s\"", VAR_CURR_TOK(), TOK_ERR()))
-	out_line(sprintf("%s = 1", VAR_LINE_NO()))
-	out_line(sprintf("%s = 1", VAR_LINE_POS()))
+	out_line(sprintf("%s = 0", VAR_LINE_NO()))
+	out_line(sprintf("%s = 0", VAR_LINE_POS()))
 	out_line(sprintf("%s = \"\"", VAR_PEEK_CH()))
 	out_line(sprintf("%s = \"\"", VAR_PEEKED_CH_CACHE()))
 	out_line(sprintf("%s = \"\"", VAR_SAVED()))
-	out_line(LEX_NEXT_LINE())
+	out_line(sprintf("%s()", F_READ_LN()))
 	tabs_dec()
 	out_line("}")
 }

@@ -70,7 +70,7 @@ function eval_success
 # <awk>
 function test_awk_ver
 {
-	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.7"
+	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.7.1"
 }
 function test_awk_run_test
 {
