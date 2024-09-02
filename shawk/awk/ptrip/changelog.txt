@@ -1,3 +1,7 @@
+2024-09-02
+	ptrip.awk 1.2.1
+	fixed a minor bug by introducing lex-awk.awk 1.7.1
+
 2022-11-27
 	ptrip.awk 1.1 -> 1.2
 	bugfix - wrong output when multiple files are given on the command line
@@ -9,7 +13,7 @@
 2021-11-30
 	doti.awk 1.01 -> 1.02
 	awklib_gtree.awk version updated
-	
+
 2021-11-11
 	ptrip.awk 1.0 -> 1.01
 	ptrip parser now made with Olvl=5

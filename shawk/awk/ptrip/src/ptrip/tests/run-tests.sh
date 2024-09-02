@@ -7,11 +7,11 @@ function main
 {
 	local L_BT_DIR="$(dirname $(realpath $0))/../../../../../bash/bashtest"
 	source "$L_BT_DIR/bashtest.sh"
-	
+
 	if [ "$#" -gt 0 ]; then
 		bt_set_verbose
 	fi
-	
+
 	bt_enter
 	bt_eval test_all
 	bt_exit_success
@@ -33,10 +33,10 @@ function diff_ok_rm
 function test_versions
 {
 	local L_RES=""
-	
+
 	L_RES="$(run -vVersion=1)"
 	bt_assert_success
-	bt_diff_ok "<(echo '$L_RES') <(echo 'ptrip.awk 1.2')"
+	bt_diff_ok "<(echo '$L_RES') <(echo 'ptrip.awk 1.2.1')"
 }
 # </test_versions>
 
@@ -87,14 +87,14 @@ key{
 "ptrip.awk: error: fatal: file '../data/error/fatal/not_curly_2.info', line 4, pos 4: 'not-a-curly' expected, got 'error'
 	k3}y
 	  ^"
-"ptrip.awk: error: fatal: file '../data/error/fatal/bad_block_1.info', line 5, pos 1: '}' expected, got 'end of input'
+"ptrip.awk: error: fatal: file '../data/error/fatal/bad_block_1.info', line 4, pos 3: '}' expected, got 'end of input'
 }
-^"
+  ^"
 "ptrip.awk: error: fatal: file '../data/error/fatal/bad_block_2.info', line 8, pos 2: '}' expected, got '{'
  {
  ^"
 	)
-	
+
 	local len="${#L_FILES[@]}"
 	for ((i = 0; i < ${len}; ++i));
 	do
@@ -165,8 +165,8 @@ ptrip.awk: error: ---|../data/error/non-fatal/recursive/c.info:3:;ERROR = \"recu
 -|../data/error/non-fatal/recursive/a.info:-:;FILE_END = ../data/error/non-fatal/recursive/a.info"
 "ptrip.awk: error: file 'doesnt-exist.info': No such file or directory"
 	)
-	
-	
+
+
 	local len="${#L_FILES[@]}"
 	for ((i = 0; i < ${len}; ++i));
 	do
@@ -186,7 +186,7 @@ function test_parser_complex
 	local L_DIR="../data/complex"
 	local L_RES=""
 	local L_EXP=""
-	
+
 	L_EXP=\
 '-|../data/complex/entry.info
 -|../data/complex/entry.info:-:;FILE_BEGIN = ../data/complex/entry.info
@@ -238,7 +238,7 @@ function test_parser_complex
 	L_RES="$(run "$L_DIR/entry.info")"
 	bt_assert_success
 	bt_diff_ok "<(echo '$L_RES') <(echo '$L_EXP')"
-	
+
 	L_RES="$(run "$L_DIR/entry.info" "$L_DIR/entry.info")"
 	bt_assert_success
 	bt_diff_ok "<(echo '$L_RES') <(printf '%s\n%s\n' '$L_EXP' '$L_EXP')"
@@ -249,10 +249,10 @@ function test_parser_base
 	local L_DIR="../data/base"
 	local L_RES=""
 	local L_EXP=""
-	
+
 	L_RES="$(run "$L_DIR/empty")"
 	bt_assert_success
-	
+
 	L_EXP=\
 '-|../data/base/base_flat.info
 -|../data/base/base_flat.info:-:;FILE_BEGIN = ../data/base/base_flat.info
@@ -275,7 +275,7 @@ function test_parser_base
 	L_RES="$(run "$L_DIR/base_flat.info")"
 	bt_assert_success
 	bt_diff_ok "<(echo '$L_RES') <(echo '$L_EXP')"
-	
+
 	L_EXP=\
 '-|../data/base/base_tree.info
 -|../data/base/base_tree.info:-:;FILE_BEGIN = ../data/base/base_tree.info
@@ -342,7 +342,7 @@ function test_lexer
 "../data/tree_simple.info ../data/tree_more.info ../data/tree_tok_with_err.txt"
 
 	local L_RESULT=\
-	
+
 	bt_eval "$L_RUN_LEX $L_DATA > $G_TEST_RES 2>&1"
 	diff_ok_rm "$G_TEST_RES ./accept/test_accept_lexer.txt"
 }
