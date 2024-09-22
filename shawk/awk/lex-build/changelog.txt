@@ -1,6 +1,6 @@
 2024-09-22
 	lex-awk.awk 1.7.2
-	bugfix: input does not advance past the last character
+	bugfix - input does not advance past the last character
 	lex_pos_str_build() added
 
 2024-09-02

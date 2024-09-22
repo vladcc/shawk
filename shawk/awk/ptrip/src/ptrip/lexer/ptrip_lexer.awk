@@ -55,7 +55,7 @@ function lex_read_ch() {
 		return _B_lex_curr_ch
 	else if ("" == _B_lex_curr_ch)
 		--_B_lex_line_pos
-	return ""
+	return _B_lex_curr_ch
 }
 
 # return the last read character
