@@ -1,3 +1,8 @@
+2024-09-22
+	lex-awk.awk 1.7.2
+	bugfix: input does not advance past the last character
+	lex_pos_str_build() added
+
 2024-09-02
 	lex-awk.awk 1.7.1
 	lex_read_line() added, handles new line positioning

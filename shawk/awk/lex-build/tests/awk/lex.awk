@@ -117,6 +117,17 @@ function str_pos(    _tok, _txt, _pos) {
 		print sprintf("line %d, pos %d:", lex_get_line_no(), _pos)
 		print lex_get_pos_str(_txt)
 	}
+
+	# make sure no empty line is read
+	lex_next()
+	print sprintf("line %d, pos %d:", lex_get_line_no(), lex_get_pos())
+	print lex_get_pos_str()
+	lex_next()
+	print sprintf("line %d, pos %d:", lex_get_line_no(), lex_get_pos())
+	print lex_get_pos_str()
+	lex_next()
+	print sprintf("line %d, pos %d:", lex_get_line_no(), lex_get_pos())
+	print lex_get_pos_str()
 }
 
 function set_file_name(str) {_B_file_name = str ? str : "/dev/stdin"}

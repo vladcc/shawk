@@ -11,7 +11,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.7.1"}
+function SCRIPT_VERSION() {return "1.7.2"}
 # </script>
 
 # <out_signature>
@@ -148,6 +148,7 @@ function F_READ_CH() {return fname("read_ch")}
 function F_USR_ON_UNKNOWN_CH() {return fname("usr_on_unknown_ch")}
 function F_USR_GET_LINE() {return fname("usr_get_line")}
 function F_GET_POS() {return fname("get_pos")}
+function F_POS_STR_BLD() {return fname("pos_str_build")}
 
 function fname(str) {return (npref_get() "lex_" str)}
 function fdecl(name) {return sprintf("function %s", fname(name))}
@@ -181,34 +182,36 @@ function LEX_NEXT_LINE() {
 function out_lex_io() {
 	# Generates the lexer public interface.
 	out_line("# read the next character; advance the input")
-	out_line(sprintf("%s() {", fdecl("read_line")))
+	out_line(sprintf("%s(    _ln) {", fdecl("read_line")))
 	tabs_inc()
-	out_line(sprintf("if (%s = %s()) {", VAR_LINE_STR(), F_USR_GET_LINE()))
+	out_line(sprintf("# Note: the user defines %s()", F_USR_GET_LINE()))
+	out_line(sprintf("if (_ln = %s()) {", F_USR_GET_LINE()))
 	tabs_inc()
+	out_line(sprintf("%s = _ln", VAR_LINE_STR()))
 	out_line(sprintf("split(%s, %s, \"\")", VAR_LINE_STR(), VAR_INPUT_LINE()))
 	out_line(sprintf("++%s", VAR_LINE_NO()))
 	out_line(sprintf("%s = 1", VAR_LINE_POS()))
+	out_line("return 1")
 	tabs_dec()
 	out_line("}")
+	out_line("return 0")
 	tabs_dec()
 	out_line("}")
 	out_line()
-	out_line("# read the next character; advance the input")
+	out_line("# read the next character and advance the input")
 	out_line(sprintf("%s() {", fdecl("read_ch")))
 	tabs_inc()
-	out_line(sprintf("# Note: the user defines %s()", F_USR_GET_LINE()))
-	out_line()
 	out_line(sprintf("%s = %s[%s++]",
 		VAR_CURR_CH(), VAR_INPUT_LINE(), VAR_LINE_POS()))
 	out_line(sprintf("%s = %s[%s]",
 		VAR_PEEK_CH(), VAR_INPUT_LINE(), VAR_LINE_POS()))
-	out_line(sprintf("if (%s != \"\")", VAR_PEEK_CH()))
+	out_line(sprintf("if (%s != \"\" || %s())", VAR_PEEK_CH(), F_READ_LN()))
 	tabs_inc()
 	out_line(sprintf("return %s", VAR_CURR_CH()))
 	tabs_dec()
-	out_line("else")
+	out_line(sprintf("else if (\"\" == %s)", VAR_CURR_CH()))
 	tabs_inc()
-	out_line(sprintf("%s()", F_READ_LN()))
+	out_line(sprintf("--%s", VAR_LINE_POS()))
 	tabs_dec()
 	out_line(sprintf("return %s", VAR_CURR_CH()))
 	tabs_dec()
@@ -264,11 +267,19 @@ function out_lex_io() {
 	out_line("# generate position string")
 	out_line(sprintf("%s(last_tok_txt,    _str, _offs) {", \
 		fdecl("get_pos_str")))
-	out_line("\t_offs = (last_tok_txt) ? length(last_tok_txt) : 1")
-	out_line(sprintf("\t_str = substr(%s, 1, %s()-_offs)", \
-		VAR_LINE_STR(), F_GET_POS()))
-	out_line("\tgsub(\"[^[:space:]]\", \" \", _str)")
-	out_line(sprintf("\treturn (%s (_str \"^\"))", VAR_LINE_STR()))
+	tabs_inc()
+	out_line(sprintf("return %s(%s, %s(), last_tok_txt)", \
+		F_POS_STR_BLD(), VAR_LINE_STR(), F_GET_POS()))
+	tabs_dec()
+	out_line("}")
+	out_line(sprintf("%s(line_str, pos, last_tok_txt,    _str, _offs) {", \
+		fdecl("pos_str_build")))
+	tabs_inc()
+	out_line("_offs = (last_tok_txt) ? length(last_tok_txt) : 1")
+	out_line("_str = substr(line_str, 1, pos-_offs)")
+	out_line("gsub(\"[^[:space:]]|\\\\n\", \" \", _str)")
+	out_line("return (line_str (_str \"^\"))")
+	tabs_dec()
 	out_line("}")
 }
 # </out_input>

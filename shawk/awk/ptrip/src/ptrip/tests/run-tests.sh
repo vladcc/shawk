@@ -87,9 +87,9 @@ key{
 "ptrip.awk: error: fatal: file '../data/error/fatal/not_curly_2.info', line 4, pos 4: 'not-a-curly' expected, got 'error'
 	k3}y
 	  ^"
-"ptrip.awk: error: fatal: file '../data/error/fatal/bad_block_1.info', line 4, pos 3: '}' expected, got 'end of input'
+"ptrip.awk: error: fatal: file '../data/error/fatal/bad_block_1.info', line 4, pos 2: '}' expected, got 'end of input'
 }
-  ^"
+ ^"
 "ptrip.awk: error: fatal: file '../data/error/fatal/bad_block_2.info', line 8, pos 2: '}' expected, got '{'
  {
  ^"

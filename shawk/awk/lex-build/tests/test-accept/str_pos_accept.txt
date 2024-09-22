@@ -90,3 +90,12 @@ abc0
 line 6, pos 1:
 abc0
 ^
+line 6, pos 5:
+abc0
+    ^
+line 6, pos 5:
+abc0
+    ^
+line 6, pos 5:
+abc0
+    ^
