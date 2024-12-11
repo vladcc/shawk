@@ -1,0 +1,5 @@
+file inputs/bad_start.txt, line 1, pos 1: unexpected '*'
+*; 1 1 ;
+^
+expected one of: ';' '-' 'number' '('
+

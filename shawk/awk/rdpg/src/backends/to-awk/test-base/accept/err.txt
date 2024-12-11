@@ -1,0 +1,4 @@
+rdpg-to-awk.awk: error: file -, line 1, field 1: unexpected 'name'
+foo
+^
+expected one of: '#' 'tokens' 

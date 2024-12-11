@@ -1,0 +1,1 @@
+rdpg-comp.awk: error: sync: 'ZAG' not in the follow set for 'baz'

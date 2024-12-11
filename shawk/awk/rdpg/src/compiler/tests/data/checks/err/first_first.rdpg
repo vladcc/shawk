@@ -1,0 +1,17 @@
+start : foo EOI ;
+
+foo : A | B | C | bar | baz | ping? A | ping* Q | ping+ Q | pong? | pong* ;
+
+bar : A ;
+
+baz : zig ;
+
+zig : B | zag ;
+
+zag : C  | D foo X Y | zog ;
+
+zog : C | D ;
+
+ping : R ;
+
+pong : W ;

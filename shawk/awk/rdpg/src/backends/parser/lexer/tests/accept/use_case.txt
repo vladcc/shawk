@@ -1,0 +1,91 @@
+#
+# sets predict expect sync
+# sets predict expect sync
+^
+sets
+# sets predict expect sync
+  ^
+predict
+# sets predict expect sync
+       ^
+expect
+# sets predict expect sync
+               ^
+sync
+# sets predict expect sync
+                      ^
+\
+\ func call return true
+^
+func
+\ func call return true
+  ^
+call
+\ func call return true
+       ^
+return
+\ func call return true
+            ^
+true
+\ func call return true
+                   ^
+false
+false rdpg_parse && { }
+^
+rdpg_parse
+false rdpg_parse && { }
+      ^
+&&
+false rdpg_parse && { }
+                 ^
+{
+false rdpg_parse && { }
+                    ^
+}
+false rdpg_parse && { }
+                      ^
+if
+if else_if else loop continue
+^
+else_if
+if else_if else loop continue
+   ^
+else
+if else_if else loop continue
+           ^
+loop
+if else_if else loop continue
+                ^
+continue
+if else_if else loop continue
+                     ^
+tok_match
+tok_match tok_is tok_next tok_curr tok_eoi
+^
+tok_is
+tok_match tok_is tok_next tok_curr tok_eoi
+          ^
+tok_next
+tok_match tok_is tok_next tok_curr tok_eoi
+                 ^
+tok_curr
+tok_match tok_is tok_next tok_curr tok_eoi
+                          ^
+tok_eoi
+tok_match tok_is tok_next tok_curr tok_eoi
+                                   ^
+name foo
+foo bar baz
+^
+name bar
+foo bar baz
+    ^
+name baz
+foo bar baz
+        ^
+tok_err
+tok_err was_no_err
+^
+was_no_err
+tok_err was_no_err
+        ^

@@ -1,0 +1,52 @@
+
+#### TREE ORIGINAL ####
+
+start (line 1) : all EOI
+
+all (line 3) : foo foo? 
+	| foo* foo+ 
+
+foo (line 5) : X 
+
+
+#### TREE REWRITTEN ####
+
+start (line 1) : all EOI
+
+all (line 3) : foo foo_opt 
+	| foo_star foo_plus 
+
+foo (line 5) : X 
+
+foo_opt (line -) : foo 
+	| 0 
+
+foo_plus (line -) : foo foo_star 
+
+foo_star (line -) : foo foo_star 
+	| 0 
+
+
+#### SYM TBL ####
+
+start (line 1)
+start : (start_1) all EOI 
+
+all (line 3)
+all : (all_1) foo foo_opt 
+all : (all_2) foo_star foo_plus 
+
+foo (line 5)
+foo : (foo_1) X 
+
+foo_opt (line -) (0)
+foo_opt : (foo_opt_1) foo 
+foo_opt : (foo_opt_2) (0) 0 
+
+foo_plus (line -)
+foo_plus : (foo_plus_1) foo foo_star 
+
+foo_star (line -) (0) (tr)
+foo_star : (foo_star_1) (tr) foo foo_star 
+foo_star : (foo_star_2) (0) 0 
+

@@ -1,0 +1,3 @@
+start : foo EOI ;
+
+foo : \esc_1 X \esc_2 | \esc_3 Y \esc_4 foo \esc_5 \esc_6 ;

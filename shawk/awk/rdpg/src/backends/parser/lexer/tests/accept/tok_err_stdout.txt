@@ -1,0 +1,18 @@
+name a
+a B _ _aB
+^
+name B
+a B _ _aB
+  ^
+name _
+a B _ _aB
+    ^
+name _aB
+a B _ _aB
+      ^
+name foo1
+foo1 bar 1234 baz
+^
+name bar
+foo1 bar 1234 baz
+     ^

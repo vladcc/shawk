@@ -1,0 +1,10 @@
+file inputs/bad_many.txt, line 1, pos 3: unexpected 'number' after 'number'
+1 1 ;
+  ^
+expected one of: '^' '*' '/' '+' '-' ';' ')'
+
+file inputs/bad_many.txt, line 3, pos 3: unexpected ')' after 'number'
+1 ) ;
+  ^
+expected: ';'
+

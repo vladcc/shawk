@@ -1,0 +1,66 @@
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : A
+foo : bar
+can both begin with
+A
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : A
+foo : ping_opt A
+can both begin with
+A
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : B
+foo : baz
+can both begin with
+B
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : C
+foo : baz
+can both begin with
+C
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : bar
+foo : ping_opt A
+can both begin with
+A
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : ping_opt A
+foo : ping_star Q
+can both begin with
+R
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : ping_opt A
+foo : ping_plus Q
+can both begin with
+R
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : ping_star Q
+foo : ping_plus Q
+can both begin with
+R
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : pong_opt
+foo : pong_star
+can both begin with
+0 W
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 11, non-terminal 'zag': first/first conflict
+zag : C
+zag : zog
+can both begin with
+C
+
+rdpg-comp.awk: error: file 'data/checks/err/first_first.rdpg', line 11, non-terminal 'zag': first/first conflict
+zag : D foo X Y
+zag : zog
+can both begin with
+D
+

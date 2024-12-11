@@ -1,0 +1,98 @@
+set first start SEMI MINUS NUMBER L_PAR
+set first start_1 SEMI MINUS NUMBER L_PAR
+set first expr SEMI MINUS NUMBER L_PAR
+set first expr_1 SEMI MINUS NUMBER L_PAR
+set first expr_plus SEMI MINUS NUMBER L_PAR
+set first expr_plus_1 SEMI MINUS NUMBER L_PAR
+set first expr_star 0 SEMI MINUS NUMBER L_PAR
+set first expr_star_1 SEMI MINUS NUMBER L_PAR
+set first expr_star_2 0
+set first expr_add_sub MINUS NUMBER L_PAR
+set first expr_add_sub_1 MINUS NUMBER L_PAR
+set first expr_add_sub_opt 0 MINUS NUMBER L_PAR
+set first expr_add_sub_opt_1 MINUS NUMBER L_PAR
+set first expr_add_sub_opt_2 0
+set first add_sub PLUS MINUS
+set first add_sub_1 PLUS
+set first add_sub_2 MINUS
+set first add_sub_star 0 PLUS MINUS
+set first add_sub_star_1 PLUS MINUS
+set first add_sub_star_2 0
+set first expr_mul_div MINUS NUMBER L_PAR
+set first expr_mul_div_1 MINUS NUMBER L_PAR
+set first mul_div MUL DIV
+set first mul_div_1 MUL
+set first mul_div_2 DIV
+set first mul_div_star 0 MUL DIV
+set first mul_div_star_1 MUL DIV
+set first mul_div_star_2 0
+set first expr_expon MINUS NUMBER L_PAR
+set first expr_expon_1 MINUS NUMBER L_PAR
+set first expon POW
+set first expon_1 POW
+set first expon_opt 0 POW
+set first expon_opt_1 POW
+set first expon_opt_2 0
+set first expr_base MINUS NUMBER L_PAR
+set first expr_base_1 MINUS
+set first expr_base_2 NUMBER L_PAR
+set first base NUMBER L_PAR
+set first base_1 NUMBER
+set first base_2 L_PAR
+set follow start $
+set follow expr SEMI MINUS NUMBER L_PAR EOI
+set follow expr_plus EOI
+set follow expr_star EOI
+set follow expr_add_sub SEMI R_PAR
+set follow expr_add_sub_opt SEMI
+set follow add_sub PLUS MINUS SEMI R_PAR
+set follow add_sub_star SEMI R_PAR
+set follow expr_mul_div PLUS MINUS SEMI R_PAR
+set follow mul_div MUL DIV PLUS MINUS SEMI R_PAR
+set follow mul_div_star PLUS MINUS SEMI R_PAR
+set follow expr_expon MUL DIV PLUS MINUS SEMI R_PAR
+set follow expon MUL DIV PLUS MINUS SEMI R_PAR
+set follow expon_opt MUL DIV PLUS MINUS SEMI R_PAR
+set follow expr_base POW MUL DIV PLUS MINUS SEMI R_PAR
+set follow base POW MUL DIV PLUS MINUS SEMI R_PAR
+set predict start_1 SEMI MINUS NUMBER L_PAR
+set predict expr_1 SEMI MINUS NUMBER L_PAR
+set predict expr_plus_1 SEMI MINUS NUMBER L_PAR
+set predict expr_star_1 SEMI MINUS NUMBER L_PAR
+set predict expr_star_2 EOI
+set predict expr_add_sub_1 MINUS NUMBER L_PAR
+set predict expr_add_sub_opt_1 MINUS NUMBER L_PAR
+set predict expr_add_sub_opt_2 SEMI
+set predict add_sub_1 PLUS
+set predict add_sub_2 MINUS
+set predict add_sub_star_1 PLUS MINUS
+set predict add_sub_star_2 SEMI R_PAR
+set predict expr_mul_div_1 MINUS NUMBER L_PAR
+set predict mul_div_1 MUL
+set predict mul_div_2 DIV
+set predict mul_div_star_1 MUL DIV
+set predict mul_div_star_2 PLUS MINUS SEMI R_PAR
+set predict expr_expon_1 MINUS NUMBER L_PAR
+set predict expon_1 POW
+set predict expon_opt_1 POW
+set predict expon_opt_2 MUL DIV PLUS MINUS SEMI R_PAR
+set predict expr_base_1 MINUS
+set predict expr_base_2 NUMBER L_PAR
+set predict base_1 NUMBER
+set predict base_2 L_PAR
+set expect start SEMI MINUS NUMBER L_PAR
+set expect expr SEMI MINUS NUMBER L_PAR
+set expect expr_plus SEMI MINUS NUMBER L_PAR
+set expect expr_star SEMI MINUS NUMBER L_PAR EOI
+set expect expr_add_sub MINUS NUMBER L_PAR
+set expect expr_add_sub_opt MINUS NUMBER L_PAR SEMI
+set expect add_sub PLUS MINUS
+set expect add_sub_star PLUS MINUS SEMI R_PAR
+set expect expr_mul_div MINUS NUMBER L_PAR
+set expect mul_div MUL DIV
+set expect mul_div_star MUL DIV PLUS MINUS SEMI R_PAR
+set expect expr_expon MINUS NUMBER L_PAR
+set expect expon POW
+set expect expon_opt POW MUL DIV PLUS MINUS SEMI R_PAR
+set expect expr_base MINUS NUMBER L_PAR
+set expect base NUMBER L_PAR

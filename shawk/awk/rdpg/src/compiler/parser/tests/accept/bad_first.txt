@@ -1,0 +1,5 @@
+error: file grammars/bad_first.rdpg, line 1, pos 5: unexpected 'terminal' after 'error'
+START : foo EOI ;
+    ^
+expected one of: 'EOI' 'start' 
+

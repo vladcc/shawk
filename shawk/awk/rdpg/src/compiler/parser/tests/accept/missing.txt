@@ -1,0 +1,26 @@
+
+#### TREE ORIGINAL ####
+
+start (line 1) : all EOI
+
+all (line 3) : foo foo? 
+	| foo* foo+ 
+
+
+#### TREE REWRITTEN ####
+
+start (line 1) : all EOI
+
+all (line 3) : foo foo_opt 
+	| foo_star foo_plus 
+
+
+#### SYM TBL ####
+
+start (line 1)
+start : (start_1) all EOI 
+
+all (line 3)
+all : (all_1) foo foo_opt 
+all : (all_2) foo_star foo_plus 
+

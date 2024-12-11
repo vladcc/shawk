@@ -1,0 +1,5 @@
+start : FOO EOI ;
+
+bar : ;
+
+FOO : bar ;

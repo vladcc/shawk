@@ -1,0 +1,31 @@
+rule 1 start_1 start : foo EOI 
+rule 2 foo_1 foo : A 
+rule 3 foo_2 foo : B 
+rule 4 foo_3 foo : C 
+rule 5 foo_4 foo : bar 
+rule 6 foo_5 foo : baz 
+rule 7 foo_6 foo : ping_opt A 
+rule 8 foo_7 foo : ping_star Q 
+rule 9 foo_8 foo : ping_plus Q 
+rule 10 foo_9 foo : pong_opt 
+rule 11 foo_10 foo : pong_star 
+rule 12 bar_1 bar : A 
+rule 13 baz_1 baz : zig 
+rule 14 zig_1 zig : B 
+rule 15 zig_2 zig : zag 
+rule 16 zag_1 zag : C 
+rule 17 zag_2 zag : D foo X Y 
+rule 18 zag_3 zag : zog 
+rule 19 zog_1 zog : C 
+rule 20 zog_2 zog : D 
+rule 21 ping_1 ping : R 
+rule 22 ping_opt_1 ping_opt : ping 
+rule 23 ping_opt_2 ping_opt : 0 
+rule 24 ping_plus_1 ping_plus : ping ping_star 
+rule 25 ping_star_1 ping_star : ping ping_star 
+rule 26 ping_star_2 ping_star : 0 
+rule 27 pong_1 pong : W 
+rule 28 pong_opt_1 pong_opt : pong 
+rule 29 pong_opt_2 pong_opt : 0 
+rule 30 pong_star_1 pong_star : pong pong_star 
+rule 31 pong_star_2 pong_star : 0 

@@ -1,0 +1,6 @@
+rdpg-comp.awk: error: file data/fatal_err/fatal_parse.rdpg, line 1, pos 11: unexpected 'terminal' after ':'
+start : FOO EOI ;
+          ^
+expected: 'non-terminal' 
+
+rdpg-comp.awk: exiting due to FatalErr

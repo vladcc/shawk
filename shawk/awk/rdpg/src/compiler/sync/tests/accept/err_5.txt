@@ -1,0 +1,2 @@
+sync: 'BAR' multiple times in 'foo':
+foo=BAR,BAZ,BAR;zig=ZAG

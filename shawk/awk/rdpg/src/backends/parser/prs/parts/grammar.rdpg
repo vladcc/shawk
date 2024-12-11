@@ -1,0 +1,58 @@
+start : parser EOI ;
+
+parser : \on_parser comment* tokens_ sets_ parse_main func_+ ;
+
+comment : IR_COMMENT \on_comment ;
+
+tokens_  : tok_lst tok_eoi_ ;
+tok_lst  : IR_TOKENS \on_tokens tok_name+ ;
+tok_name : NAME \on_tok_name ;
+tok_eoi_ : IR_TOK_EOI NAME \on_tok_eoi ;
+
+sets_    : IR_SETS IR_BLOCK_OPEN \on_sets alias_+ set+ IR_BLOCK_CLOSE ;
+alias_   : IR_ALIAS \on_set_alias NAME \on_set_alias_defn set_elem+ ;
+set_elem : NAME \on_set_elem ;
+set      : \on_set set_type NAME \on_set_name NAME \on_set_alias_name ;
+set_type : IR_PREDICT \on_set_type
+         | IR_EXPECT  \on_set_type
+         | IR_SYNC    \on_set_type ;
+
+parse_main : IR_FUNC IR_RDPG_PARSE \on_parse_main
+	IR_BLOCK_OPEN
+		IR_RETURN IR_CALL NAME \on_top_name IR_AND IR_WAS_NO_ERR \on_err_var
+	IR_BLOCK_CLOSE \on_parse_main_end ;
+
+func_           : IR_FUNC NAME \on_func_start func_code_block \on_func_end ;
+func_code_block : IR_BLOCK_OPEN comment* \on_cb_open ir_code+ IR_BLOCK_CLOSE
+	\on_cb_close ;
+
+code_block : IR_BLOCK_OPEN \on_cb_open ir_code+ IR_BLOCK_CLOSE \on_cb_close ;
+
+ir_code : call_expr
+        | return_stmt
+        | loop_stmt
+        | IR_CONTINUE \on_continue
+        | if_stmt ;
+
+call_expr : IR_CALL \on_call call_name call_arg? \on_call_end ;
+call_name : NAME                     \on_call_name
+          | IR_TOK_IS                \on_call_name
+          | IR_ESC \on_call_esc NAME \on_call_name
+          | IR_TOK_NEXT              \on_call_name
+          | IR_TOK_MATCH             \on_call_name
+          | IR_PREDICT               \on_call_name
+          | IR_EXPECT                \on_call_name
+          | IR_SYNC                  \on_call_name ;
+call_arg  : NAME \on_call_arg ;
+
+return_stmt : IR_RETURN \on_return return_rest \on_return_end ;
+return_rest : call_expr
+            | IR_TRUE \on_ret_const
+            | IR_FALSE \on_ret_const ;
+
+loop_stmt : IR_LOOP \on_loop code_block \on_loop_end ;
+
+if_stmt      : IR_IF \on_if call_expr code_block \on_if_end else_if_stmt*
+	else_stmt? ;
+else_if_stmt : IR_ELSE_IF \on_else_if call_expr code_block \on_else_if_end ;
+else_stmt    : IR_ELSE \on_else code_block \on_else_end ;

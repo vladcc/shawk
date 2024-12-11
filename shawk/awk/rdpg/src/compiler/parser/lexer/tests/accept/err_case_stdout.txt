@@ -1,0 +1,6 @@
+line 1, pos 2: terminal OK
+OK ok
+ ^
+line 1, pos 5: non-terminal ok
+OK ok
+    ^

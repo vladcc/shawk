@@ -1,0 +1,9 @@
+START : foo EOI ;
+
+foo : \a \b \c bar baz zig ;
+
+foo : BAR? ;
+
+foo : \BAR ;
+
+foo : \esc_1 \esc_2 BAR ;

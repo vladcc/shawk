@@ -1,0 +1,7 @@
+start : foo EOI ;
+
+foo : bar baz? ZIG ;
+
+baz : ZAG | ZEG ;
+
+bar : ZOG ;

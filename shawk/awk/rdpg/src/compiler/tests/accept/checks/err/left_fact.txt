@@ -1,0 +1,23 @@
+rdpg-comp.awk: error: file 'data/checks/err/left_fact.rdpg', line 3, non-terminal 'foo': rules start with same symbol
+foo : bar X
+foo : bar Y
+foo : bar W
+
+rdpg-comp.awk: error: file 'data/checks/err/left_fact.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : bar X
+foo : bar Y
+can both begin with
+Z
+
+rdpg-comp.awk: error: file 'data/checks/err/left_fact.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : bar X
+foo : bar W
+can both begin with
+Z
+
+rdpg-comp.awk: error: file 'data/checks/err/left_fact.rdpg', line 3, non-terminal 'foo': first/first conflict
+foo : bar Y
+foo : bar W
+can both begin with
+Z
+

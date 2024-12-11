@@ -1,0 +1,22 @@
+start : grmr_defn? TOK_EOI ;
+
+grmr_defn : start_defn lhs_defn+ ;
+
+start_defn : START_SYM COLON NONT \on_top_sym nont_mod? TERM \on_eoi_term SEMI ;
+
+lhs_defn : NONT \on_lhs_start COLON rule bar_rule* SEMI ;
+
+rule : \on_rule_start esc* sym+ ;
+
+bar_rule : BAR rule ;
+
+sym : grmr_sym esc* ;
+
+esc : ESC NONT \on_esc;
+
+grmr_sym : TERM \on_term
+         | NONT \on_nont nont_mod? ;
+
+nont_mod : QMARK \on_qmark
+         | STAR \on_star
+         | PLUS \on_plus ;

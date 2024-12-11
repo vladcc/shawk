@@ -1,0 +1,30 @@
+
+#### TREE ORIGINAL ####
+
+start (line 1) : foo? EOI
+
+foo (line 3) : X 
+
+
+#### TREE REWRITTEN ####
+
+start (line 1) : foo_opt EOI
+
+foo (line 3) : X 
+
+foo_opt (line -) : foo 
+	| 0 
+
+
+#### SYM TBL ####
+
+start (line 1)
+start : (start_1) foo_opt EOI 
+
+foo (line 3)
+foo : (foo_1) X 
+
+foo_opt (line -) (0)
+foo_opt : (foo_opt_1) foo 
+foo_opt : (foo_opt_2) (0) 0 
+

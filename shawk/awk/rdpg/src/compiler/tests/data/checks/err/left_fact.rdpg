@@ -1,0 +1,5 @@
+start : foo EOI ;
+
+foo : bar X | bar Y | A | bar W ;
+
+bar : Z ;

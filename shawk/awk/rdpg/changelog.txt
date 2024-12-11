@@ -1,3 +1,13 @@
+2024-12-11
+	Rewrite done.
+	rdpg-comp.awk   2.0
+	rdpg-to-c.awk   2.0
+	rdpg-to-awk.awk 2.0
+
+2024-06-24
+	_rdpg_ir.awk 2.0
+	sets, match_n, err_n added
+
 2024-06-06
 	rdpg.awk 1.5
 	bug fix - check_reachability_rule() works with more than two productions

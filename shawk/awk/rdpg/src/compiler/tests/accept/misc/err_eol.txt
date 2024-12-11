@@ -1,0 +1,6 @@
+rdpg-comp.awk: error: file data/misc/err_eol.rdpg, line 1, pos 12: unexpected 'EOI' after 'non-terminal'
+start : foo
+           ^
+expected one of: '?' '*' '+' 'terminal' '\' 'non-terminal' '|' ';' 
+
+rdpg-comp.awk: error: parsing failed

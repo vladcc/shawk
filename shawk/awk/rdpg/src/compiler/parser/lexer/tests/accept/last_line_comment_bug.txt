@@ -1,0 +1,3 @@
+line 1, pos 3: non-terminal foo
+foo
+  ^

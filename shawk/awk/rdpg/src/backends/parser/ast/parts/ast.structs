@@ -1,0 +1,96 @@
+start
+
+prefix ast
+
+type root_node
+has cmnt_lst cmnt_lst
+has tokens tokens
+
+type cmnt_lst
+has head comment
+has tail comment
+
+type comment
+has str
+has next_ comment
+
+type tokens
+has all_tok
+has tok_eoi
+has sets sets
+
+type sets
+has alias_lst alias_lst
+has set_lst set_lst
+has parse_main parse_main
+
+type alias_lst
+has head alias
+has tail alias
+
+type alias
+has name
+has data
+has next_ alias
+
+type set_lst
+has head set
+has tail set
+
+type set
+has type
+has name
+has alias_name
+has next_ set
+
+type parse_main
+has name
+has top_nont
+has err_var
+has fnc_lst fnc_lst
+
+type fnc_lst
+has head fnc
+has tail fnc
+
+type fnc
+has name
+has cmnt_lst cmnt_lst
+has code_lst code_lst
+has next_ fnc
+
+type code_lst
+has head code_node
+has tail code_node
+
+type code_node
+has code
+has next_ code_node
+
+type code_call
+has is_esc
+has fname
+has arg
+
+type code_ret
+has const
+has call code_call
+
+type code_loop
+has code_lst code_lst
+
+type code_continue
+has none
+
+type code_if
+has cond code_call
+has code_lst code_lst
+
+type code_else_if
+has cond code_call
+has code_lst code_lst
+
+type code_else
+has code_lst code_lst
+
+end

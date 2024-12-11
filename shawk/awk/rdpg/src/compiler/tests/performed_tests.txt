@@ -1,0 +1,373 @@
+test_all
+test_messages
+test_example
+awk -f ../rdpg-comp.awk -vExample=1 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/messages/example.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_version
+awk -f ../rdpg-comp.awk -vVersion=1 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/messages/version.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_help
+awk -f ../rdpg-comp.awk -vHelp=1 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/messages/help.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_try_use
+awk -f ../rdpg-comp.awk  1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/messages/try_use.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk foo bar 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/messages/try_use.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_checks
+test_checks_errs
+test_undefined
+awk -f ../rdpg-comp.awk data/checks/err/undefined.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/err/undefined.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_redefined
+awk -f ../rdpg-comp.awk data/checks/err/redefined.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/err/redefined.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_left_fact
+awk -f ../rdpg-comp.awk data/checks/err/left_fact.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/err/left_fact.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_left_rec
+awk -f ../rdpg-comp.awk data/checks/err/left_rec.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/err/left_rec.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_first_first
+awk -f ../rdpg-comp.awk data/checks/err/first_first.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/err/first_first.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_first_follow
+awk -f ../rdpg-comp.awk data/checks/err/first_follow.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/err/first_follow.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_checks_warns
+awk -f ../rdpg-comp.awk -vWarnAll=1 -vWarnErr=1 data/checks/warn/all.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/warn/all.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vWarnReach=1 -vWarnErr=1 data/checks/warn/all.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/warn/noreach.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vWarnEsc=1 -vWarnErr=1 data/checks/warn/all.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/warn/esc_tr.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_fatal_err
+test_fatal_warn_err
+awk -f ../rdpg-comp.awk data/fatal_err/fatal_err.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/no_fatal.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vFatalErr=1 data/fatal_err/fatal_err.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_err_1.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vFatalErr=2 data/fatal_err/fatal_err.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_err_2.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vFatalErr=3 data/fatal_err/fatal_err.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/no_fatal.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vWarnAll=1 -vWarnErr=1 data/fatal_err/fatal_err.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/no_fatal_warn.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vWarnAll=1 -vWarnErr=1 -vFatalErr=1 data/fatal_err/fatal_err.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_err_warn_1.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vWarnAll=1 -vWarnErr=1 -vFatalErr=2 data/fatal_err/fatal_err.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_err_warn_2.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vWarnAll=1 -vWarnErr=1 -vFatalErr=3 data/fatal_err/fatal_err.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_err_warn_3.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_fatal_parse
+awk -f ../rdpg-comp.awk data/fatal_err/fatal_parse.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_parse.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vFatalErr=1 data/fatal_err/fatal_parse.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_parse_1.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vFatalErr=2 data/fatal_err/fatal_parse.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_parse_2.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vFatalErr=3 data/fatal_err/fatal_parse.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_parse_3.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vFatalErr=4 data/fatal_err/fatal_parse.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/fatal_err/fatal_parse.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_flags
+test_flag_grammar
+awk -f ../rdpg-comp.awk -vGrammar=1 ../../common/expr.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/flags/grammar/grammar_ll1.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vGrammar=1 data/checks/err/first_first.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/flags/grammar/grammar_no_ll1.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_flag_rules
+awk -f ../rdpg-comp.awk -vRules=1 ../../common/expr.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/flags/rules/rules_ll1.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vRules=1 data/checks/err/first_first.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/flags/rules/rules_no_ll1.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_flag_sets
+awk -f ../rdpg-comp.awk -vSets=1 data/sets/sets.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sets/sets.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSets=1 ../../common/expr.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/flags/sets/sets_ll1.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSets=1 data/checks/err/first_first.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/flags/sets/sets_no_ll1.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_flag_tbl
+awk -f ../rdpg-comp.awk -vTable=1 ../../common/expr.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/flags/tbl/tbl_ll1.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vTable=1 data/checks/err/first_first.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/err/first_first.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_flag_check
+awk -f ../rdpg-comp.awk -vCheck=1 ../../common/expr.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vCheck=1 data/checks/err/first_first.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/checks/err/first_first.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_misc
+test_lex_eol
+awk -f ../rdpg-comp.awk data/misc/err_eol.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/misc/err_eol.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_use_case
+awk -f ../rdpg-comp.awk ../../common/expr.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/expr.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_sync
+test_sync_use_case
+awk -f ../rdpg-comp.awk data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_default.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync=1 data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_default.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync=0 data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_none.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync='bar=ZIG' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_custom_1.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync='bar=ZIG,ZEG' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_custom_2.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync='bar=ZIG,ZAG,ZEG' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_custom_3.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_sync_err_case
+awk -f ../rdpg-comp.awk -vSync='biz=ZIG' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/sync/sync_err_not_an_lhs.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync='baz=ZAG' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/sync/sync_err_not_in_follow.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync='baz=ZYG' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/sync/sync_err_not_a_terminal.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 

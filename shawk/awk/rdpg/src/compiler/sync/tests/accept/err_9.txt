@@ -1,0 +1,2 @@
+sync: 'Foo' not a non-terminal:
+Foo=BAR

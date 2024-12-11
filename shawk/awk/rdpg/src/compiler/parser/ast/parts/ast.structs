@@ -1,0 +1,50 @@
+start
+
+prefix ast
+
+type start
+has top_nont
+has mod
+has eoi_term
+has line_num
+has lhs_lst lhs_lst
+
+type lhs_lst
+has head lhs
+has tail lhs
+
+type lhs
+has name
+has line_num
+has rule_lst rule_lst
+has next_ lhs
+
+type rule_lst
+has head rule
+has tail rule
+
+type rule
+has esc_lst esc_lst
+has sym_lst sym_lst
+has next_ rule
+
+type sym_lst
+has head sym
+has tail sym
+
+type sym
+has type
+has name
+has mod
+has esc_lst esc_lst
+has next_ sym
+
+type esc_lst
+has head esc
+has tail esc
+
+type esc
+has name
+has next_ esc
+
+end

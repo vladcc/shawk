@@ -1,0 +1,39 @@
+char_tbl
+	\s  CH_CLS_SPACE
+	\t  CH_CLS_SPACE
+	a-z CH_CLS_WORD
+	A-Z CH_CLS_WORD
+	_   CH_CLS_WORD
+	0-9 CH_CLS_NUMBER
+	#   CH_CLS_CMNT
+	\n  CH_CLS_NEW_LINE
+	\0  CH_CLS_EOI
+end
+
+symbols
+	: COLON
+	| BAR
+	; SEMI
+	? QMARK
+	* STAR
+	+ PLUS
+	\ ESC
+	EOI TOK_EOI
+end
+
+keywords
+	start START_SYM
+end
+
+patterns
+	terminal     TERM
+	non-terminal NONT
+end
+
+actions
+	CH_CLS_SPACE    next_ch
+	CH_CLS_NEW_LINE next_line
+	CH_CLS_EOI      TOK_EOI
+	CH_CLS_WORD     get_word()
+	CH_CLS_CMNT     on_comment()
+end

@@ -1,0 +1,3 @@
+start : all EOI ;
+
+all : foo foo? | foo* foo+ ;

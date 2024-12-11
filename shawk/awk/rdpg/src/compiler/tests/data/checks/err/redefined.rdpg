@@ -1,0 +1,7 @@
+start : foo EOI ;
+
+foo : A ;
+
+foo : B ;
+
+bar : C ;

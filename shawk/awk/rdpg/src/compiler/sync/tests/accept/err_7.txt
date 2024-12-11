@@ -1,0 +1,2 @@
+sync: field 2 empty after split on ',':
+BAZ,,

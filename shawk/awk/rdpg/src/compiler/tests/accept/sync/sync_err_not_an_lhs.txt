@@ -1,0 +1,1 @@
+rdpg-comp.awk: error: sync: 'biz' not a lhs to be synced

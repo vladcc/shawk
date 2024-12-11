@@ -1,0 +1,5 @@
+start : foo EOI ;
+
+foo : bar? A | X bar* B | Y bar+ C ;
+
+bar : A | B | C ;

@@ -1,0 +1,23 @@
+
+#### TREE ORIGINAL ####
+
+start (line 1) : foo EOI
+
+foo (line 3) : X 
+
+
+#### TREE REWRITTEN ####
+
+start (line 1) : foo EOI
+
+foo (line 3) : X 
+
+
+#### SYM TBL ####
+
+start (line 1)
+start : (start_1) foo EOI 
+
+foo (line 3)
+foo : (foo_1) X 
+

@@ -1,0 +1,10 @@
+error: file data/tok_err.txt, line 1, pos 3: unexpected 'non-terminal'
+bar BAZ
+  ^
+expected: 'foo' 
+
+error: file data/tok_err.txt, line 1, pos 7: unexpected 'terminal'
+bar BAZ
+      ^
+expected one of: 'zig' 'zag' 
+

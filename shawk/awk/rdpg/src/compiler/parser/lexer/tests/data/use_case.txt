@@ -1,0 +1,13 @@
+TERM _TERM _TERM_ _T_E_R_M_ __TERM __TERM__ __T__E___RM_
+# comment
+	# comment 2
+_123TERM T3RM __T__3____R0M__1_ # COMMENT
+
+start
+
+nont _nont _nont_ _n_o_n_t_ __nont __nont__ __n__o___nt_
+# comment
+	# comment 2
+_123nont n0nt __n__0____n0t__1_ # COMMENT
+
+; : |	\ *+ ?

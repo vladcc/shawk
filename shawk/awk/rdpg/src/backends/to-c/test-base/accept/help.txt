@@ -1,0 +1,44 @@
+-- rdpg-to-c.awk - ir to C translator --
+
+Use: rdpg-comp.awk [options] <grammar> | rdpg-to-c.awk [options]
+
+Outputs rdpg_parser.c and rdpg_parser.h in the current directory by default.
+Expects rdpg_usr.h which contains the declarations of all required user types.
+The Tag option changes the output file names; e.g. rdpg_parser_<tag>.c
+
+I. Required user types:
+1. typedef enum tok_id tok_id; - represents the type of token. No assumptions
+are made about the values.
+
+2. typedef struct usr_ctx usr_ctx; - holds the user context, e.g. the lexer.
+The parser does not care what's in the struct, only passes its address around.
+
+II. Required user callbacks:
+1. tok_id tok_next(usr_ctx * usr); - called to get the next token from the
+input.
+
+2. void tok_err(usr_ctx * usr, prs_ctx * prs); - called when the current input
+token is not what's expected. Print error messages here.
+
+3. void err_crit(const char * msg); - called when a critical error has occurred.
+A call to err_crit() indicates a bug. This call is expected to never happen and
+err_crit() is expected to never return.
+
+III. Exported types:
+1. typedef struct prs_ctx {void * ctx;} prs_ctx; - holds the parser state.
+Opaque to the user. Needed in order to avoid static variables. The user does not
+need to initialize it, only declare one and pass it to the parser.
+
+IV. Exported API:
+1. bool rdpg_parse(prs_ctx * prs, usr_ctx * usr); - call to parse. Returns
+true of no error occurred while parsing, false otherwise.
+
+2. const tok_id * rdpg_expect(prs_ctx * prs, size_t * out_size); - call from
+tok_err(). Returns a pointer to an array of tokens which were expected at this
+point in the input. Upon return, out_size holds the size of the array.
+
+Options:
+-v Dir=<dir> - output the .c and .h files in <dir>; ./ by default
+-v Tag=<str> - use <str> in functions, types, and files; e.g. rdpg_parse_<tag>()
+-v Help=1    - this screen
+-v Version=1 - version info

@@ -1,0 +1,41 @@
+start : expr_plus EOI
+
+expr : \on_expr_start expr_add_sub_opt SEMI \on_expr_end 
+
+expr_plus : expr expr_star 
+
+expr_star : expr expr_star 
+	| 0 
+
+expr_add_sub : expr_mul_div add_sub_star 
+
+expr_add_sub_opt : expr_add_sub 
+	| 0 
+
+add_sub : PLUS expr_mul_div \on_add 
+	| MINUS expr_mul_div \on_sub 
+
+add_sub_star : add_sub add_sub_star 
+	| 0 
+
+expr_mul_div : expr_expon mul_div_star 
+
+mul_div : MUL expr_expon \on_mul 
+	| DIV expr_expon \on_div 
+
+mul_div_star : mul_div mul_div_star 
+	| 0 
+
+expr_expon : expr_base expon_opt 
+
+expon : POW expr_expon \on_pow 
+
+expon_opt : expon 
+	| 0 
+
+expr_base : MINUS base \on_neg 
+	| base 
+
+base : NUMBER \on_number 
+	| L_PAR expr_add_sub R_PAR 
+

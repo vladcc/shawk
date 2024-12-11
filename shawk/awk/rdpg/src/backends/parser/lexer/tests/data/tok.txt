@@ -1,0 +1,7 @@
+		# sets predict expect sync
+	\ func call return true
+false rdpg_parse && { }
+if else_if else loop continue
+	tok_match tok_is tok_next tok_curr tok_eoi
+foo bar baz
+tok_err was_no_err

@@ -1,0 +1,2 @@
+sync: 'foo' redefined:
+foo=BAR;foo=BAZ

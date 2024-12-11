@@ -1,0 +1,4 @@
+file data/tok.txt, line 1, field 2: unexpected 'sets' after '#'
+# sets predict expect sync
+  ^
+expected: 'foo' 

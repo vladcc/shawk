@@ -1,0 +1,45 @@
+start : foo EOI
+
+foo : A 
+	| B 
+	| C 
+	| bar 
+	| baz 
+	| ping_opt A 
+	| ping_star Q 
+	| ping_plus Q 
+	| pong_opt 
+	| pong_star 
+
+bar : A 
+
+baz : zig 
+
+zig : B 
+	| zag 
+
+zag : C 
+	| D foo X Y 
+	| zog 
+
+zog : C 
+	| D 
+
+ping : R 
+
+ping_opt : ping 
+	| 0 
+
+ping_plus : ping ping_star 
+
+ping_star : ping ping_star 
+	| 0 
+
+pong : W 
+
+pong_opt : pong 
+	| 0 
+
+pong_star : pong pong_star 
+	| 0 
+

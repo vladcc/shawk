@@ -1,0 +1,84 @@
+line 1, pos 4: terminal TERM
+TERM _TERM _TERM_ _T_E_R_M_ __TERM __TERM__ __T__E___RM_
+   ^
+line 1, pos 10: terminal _TERM
+TERM _TERM _TERM_ _T_E_R_M_ __TERM __TERM__ __T__E___RM_
+         ^
+line 1, pos 17: terminal _TERM_
+TERM _TERM _TERM_ _T_E_R_M_ __TERM __TERM__ __T__E___RM_
+                ^
+line 1, pos 27: terminal _T_E_R_M_
+TERM _TERM _TERM_ _T_E_R_M_ __TERM __TERM__ __T__E___RM_
+                          ^
+line 1, pos 34: terminal __TERM
+TERM _TERM _TERM_ _T_E_R_M_ __TERM __TERM__ __T__E___RM_
+                                 ^
+line 1, pos 43: terminal __TERM__
+TERM _TERM _TERM_ _T_E_R_M_ __TERM __TERM__ __T__E___RM_
+                                          ^
+line 1, pos 56: terminal __T__E___RM_
+TERM _TERM _TERM_ _T_E_R_M_ __TERM __TERM__ __T__E___RM_
+                                                       ^
+line 4, pos 8: terminal _123TERM
+_123TERM T3RM __T__3____R0M__1_ # COMMENT
+       ^
+line 4, pos 13: terminal T3RM
+_123TERM T3RM __T__3____R0M__1_ # COMMENT
+            ^
+line 4, pos 31: terminal __T__3____R0M__1_
+_123TERM T3RM __T__3____R0M__1_ # COMMENT
+                              ^
+line 6, pos 5: start start
+start
+    ^
+line 8, pos 4: non-terminal nont
+nont _nont _nont_ _n_o_n_t_ __nont __nont__ __n__o___nt_
+   ^
+line 8, pos 10: non-terminal _nont
+nont _nont _nont_ _n_o_n_t_ __nont __nont__ __n__o___nt_
+         ^
+line 8, pos 17: non-terminal _nont_
+nont _nont _nont_ _n_o_n_t_ __nont __nont__ __n__o___nt_
+                ^
+line 8, pos 27: non-terminal _n_o_n_t_
+nont _nont _nont_ _n_o_n_t_ __nont __nont__ __n__o___nt_
+                          ^
+line 8, pos 34: non-terminal __nont
+nont _nont _nont_ _n_o_n_t_ __nont __nont__ __n__o___nt_
+                                 ^
+line 8, pos 43: non-terminal __nont__
+nont _nont _nont_ _n_o_n_t_ __nont __nont__ __n__o___nt_
+                                          ^
+line 8, pos 56: non-terminal __n__o___nt_
+nont _nont _nont_ _n_o_n_t_ __nont __nont__ __n__o___nt_
+                                                       ^
+line 11, pos 8: non-terminal _123nont
+_123nont n0nt __n__0____n0t__1_ # COMMENT
+       ^
+line 11, pos 13: non-terminal n0nt
+_123nont n0nt __n__0____n0t__1_ # COMMENT
+            ^
+line 11, pos 31: non-terminal __n__0____n0t__1_
+_123nont n0nt __n__0____n0t__1_ # COMMENT
+                              ^
+line 13, pos 1: ;
+; : |	\ *+ ?
+^
+line 13, pos 3: :
+; : |	\ *+ ?
+  ^
+line 13, pos 5: |
+; : |	\ *+ ?
+    ^
+line 13, pos 7: \
+; : |	\ *+ ?
+     	^
+line 13, pos 9: *
+; : |	\ *+ ?
+     	  ^
+line 13, pos 10: +
+; : |	\ *+ ?
+     	   ^
+line 13, pos 12: ?
+; : |	\ *+ ?
+     	     ^

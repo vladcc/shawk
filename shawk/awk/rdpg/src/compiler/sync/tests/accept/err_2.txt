@@ -1,0 +1,2 @@
+sync: string does not split in two fields at '=':
+foo=BAR=

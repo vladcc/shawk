@@ -1,0 +1,9 @@
+start : foo EOI ;
+
+foo : foo  bar ;
+
+bar : baz ;
+
+baz : zig ;
+
+zig : bar ;

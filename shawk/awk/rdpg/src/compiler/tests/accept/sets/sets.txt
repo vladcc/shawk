@@ -1,0 +1,42 @@
+set first start A D B C
+set first start_1 A D B C
+set first foo A D B C
+set first foo_1 A
+set first foo_2 B
+set first foo_3 D C
+set first bar B
+set first bar_1 B
+set first baz C
+set first baz_1 C
+set first baz_opt 0 C
+set first baz_opt_1 C
+set first baz_opt_2 0
+set first foo_ C 0 X
+set first foo__1 C 0
+set first foo__2 X
+set first zig C X Y
+set first zig_1 C X Y
+set follow start $
+set follow foo EOI
+set follow bar EOI
+set follow baz D Y
+set follow baz_opt D Y
+set follow foo_ Y
+set predict start_1 A D B C
+set predict foo_1 A
+set predict foo_2 B
+set predict foo_3 D C
+set predict bar_1 B
+set predict baz_1 C
+set predict baz_opt_1 C
+set predict baz_opt_2 D Y
+set predict foo__1 C Y
+set predict foo__2 X
+set predict zig_1 C X Y
+set expect start A D B C
+set expect foo A B D C
+set expect bar B
+set expect baz C
+set expect baz_opt C D Y
+set expect foo_ C Y X
+set expect zig C X Y

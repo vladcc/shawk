@@ -1,0 +1,2 @@
+Use: rdpg-comp.awk [options] <grammar-file>
+Try 'rdpg-comp.awk -vHelp=1' for more info

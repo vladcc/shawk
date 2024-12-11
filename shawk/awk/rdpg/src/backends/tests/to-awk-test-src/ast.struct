@@ -1,0 +1,17 @@
+start
+
+prefix ast
+
+type node
+has left
+has right
+
+type num
+has num
+has node node
+
+type op
+has op
+has node node
+
+end

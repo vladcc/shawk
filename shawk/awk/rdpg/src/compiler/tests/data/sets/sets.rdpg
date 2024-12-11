@@ -1,0 +1,11 @@
+start : foo EOI ;
+
+foo : A | bar | baz? D ;
+
+bar : B ;
+
+baz : C ;
+
+foo_ : baz? | X ;
+
+zig : foo_ Y ;

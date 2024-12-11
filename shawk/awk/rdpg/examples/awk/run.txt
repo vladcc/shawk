@@ -1,0 +1,1 @@
+awk -f _main.awk -f _rdpg_parser.awk ../input.txt

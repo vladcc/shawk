@@ -1,0 +1,32 @@
+--- rdpg-comp.awk ---
+
+LL(1) recursive descent parser generator
+
+Use: rdpg-comp.awk [options] <grammar-file>
+
+Options:
+-v FatalErr=<n> - quit after <n> number of errors; <n> is positive
+-v WarnErr=1    - treat warnings as errors
+-v WarnAll=1    - turn on all warnings
+-v WarnReach=1  - warn about unreachable non-terminals
+-v WarnEsc=1    - warn about unreachable escapes
+-v Check=1      - quit after all grammar checks; don't generate code
+-v Grammar=1    - print the expanded grammar and quit
+-v Rules=1      - print the list of rules and quit
+-v Sets=1       - print the grammar sets and quit
+-v Table=1      - print the parse table and quit
+-v Example=1    - print example
+-v Help=1       - print this screen
+-v Version=1    - print version
+
+-v Sync=1 - default syncing. Same if no sync option is used. Every non-terminal
+function syncs to the the first token found in the follow set of any of its
+rules and returns true. Returns false otherwise. Could lead to an error cascade.
+
+-v Sync=0 - no syncing. All non-terminal functions return false. I.e. the parser
+stops after a single error is encountered.
+
+-v Sync="<nont>=<tok-csv>[;<nont>=<tok-csv>]" - sync only non-terminals
+<nont> on tokens in <tok-csv>. <nont> must exist and all tokens in <tok-csv>
+must be in its follow set. E.g. "foo=TOK_A,TOK_B;bar=TOK_C;baz=EOI" will sync
+non-terminal foo only on tokens TOK_A and TOK_B, bar on TOK_C, and baz on EOI.

@@ -1,0 +1,3 @@
+start : foo EOI ;
+
+foo : X ;

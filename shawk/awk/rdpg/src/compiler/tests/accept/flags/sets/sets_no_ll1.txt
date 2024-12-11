@@ -1,0 +1,104 @@
+set first start A B C Q EOI R W D
+set first start_1 A B C Q EOI R W D
+set first foo A B C Q 0 R W D
+set first foo_1 A
+set first foo_2 B
+set first foo_3 C
+set first foo_4 A
+set first foo_5 B C D
+set first foo_6 A R
+set first foo_7 Q R
+set first foo_8 R
+set first foo_9 0 W
+set first foo_10 0 W
+set first bar A
+set first bar_1 A
+set first baz B C D
+set first baz_1 B C D
+set first zig B C D
+set first zig_1 B
+set first zig_2 C D
+set first zag C D
+set first zag_1 C
+set first zag_2 D
+set first zag_3 C D
+set first zog C D
+set first zog_1 C
+set first zog_2 D
+set first ping R
+set first ping_1 R
+set first ping_opt 0 R
+set first ping_opt_1 R
+set first ping_opt_2 0
+set first ping_plus R
+set first ping_plus_1 R
+set first ping_star 0 R
+set first ping_star_1 R
+set first ping_star_2 0
+set first pong W
+set first pong_1 W
+set first pong_opt 0 W
+set first pong_opt_1 W
+set first pong_opt_2 0
+set first pong_star 0 W
+set first pong_star_1 W
+set first pong_star_2 0
+set follow start $
+set follow foo EOI X
+set follow bar EOI X
+set follow baz EOI X
+set follow zig EOI X
+set follow zag EOI X
+set follow zog EOI X
+set follow ping A R Q
+set follow ping_opt A
+set follow ping_plus Q
+set follow ping_star Q
+set follow pong EOI W X
+set follow pong_opt EOI X
+set follow pong_star EOI X
+set predict start_1 A B C Q EOI R W D
+set predict foo_1 A
+set predict foo_2 B
+set predict foo_3 C
+set predict foo_4 A
+set predict foo_5 B C D
+set predict foo_6 A R
+set predict foo_7 Q R
+set predict foo_8 R
+set predict foo_9 W EOI X
+set predict foo_10 W EOI X
+set predict bar_1 A
+set predict baz_1 B C D
+set predict zig_1 B
+set predict zig_2 C D
+set predict zag_1 C
+set predict zag_2 D
+set predict zag_3 C D
+set predict zog_1 C
+set predict zog_2 D
+set predict ping_1 R
+set predict ping_opt_1 R
+set predict ping_opt_2 A
+set predict ping_plus_1 R
+set predict ping_star_1 R
+set predict ping_star_2 Q
+set predict pong_1 W
+set predict pong_opt_1 W
+set predict pong_opt_2 EOI X
+set predict pong_star_1 W
+set predict pong_star_2 EOI X
+set expect start A B C Q EOI R W D
+set expect foo A B C D R Q W EOI X
+set expect bar A
+set expect baz B C D
+set expect zig B C D
+set expect zag C D
+set expect zog C D
+set expect ping R
+set expect ping_opt R A
+set expect ping_plus R
+set expect ping_star R Q
+set expect pong W
+set expect pong_opt W EOI X
+set expect pong_star W EOI X

@@ -1,0 +1,5 @@
+start : foo EOI ;
+
+foo : A foo \esc1 \esc2 \esc3;
+
+bar : B | foo? ;

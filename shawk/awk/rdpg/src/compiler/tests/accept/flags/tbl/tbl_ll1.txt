@@ -1,0 +1,17 @@
+table ;;EOI;SEMI;PLUS;MINUS;MUL;DIV;POW;NUMBER;L_PAR;R_PAR;
+table ;start;;start_1;;start_1;;;;start_1;start_1;;
+table ;expr;;expr_1;;expr_1;;;;expr_1;expr_1;;
+table ;expr_plus;;expr_plus_1;;expr_plus_1;;;;expr_plus_1;expr_plus_1;;
+table ;expr_star;expr_star_2;expr_star_1;;expr_star_1;;;;expr_star_1;expr_star_1;;
+table ;expr_add_sub;;;;expr_add_sub_1;;;;expr_add_sub_1;expr_add_sub_1;;
+table ;expr_add_sub_opt;;expr_add_sub_opt_2;;expr_add_sub_opt_1;;;;expr_add_sub_opt_1;expr_add_sub_opt_1;;
+table ;add_sub;;;add_sub_1;add_sub_2;;;;;;;
+table ;add_sub_star;;add_sub_star_2;add_sub_star_1;add_sub_star_1;;;;;;add_sub_star_2;
+table ;expr_mul_div;;;;expr_mul_div_1;;;;expr_mul_div_1;expr_mul_div_1;;
+table ;mul_div;;;;;mul_div_1;mul_div_2;;;;;
+table ;mul_div_star;;mul_div_star_2;mul_div_star_2;mul_div_star_2;mul_div_star_1;mul_div_star_1;;;;mul_div_star_2;
+table ;expr_expon;;;;expr_expon_1;;;;expr_expon_1;expr_expon_1;;
+table ;expon;;;;;;;expon_1;;;;
+table ;expon_opt;;expon_opt_2;expon_opt_2;expon_opt_2;expon_opt_2;expon_opt_2;expon_opt_1;;;expon_opt_2;
+table ;expr_base;;;;expr_base_1;;;;expr_base_2;expr_base_2;;
+table ;base;;;;;;;;base_1;base_2;;

@@ -1,0 +1,25 @@
+rule 1 start_1 start : expr_plus EOI 
+rule 2 expr_1 expr : expr_add_sub_opt SEMI 
+rule 3 expr_plus_1 expr_plus : expr expr_star 
+rule 4 expr_star_1 expr_star : expr expr_star 
+rule 5 expr_star_2 expr_star : 0 
+rule 6 expr_add_sub_1 expr_add_sub : expr_mul_div add_sub_star 
+rule 7 expr_add_sub_opt_1 expr_add_sub_opt : expr_add_sub 
+rule 8 expr_add_sub_opt_2 expr_add_sub_opt : 0 
+rule 9 add_sub_1 add_sub : PLUS expr_mul_div 
+rule 10 add_sub_2 add_sub : MINUS expr_mul_div 
+rule 11 add_sub_star_1 add_sub_star : add_sub add_sub_star 
+rule 12 add_sub_star_2 add_sub_star : 0 
+rule 13 expr_mul_div_1 expr_mul_div : expr_expon mul_div_star 
+rule 14 mul_div_1 mul_div : MUL expr_expon 
+rule 15 mul_div_2 mul_div : DIV expr_expon 
+rule 16 mul_div_star_1 mul_div_star : mul_div mul_div_star 
+rule 17 mul_div_star_2 mul_div_star : 0 
+rule 18 expr_expon_1 expr_expon : expr_base expon_opt 
+rule 19 expon_1 expon : POW expr_expon 
+rule 20 expon_opt_1 expon_opt : expon 
+rule 21 expon_opt_2 expon_opt : 0 
+rule 22 expr_base_1 expr_base : MINUS base 
+rule 23 expr_base_2 expr_base : base 
+rule 24 base_1 base : NUMBER 
+rule 25 base_2 base : L_PAR expr_add_sub R_PAR 
