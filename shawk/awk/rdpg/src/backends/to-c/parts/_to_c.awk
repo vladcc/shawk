@@ -2,7 +2,7 @@
 
 # <to-c>
 function SCRIPT_NAME()    {return "rdpg-to-c.awk"}
-function SCRIPT_VERSION() {return "2.0"}
+function SCRIPT_VERSION() {return "2.0.1"}
 
 function print_help_quit() {
 print sprintf("-- %s - ir to C translator --", SCRIPT_NAME())

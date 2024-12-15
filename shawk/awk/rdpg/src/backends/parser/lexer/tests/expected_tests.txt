@@ -1,4 +1,4 @@
 test_all
+test_use_case
 test_err_case
 test_tok_err
-test_use_case

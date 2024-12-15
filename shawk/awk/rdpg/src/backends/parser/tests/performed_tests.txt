@@ -1,2 +1,9 @@
 test_all
 test_bd
+awk -f ../_parser.awk -f ./_main.awk -f ./_bd_test.awk data/expr.ir 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/accept_default.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 

@@ -2,7 +2,7 @@
 
 # <rdpg-main>
 function SCRIPT_NAME() {return "rdpg-comp.awk"}
-function SCRIPT_VERSION() {return "2.0"}
+function SCRIPT_VERSION() {return "2.0.1"}
 
 # <opts>
 function OPT_SYNC()        {return "Sync"}

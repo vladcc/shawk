@@ -22,7 +22,7 @@ PERF_TESTS := $(TEST_DIR)/performed_tests.txt
 EXP_TESTS  := $(TEST_DIR)/expected_tests.txt
 RUN_TESTS  := $(TEST_DIR)/run-tests.sh
 RUN_TESTSV := $(RUN_TESTS) x
-RUN_SURE   := $(RUN_TESTSV) > $(PERF_TESTS) && grep -E '^test_[^ ]+' $(PERF_TESTS) | sort | diff /dev/stdin $(EXP_TESTS)
+RUN_SURE   := $(RUN_TESTSV) > $(PERF_TESTS) && grep -E '^test_[^ ]+' $(PERF_TESTS) | diff /dev/stdin $(EXP_TESTS)
 # </tests>
 $(TARGET): $(SYNC)
 	$(RUN_SURE) && cp -v $(SYNC) $(TARGET)

@@ -1,6 +1,8 @@
 # <structs-ast>
 # structs:
 #
+# prefix ast
+#
 # type root_node
 # has  cmnt_lst cmnt_lst
 # has  tokens tokens
@@ -103,7 +105,10 @@ function _ast_type_chk(ent, texp) {
 }
 # <\private>
 
-function ast_clear() {delete _STRUCTS_ast_db}
+function ast_clear() {
+	delete _STRUCTS_ast_db
+	_ent_set("gen", _ent_get("gen")+1)
+}
 function ast_is(ent) {return (ent in _STRUCTS_ast_db)}
 function ast_type_of(ent) {
 	if (ent in _STRUCTS_ast_db)
@@ -111,8 +116,8 @@ function ast_type_of(ent) {
 	ast_errq(sprintf("'%s' not an entity", ent))
 }
 function ast_new(type,    _ent) {
-		_ast_set("ents", (_ent = _ast_get("ents")+1))
-	_ent = ("_n" _ent)
+	_ast_set("ents", (_ent = _ast_get("ents")+1))
+	_ent = ("_ast-" _ast_get("gen")+0 "-" _ent)
 	_ast_set(_ent, type)
 	return _ent
 }

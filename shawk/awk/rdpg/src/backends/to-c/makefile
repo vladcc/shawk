@@ -24,7 +24,7 @@ PERF_TESTS := $(TEST_DIR)/performed_tests.txt
 EXP_TESTS  := $(TEST_DIR)/expected_tests.txt
 RUN_TESTS  := ../tests/run-tests.sh ../to-c/test-base/src.sh
 RUN_TESTSV := $(RUN_TESTS) x
-RUN_SURE   := $(RUN_TESTSV) | grep -E '^test_[^ ]+' > $(PERF_TESTS) && diff $(PERF_TESTS) $(EXP_TESTS)
+RUN_SURE   := $(RUN_TESTSV) > $(PERF_TESTS) && grep -E '^test_[^ ]+' $(PERF_TESTS) | diff /dev/stdin $(EXP_TESTS)
 # </tests>
 $(TARGET): $(TO_C)
 	$(RUN_SURE) && cp -v $(TO_C) $(TARGET) && chmod +x $(TARGET)

@@ -1,3 +1,10 @@
+2024-12-15
+	structs 1.2 integrated
+	make sures fixed
+	rdpg-comp.awk   2.0.1
+	rdpg-to-c.awk   2.0.1
+	rdpg-to-awk.awk 2.0.1
+
 2024-12-11
 	Rewrite done.
 	rdpg-comp.awk   2.0
