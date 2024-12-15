@@ -13,28 +13,25 @@ function run
 }
 function run_structs
 {
+	bt_eval cleanup
 	bt_eval run "-f $G_STRUCTS $*"
 }
 function run_main
 {
+	bt_eval cleanup
 	bt_eval run "$G_MAIN $*"
 }
 function cleanup
 {
 	bt_eval "rm -f $G_STDOUT $G_STDERR $*"
 }
-function diff_clean
-{
-	bt_diff_ok "$*"
-	bt_eval cleanup
-}
 function diff_stdout
 {
-	diff_clean "$G_STDOUT accept/$1"
+	bt_diff_ok "$G_STDOUT accept/$1"
 }
 function diff_stderr
 {
-	diff_clean "$G_STDERR accept/$1"
+	bt_diff_ok "$G_STDERR accept/$1"
 }
 
 # <tests>
@@ -113,7 +110,10 @@ function test_runs
 	bt_assert_failure
 	diff_stderr "main_clear.txt"
 
-	bt_eval "rm -f ./test.awk"
+	run_main "-vGenInd=1"
+	bt_assert_failure
+	diff_stdout "main_gen_ind_stdout.txt"
+	diff_stderr "main_gen_ind_stderr.txt"
 }
 # </runs>
 
@@ -121,6 +121,7 @@ function test_all
 {
 	bt_eval test_opts
 	bt_eval test_runs
+	bt_eval cleanup
 }
 # </tests>
 

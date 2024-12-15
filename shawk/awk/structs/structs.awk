@@ -32,7 +32,7 @@ function DESCRIPT() {
 # 2024-08-06
 
 function SCRIPT_NAME() {return "structs.awk"}
-function SCRIPT_VERSION() {return "1.1"}
+function SCRIPT_VERSION() {return "1.2"}
 
 # <awk_rules>
 function init() {
@@ -458,7 +458,12 @@ function gen_base(    _fname, _db_nm) {
 	emit("")
 
 	_fname = make_fnm("clear")
-	emit(sprintf("function %s() {delete %s}", _fname, _db_nm))
+	emit(sprintf("function %s() {", _fname))
+	tabs_inc()
+		emit(sprintf("delete %s", _db_nm))
+		emit("_ent_set(\"gen\", _ent_get(\"gen\")+1)")
+	tabs_dec()
+	emit("}")
 
 	_fname = make_fnm("is")
 	emit(sprintf("function %s(ent) {return (ent in %s)}", _fname, _db_nm))
@@ -478,9 +483,10 @@ function gen_base(    _fname, _db_nm) {
 	_fname = make_fnm("new")
 	emit(sprintf("function %s(type,    _ent) {", _fname))
 	tabs_inc()
-		emit(sprintf("\t_%s(\"ents\", (_ent = _%s(\"ents\")+1))", \
+		emit(sprintf("_%s(\"ents\", (_ent = _%s(\"ents\")+1))", \
 			make_fnm("set"), make_fnm("get")))
-		emit("_ent = (\"_n\" _ent)")
+		emit(sprintf("_ent = (\"_%s-\" _%s(\"gen\")+0 \"-\" _ent)", \
+			prefix_get(), make_fnm("get")))
 		emit(sprintf("_%s(_ent, type)", make_fnm("set")))
 		emit("return _ent")
 	tabs_dec()
@@ -569,6 +575,8 @@ function checks() {check_mtypes()}
 
 function gen_struct_cmnts(    _i, _ie, _j, _je, _type, _memb, _mtype) {
 	emit("# structs:")
+	emit("#")
+	emit(sprintf("# prefix %s", prefix_get()))
 	_ie = type_count()
 	for (_i = 1; _i <= _ie; ++_i) {
 		_type = type_get(_i)
@@ -597,7 +605,7 @@ function generate() {
 # </generate>
 # <doc>
 function print_help() {
-print sprintf("%s %s - type compiler", SCRIPT_NAME(), SCRIPT_VERSION())
+print sprintf("%s - type compiler", SCRIPT_NAME())
 print ""
 print use_str()
 print ""

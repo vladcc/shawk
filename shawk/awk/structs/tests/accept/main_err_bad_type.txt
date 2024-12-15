@@ -1,1 +1,1 @@
-error: entity '_n2' expected type 'list', actual type 'node'
+error: entity '_ent-0-2' expected type 'list', actual type 'node'

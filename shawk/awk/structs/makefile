@@ -17,7 +17,7 @@ all : structs sure
 .PHONY: structs
 structs: structs.awk
 structs.awk: src/_structs.awk src/_gen.awk src/_doc.awk
-	cat $^ > $@
+	cat $^ > $@ && chmod +x $@
 
 src/_structs.awk: structs.smpg
 	$(SMPG) $^ > $@

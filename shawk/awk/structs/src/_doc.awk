@@ -1,6 +1,6 @@
 # <doc>
 function print_help() {
-print sprintf("%s %s - type compiler", SCRIPT_NAME(), SCRIPT_VERSION())
+print sprintf("%s - type compiler", SCRIPT_NAME())
 print ""
 print use_str()
 print ""

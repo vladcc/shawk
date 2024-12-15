@@ -1,4 +1,4 @@
-structs.awk 1.1 - type compiler
+structs.awk - type compiler
 
 Use: structs.awk <structs-file>
 

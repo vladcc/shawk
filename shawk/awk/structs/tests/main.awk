@@ -54,12 +54,23 @@ function test_no_ent() {
 	list_push("foo")
 }
 
-function test_clear() {
+function test_clear(    _lst, _node) {
 	_lst = list_make()
 	list_push(_lst, "foo")
 	_node = list_head(_lst)
 	ent_clear()
 	node_set_data(_node, "bar")
+}
+
+function test_gen_ind(    _lst) {
+	_lst = list_make()
+	list_head(_lst)
+	print _lst
+	print list_make()
+	ent_clear()
+	print list_make()
+	print list_make()
+	list_head(_lst)
 }
 
 function main() {
@@ -73,4 +84,6 @@ function main() {
 		test_no_ent()
 	else if (Clear)
 		test_clear()
+	else if (GenInd)
+		test_gen_ind()
 }

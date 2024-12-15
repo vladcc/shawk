@@ -32,7 +32,7 @@ function DESCRIPT() {
 # 2024-08-06
 
 function SCRIPT_NAME() {return "structs.awk"}
-function SCRIPT_VERSION() {return "1.1"}
+function SCRIPT_VERSION() {return "1.2"}
 
 # <awk_rules>
 function init() {
