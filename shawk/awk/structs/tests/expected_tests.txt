@@ -1,8 +1,8 @@
 test_all
+test_opts
+test_ver
+test_help
+test_fsm
 test_err_files
 test_err_structs
-test_fsm
-test_help
-test_opts
 test_runs
-test_ver

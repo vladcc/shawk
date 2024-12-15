@@ -11,6 +11,15 @@ help:
 	@echo 'make testv   - run tests verbosely'
 	@echo 'make help    - this screen'
 
+# <tests>
+TEST_DIR   := ./tests
+PERF_TESTS := $(TEST_DIR)/performed_tests.txt
+EXP_TESTS  := $(TEST_DIR)/expected_tests.txt
+RUN_TESTS  := $(TEST_DIR)/run-tests.sh
+RUN_TESTSV := $(RUN_TESTS) x
+RUN_SURE   := $(RUN_TESTSV) > $(PERF_TESTS) && grep -E '^test_[^ ]+' $(PERF_TESTS) | diff /dev/stdin $(EXP_TESTS)
+# </tests>
+
 .PHONY: all
 all : structs sure
 
@@ -22,14 +31,14 @@ structs.awk: src/_structs.awk src/_gen.awk src/_doc.awk
 src/_structs.awk: structs.smpg
 	$(SMPG) $^ > $@
 
-.PHONY: sure
-sure:
-	diff <(./tests/run-tests.sh x | grep -E '^test_[^ ]+' | sort) ./tests/expected_tests.txt
-
 .PHONY: test
 test:
-	cd tests/; ./run-tests.sh
+	$(RUN_TESTS)
 
 .PHONY: testv
 testv:
-	cd tests/; ./run-tests.sh x
+	$(RUN_TESTSV)
+
+.PHONY: sure
+sure:
+	$(RUN_SURE)
