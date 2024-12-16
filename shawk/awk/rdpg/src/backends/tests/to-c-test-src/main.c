@@ -470,9 +470,9 @@ void tok_err_foo(usr_ctx_foo * usr, prs_ctx_foo * prs)
 	fprintf(stderr, "file %s, line %d, pos %d: unexpected '%s'",
 		lex->fname, lex->line, lex->pos, lex_to_str(lex->curr));
 
-	tok_id_foo prev = lex->prev;
+	tok_id_foo prev = (tok_id_foo)lex->prev;
 	if (prev != NONE_FOO)
-		fprintf(stderr, " after '%s'", lex_to_str(prev));
+		fprintf(stderr, " after '%s'", lex_to_str((tok_id)prev));
 	fprintf(stderr, "%s", "\n");
 
 	fprintf(stderr, "%s", lex->str);
@@ -488,12 +488,12 @@ void tok_err_foo(usr_ctx_foo * usr, prs_ctx_foo * prs)
 	const tok_id_foo * exp = rdpg_expect_foo(prs, &exp_size);
 
 	if (1 == exp_size)
-		fprintf(stderr, "expected: %s", lex_to_str(exp[0]));
+		fprintf(stderr, "expected: %s", lex_to_str((tok_id)exp[0]));
 	else if (exp_size > 1)
 	{
 		fprintf(stderr, "%s", "expected one of:");
 		for (size_t i = 0; i < exp_size; ++i)
-			fprintf(stderr, " %s", lex_to_str(exp[i]));
+			fprintf(stderr, " %s", lex_to_str((tok_id)exp[i]));
 	}
 	fprintf(stderr, "%c", '\n');
 }
