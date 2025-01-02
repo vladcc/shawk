@@ -1,3 +1,6 @@
+2025-01-02
+	rdpg-comp.awk 2.0.2 - lex-awk.awk 1.7.3 integrated
+
 2024-12-15
 	structs 1.2 integrated
 	make sures fixed
