@@ -1,3 +1,8 @@
+2025-01-02
+	lex-awk.awk 1.7.3
+	The line position is moved at the end if !lex_read_line(). Allows to discard
+	comments without reading every character.
+
 2024-09-22
 	lex-awk.awk 1.7.2
 	bugfix - input does not advance past the last character

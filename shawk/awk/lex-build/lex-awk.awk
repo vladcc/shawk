@@ -11,7 +11,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.7.2"}
+function SCRIPT_VERSION() {return "1.7.3"}
 # </script>
 
 # <out_signature>
@@ -194,6 +194,7 @@ function out_lex_io() {
 	out_line("return 1")
 	tabs_dec()
 	out_line("}")
+	out_line(sprintf("%s = length(%s)+2", VAR_LINE_POS(), VAR_LINE_STR()))
 	out_line("return 0")
 	tabs_dec()
 	out_line("}")
