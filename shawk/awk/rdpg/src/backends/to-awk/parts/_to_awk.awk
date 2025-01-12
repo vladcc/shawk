@@ -2,7 +2,7 @@
 
 # <to-awk>
 function SCRIPT_NAME() {return "rdpg-to-awk.awk"}
-function SCRIPT_VERSION() {return "2.0.1"}
+function SCRIPT_VERSION() {return "2.0.2"}
 
 function print_help_quit() {
 print sprintf("-- %s - ir to awk translator --", SCRIPT_NAME())
@@ -123,8 +123,7 @@ function _gen_internal(    _i, _end, _set, _nm) {
 	emit(sprintf("function %s() {return \"\\034\"}", _F_SEP()))
 	emit(sprintf("function %s() {", _fn_name(IR_TOK_NEXT())))
 	tinc()
-		emit(sprintf("%s()", IR_TOK_NEXT()))
-		emit(sprintf("%s = %s()", _V_CURR_TOK(), IR_TOK_CURR()))
+		emit(sprintf("%s = %s()", _V_CURR_TOK(), IR_TOK_NEXT()))
 	tdec()
 	emit("}")
 

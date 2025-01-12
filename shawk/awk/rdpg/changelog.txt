@@ -1,3 +1,6 @@
+2025-01-12
+	rdpg-to-awk.awk 2.0.2 - _rdpg_tok_next() does not call tok_curr() anymore
+
 2025-01-02
 	rdpg-comp.awk 2.0.2 - lex-awk.awk 1.7.3 integrated
 
