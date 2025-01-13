@@ -2,7 +2,7 @@
 
 # <rdpg-main>
 function SCRIPT_NAME() {return "rdpg-comp.awk"}
-function SCRIPT_VERSION() {return "2.1.0"}
+function SCRIPT_VERSION() {return "2.1.1"}
 
 # <opts>
 function OPT_IMM()         {return "Imm"}

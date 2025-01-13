@@ -290,7 +290,7 @@ function tok_err(    _str, _i, _end, _arr, _exp, _prev) {
 	_str = sprintf("file %s, line %d, pos %d: unexpected '%s'", \
 		fname(), lex_get_line_no(), lex_get_pos(), lex_curr_tok())
 
-	if (_prev = _tok_prev())
+	if ((_prev = _tok_prev()) && (_prev != TOK_ERROR()))
 		_str = (_str sprintf(" after '%s'", _prev))
 	_str = (_str "\n")
 	_str = (_str sprintf("%s\n", lex_get_pos_str()))
