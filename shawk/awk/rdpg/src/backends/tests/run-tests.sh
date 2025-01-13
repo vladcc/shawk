@@ -66,6 +66,41 @@ function test_err_cases
 	diff_stderr "bad_start.txt"
 	cleanup
 }
+# <imm>
+function test_imm
+{
+	bt_eval test_imm_1
+	bt_eval test_imm_0
+}
+function test_imm_1
+{
+	pretest "-vImm=1"
+	bt_eval test_use_cases
+	bt_eval test_err_cases
+	postest
+}
+function test_imm_0
+{
+	pretest "-vImm=0"
+	bt_eval test_use_cases
+	bt_eval test_imm_0_err
+	postest
+}
+function test_imm_0_err
+{
+	run "inputs/bad_many.txt"
+	bt_assert_failure
+	diff_stdout "empty"
+	diff_stderr "bad_many_imm_0.txt"
+	cleanup
+
+	run "inputs/bad_start.txt"
+	bt_assert_failure
+	diff_stdout "empty"
+	diff_stderr "bad_start.txt"
+	cleanup
+}
+# </imm>
 # <sync>
 function test_sync_default
 {
@@ -146,6 +181,7 @@ function test_custom_cases
 function test
 {
 	bt_eval test_default
+	bt_eval test_imm
 	bt_eval test_sync
 	bt_eval test_custom_cases
 }

@@ -2,9 +2,10 @@
 
 # <rdpg-main>
 function SCRIPT_NAME() {return "rdpg-comp.awk"}
-function SCRIPT_VERSION() {return "2.0.2"}
+function SCRIPT_VERSION() {return "2.1.0"}
 
 # <opts>
+function OPT_IMM()         {return "Imm"}
 function OPT_SYNC()        {return "Sync"}
 function OPT_WARN_ALL()    {return "WarnAll"}
 function OPT_WARN_REACH()  {return "WarnReach"}
@@ -16,6 +17,9 @@ function OPT_RULES()       {return "Rules"}
 function OPT_SETS()        {return "Sets"}
 function OPT_TABLE()       {return "Table"}
 function OPT_CHECK()       {return "Check"}
+
+function opt_imm_set(str)      {_B_rdpg_opt_tbl[OPT_IMM()] = str}
+function opt_imm()             {return _B_rdpg_opt_tbl[OPT_IMM()]}
 
 function opt_sync_set(str)      {_B_rdpg_opt_tbl[OPT_SYNC()] = str}
 function opt_sync()             {return _B_rdpg_opt_tbl[OPT_SYNC()]}
@@ -173,6 +177,8 @@ function init() {
 		print_use_try()
 		exit_failure()
 	}
+
+	opt_imm_set(("0" == Imm) ? 0 : 1)
 
 	opt_sync_set(Sync)
 	sync_init(opt_sync())

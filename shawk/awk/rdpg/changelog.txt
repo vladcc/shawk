@@ -1,3 +1,6 @@
+2025-01-13
+	rdpg-comp.awk 2.1.0 - -v Imm=<1|0> added with end to end tests
+
 2025-01-12
 	rdpg-to-awk.awk 2.0.2 - _rdpg_tok_next() does not call tok_curr() anymore
 

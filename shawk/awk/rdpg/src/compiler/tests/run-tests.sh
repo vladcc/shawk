@@ -244,8 +244,19 @@ function test_flag_check
 	diff_stderr "checks/err/first_first.txt"
 	cleanup
 }
+
+function test_flag_imm
+{
+	run "-vImm=0 $G_EXPR_GRMR"
+	bt_assert_success
+	diff_stdout "expr-no-imm.ir"
+	diff_stderr "empty"
+	cleanup
+}
+
 function test_flags
 {
+	bt_eval test_flag_imm
 	bt_eval test_flag_grammar
 	bt_eval test_flag_rules
 	bt_eval test_flag_sets

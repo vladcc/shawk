@@ -19,6 +19,13 @@ Options:
 -v Help=1       - print this screen
 -v Version=1    - print version
 
+-v Imm=<1|0> - turn on/off immediate error detection in epsilon productions.
+When off, less sets and predictions are generated, which makes certain hacks
+possible (e.g. inserting tokens into the input stream). Errors get detected next
+time the input is advanced rather than immediately when the wrong token is seen.
+Where in the grammar an error is detected, therefore, becomes less precise.
+On by default.
+
 -v Sync=1 - default syncing. Same if no sync option is used. Every non-terminal
 function syncs to the the first token found in the follow set of any of its
 rules and returns true. Returns false otherwise. Could lead to an error cascade.

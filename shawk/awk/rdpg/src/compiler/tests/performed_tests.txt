@@ -206,6 +206,14 @@ diff ./test_result_stderr.txt accept/fatal_err/fatal_parse.txt
 [ 0 -eq 0 ]
 rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
 test_flags
+test_flag_imm
+awk -f ../rdpg-comp.awk -vImm=0 ../../common/expr.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/expr-no-imm.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
 test_flag_grammar
 awk -f ../rdpg-comp.awk -vGrammar=1 ../../common/expr.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
 [ 0 -eq 0 ]

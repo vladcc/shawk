@@ -17,6 +17,7 @@ test_fatal_err
 test_fatal_warn_err
 test_fatal_parse
 test_flags
+test_flag_imm
 test_flag_grammar
 test_flag_rules
 test_flag_sets
