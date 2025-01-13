@@ -1,4 +1,7 @@
 2025-01-13
+	rdpg-to-awk.awk 2.1.0
+	-vTokHack=1 implemented
+
 	rdpg-comp.awk 2.1.1
 	bugfix - "error" not considered a 'prev' token anymore
 

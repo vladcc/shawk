@@ -11,12 +11,15 @@ The returned tokens must be logically comparable; TOK_A() == TOK_A() and
 TOK_A() != TOK_B() must evaluate to true.
 
 Exported API:
-rdpg_parse()         - call to parse. Returns true if the parse encountered no
+rdpg_parse()           - call to parse. Returns true if the parse encountered no
 errors, false otherwise.
-rdpg_expect(arr_out) - call from tok_err(). Places the set of expected tokens
+rdpg_expect(arr_out)   - call from tok_err(). Places the set of expected tokens
 in arr_out. Returns the length of arr_out.
+rdpg_reread_curr_tok() - reread the current token. Necessary when a token is
+pushed as the new current one through an action. Only with TokHack=1.
 
 Options:
 -v Out=<fnm> - output source code goes to <fnm>.awk
+-v TokHack=1 - Generate rdpg_reread_curr_tok()
 -v Help=1    - this screen
 -v Version=1 - version info
