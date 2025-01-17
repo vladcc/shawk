@@ -4,8 +4,8 @@ Use: rdpg-comp.awk [options] <grammar> | rdpg-to-awk.awk > out.awk
 
 Required user callbacks:
 tok_next() - returns the next token in the stream
-tok_curr() - returns the current token; i.e. the one from the last tok_next()
 tok_err()  - called when the current token does not match what's expected
+tok_curr() - returns the current token in the stream. Only with TokHack=1.
 
 The returned tokens must be logically comparable; TOK_A() == TOK_A() and
 TOK_A() != TOK_B() must evaluate to true.
