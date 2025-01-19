@@ -24,6 +24,9 @@ token is not what's expected. Print error messages here.
 A call to err_crit() indicates a bug. This call is expected to never happen and
 err_crit() is expected to never return.
 
+4. tok_id tok_curr(usr_ctx * usr); - returns the current token. Only with
+TokHack=1.
+
 III. Exported types:
 1. typedef struct prs_ctx {void * ctx;} prs_ctx; - holds the parser state.
 Opaque to the user. Needed in order to avoid static variables. The user does not
@@ -37,8 +40,12 @@ true of no error occurred while parsing, false otherwise.
 tok_err(). Returns a pointer to an array of tokens which were expected at this
 point in the input. Upon return, out_size holds the size of the array.
 
+3. void rdpg_reread_curr_tok(prs_ctx * prs); - reread the current token. Only
+with TokHack=1.
+
 Options:
 -v Dir=<dir> - output the .c and .h files in <dir>; ./ by default
 -v Tag=<str> - use <str> in functions, types, and files; e.g. rdpg_parse_<tag>()
+-v TokHack=1 - Generate rdpg_reread_curr_tok()
 -v Help=1    - this screen
 -v Version=1 - version info

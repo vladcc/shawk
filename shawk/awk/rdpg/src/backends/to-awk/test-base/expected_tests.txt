@@ -8,6 +8,9 @@ test_err_cases
 test_imm_0
 test_use_cases
 test_imm_0_err
+test_tok_hack
+test_use_cases
+test_err_cases
 test_sync
 test_sync_default
 test_use_cases

@@ -178,10 +178,18 @@ function test_custom_cases
 	bt_eval test_custom
 	postest
 }
+function test_tok_hack
+{
+	pretest "-vTokHack=1"
+	bt_eval test_use_cases
+	bt_eval test_err_cases
+	postest
+}
 function test
 {
 	bt_eval test_default
 	bt_eval test_imm
+	bt_eval test_tok_hack
 	bt_eval test_sync
 	bt_eval test_custom_cases
 }

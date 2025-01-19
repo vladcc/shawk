@@ -135,6 +135,51 @@ on_finish
 _c_cleanup
 rm -f to-c-test-src/main.bin
 true
+test_tok_hack
+on_start -vTokHack=1
+_c_cleanup
+rm -f to-c-test-src/main.bin
+_generate_parser -vTokHack=1
+command -v gcc > /dev/null
+[ 0 -eq 0 ]
+awk -f ../../../rdpg-comp.awk -vTokHack=1 ../../common/expr.rdpg | awk -f ../to-c/rdpg-to-c.awk -vDir=./to-c-test-src
+[ 0 -eq 0 ]
+awk -f ../../../rdpg-comp.awk -vTokHack=1 ../../common/expr.rdpg | sed -E 's/[A-Z][A-Z_]+/&_FOO/g' | awk -f ../to-c/rdpg-to-c.awk -vTag=foo -vDir=./to-c-test-src
+[ 0 -eq 0 ]
+gcc to-c-test-src/main.c to-c-test-src/rdpg_parser.c to-c-test-src/rdpg_parser_foo.c -DCOMPILE_FOO -o to-c-test-src/main.bin -Wall -Werror -Wfatal-errors
+[ 0 -eq 0 ]
+gcc to-c-test-src/main.c to-c-test-src/rdpg_parser.c -o to-c-test-src/main.bin -Wall -Werror -Wfatal-errors
+[ 0 -eq 0 ]
+test_use_cases
+run_prog inputs/use_cases.txt
+to-c-test-src/main.bin inputs/use_cases.txt 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/use_cases.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_err_cases
+run_prog inputs/bad_many.txt
+to-c-test-src/main.bin inputs/bad_many.txt 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/bad_many.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+run_prog inputs/bad_start.txt
+to-c-test-src/main.bin inputs/bad_start.txt 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/bad_start.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+on_finish
+_c_cleanup
+rm -f to-c-test-src/main.bin
+true
 test_sync
 test_sync_default
 on_start -vSync=1

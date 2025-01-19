@@ -114,6 +114,44 @@ diff ./test_result_stderr.txt accept/bad_start.txt
 rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
 on_finish
 true
+test_tok_hack
+on_start -vTokHack=1
+_generate_parser -vTokHack=1
+awk -f ../../../rdpg-comp.awk -vTokHack=1 ../../common/expr.rdpg | awk -f ../to-awk/rdpg-to-awk.awk > to-awk-test-src/_rdpg_parser.awk
+[ 0 -eq 0 ]
+awk -f ../../../rdpg-comp.awk -vTokHack=1 ../../common/expr.rdpg | awk -f ../to-awk/rdpg-to-awk.awk -vOut='to-awk-test-src/_rdpg_parser.out'
+[ 0 -eq 0 ]
+diff to-awk-test-src/_rdpg_parser.awk to-awk-test-src/_rdpg_parser.out.awk
+[ 0 -eq 0 ]
+rm -f to-awk-test-src/_rdpg_parser.out.awk
+test_use_cases
+run_prog inputs/use_cases.txt
+awk -f to-awk-test-src/_main.awk -f to-awk-test-src/_lex.awk -f to-awk-test-src/_rdpg_parser.awk -f to-awk-test-src/_btree.awk -f to-awk-test-src/_eval.awk inputs/use_cases.txt 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/use_cases.txt
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+test_err_cases
+run_prog inputs/bad_many.txt
+awk -f to-awk-test-src/_main.awk -f to-awk-test-src/_lex.awk -f to-awk-test-src/_rdpg_parser.awk -f to-awk-test-src/_btree.awk -f to-awk-test-src/_eval.awk inputs/bad_many.txt 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/bad_many.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+run_prog inputs/bad_start.txt
+awk -f to-awk-test-src/_main.awk -f to-awk-test-src/_lex.awk -f to-awk-test-src/_rdpg_parser.awk -f to-awk-test-src/_btree.awk -f to-awk-test-src/_eval.awk inputs/bad_start.txt 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/bad_start.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+on_finish
+true
 test_sync
 test_sync_default
 on_start -vSync=1
