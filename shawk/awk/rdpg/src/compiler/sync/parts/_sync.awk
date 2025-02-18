@@ -25,7 +25,7 @@ function sync_process_sets() {
 		return 1
 
 	sets_flw_customize()
-	return (check_err_conflicts() == 0)
+	return (sync_type() == SYNC_NONE()) ? 1 : (check_err_conflicts() == 0)
 }
 
 function sync_type() {return _B_sync_table["type"]}
