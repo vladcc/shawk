@@ -20,6 +20,14 @@ function sync_init(str) {
 	}
 }
 
+function sync_process_sets() {
+	if (sync_type() == SYNC_DEFAULT())
+		return 1
+
+	sets_flw_customize()
+	return (check_err_conflicts() == 0)
+}
+
 function sync_type() {return _B_sync_table["type"]}
 function sync_nont_count() {return _B_sync_table["nont.count"]+0}
 function sync_nont(n) {return _B_sync_table[sprintf("nont=%s", n)]}

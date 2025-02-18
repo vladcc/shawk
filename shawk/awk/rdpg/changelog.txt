@@ -1,5 +1,9 @@
+2025-02-18
+	rdpg-comp.awk 2.1.2
+	bugfix: Sync != default does not break the conflict checks
+
 2025-01-19
-	rdpt-to-c.awk 2.1.0
+	rdpg-to-c.awk 2.1.0
 	-vTokHack=1 implemented
 
 2025-01-17

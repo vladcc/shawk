@@ -29,6 +29,23 @@ function cond_print
 }
 
 # <tests>
+
+# <bugs>
+function test_sync_check_bug
+{
+	# The follow sets were mutated before the grammar check. Check=1 would show
+	# the conflict, while a normal run with Sync != default would not.
+	run "-vSync=0 data/checks/err/first_follow.rdpg"
+	bt_assert_failure
+	cleanup
+}
+
+function test_bug_fixes
+{
+	bt_eval test_sync_check_bug
+}
+# </bugs>
+
 # <grammar-checks>
 # <errors>
 function test_checks_errs
@@ -405,6 +422,7 @@ function test_use_case
 
 function test_all
 {
+	bt_eval test_bug_fixes
 	bt_eval test_messages
 	bt_eval test_checks
 	bt_eval test_fatal_err

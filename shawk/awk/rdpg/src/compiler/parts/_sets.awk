@@ -5,10 +5,6 @@ function sets_init() {
 	_sets_follow()
 	_sets_predict()
 	_sets_expect()
-
-	# It is important to do this step after all set types have been generated
-	# because it will mutate the follow sets.
-	_sets_follow_customize()
 }
 
 function sets_print() {
@@ -42,6 +38,10 @@ function sets_pred_pretty(name)  {return _sets_pred_get_pretty(name)}
 function sets_exp_size(name)   {return _sets_exp_size(name)}
 function sets_exp_pretty(name) {return _sets_exp_get_pretty(name)}
 
+function sets_flw_customize() {
+	# Mutate the sets according to the sync option.
+	_sets_flw_customize()
+}
 function sets_flw_size(name)   {return _sets_flw_size(name)}
 function sets_flw_pretty(name) {return _sets_flw_get_pretty(name)}
 
@@ -378,7 +378,7 @@ function _sets_flw_cst_nont(nont,    _i, _end, _term) {
 	for (_i = 1; _i <= _end; ++_i)
 		_sets_flw_add(nont, sync_term(nont, _i))
 }
-function _sets_follow_customize(    _i, _end, _nont) {
+function _sets_flw_customize(    _i, _end, _nont) {
 	if (sync_type() == SYNC_DEFAULT()) {
 		# Do nothing.
 		return

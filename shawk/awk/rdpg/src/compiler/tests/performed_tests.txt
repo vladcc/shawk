@@ -1,4 +1,9 @@
 test_all
+test_bug_fixes
+test_sync_check_bug
+awk -f ../rdpg-comp.awk -vSync=0 data/checks/err/first_follow.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
 test_messages
 test_example
 awk -f ../rdpg-comp.awk -vExample=1 1>./test_result_stdout.txt 2>./test_result_stderr.txt

@@ -2,7 +2,7 @@
 
 # <rdpg-main>
 function SCRIPT_NAME() {return "rdpg-comp.awk"}
-function SCRIPT_VERSION() {return "2.1.1"}
+function SCRIPT_VERSION() {return "2.1.2"}
 
 # <opts>
 function OPT_IMM()         {return "Imm"}
@@ -226,6 +226,9 @@ function main() {
 		print_tbl()
 		exit_success()
 	}
+
+	if (!sync_process_sets())
+		exit_failure()
 
 	generate_code()
 }
