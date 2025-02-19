@@ -20,11 +20,7 @@ input.
 2. void tok_err(usr_ctx * usr, prs_ctx * prs); - called when the current input
 token is not what's expected. Print error messages here.
 
-3. void err_crit(const char * msg); - called when a critical error has occurred.
-A call to err_crit() indicates a bug. This call is expected to never happen and
-err_crit() is expected to never return.
-
-4. tok_id tok_curr(usr_ctx * usr); - returns the current token. Only with
+3. tok_id tok_curr(usr_ctx * usr); - returns the current token. Only with
 TokHack=1.
 
 III. Exported types:

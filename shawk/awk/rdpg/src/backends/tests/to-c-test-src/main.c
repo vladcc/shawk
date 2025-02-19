@@ -401,11 +401,6 @@ void on_number(usr_ctx * usr) {do_act(usr, ON_NUMBER);}
 // </esc>
 
 // <callbacks>
-void err_crit(const char * msg)
-{
-	fprintf(stderr, "error: critical: %s\n", msg);
-	exit(EXIT_FAILURE);
-}
 void tok_err(usr_ctx * usr, prs_ctx * prs)
 {
 	lexer * lex = ctx_lex(usr);
@@ -457,10 +452,6 @@ static lexer * ctx_lex_foo(usr_ctx_foo * ctx)
 	return (lexer *)(ctx->ctx);
 }
 
-void err_crit_foo(const char * msg)
-{
-	err_crit(msg);
-}
 void tok_err_foo(usr_ctx_foo * usr, prs_ctx_foo * prs)
 {
 	lexer * lex = ctx_lex_foo(usr);

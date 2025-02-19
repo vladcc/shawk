@@ -270,20 +270,10 @@ static const sync_set sset_base = {set_11};
 
 static bool is_in_set(const tok_id_foo tk, const tok_id_foo * data, size_t len)
 {
-	switch (len)
+	for (size_t i = 0; i < len; ++i)
 	{
-		case 7: if (tk == data[6]) return true;
-		case 6: if (tk == data[5]) return true;
-		case 5: if (tk == data[4]) return true;
-		case 4: if (tk == data[3]) return true;
-		case 3: if (tk == data[2]) return true;
-		case 2: if (tk == data[1]) return true;
-		case 1: return (tk == data[0]);
-		default: {
-			// should not return
-			err_crit_foo("is_in_set(): bug in set size");
-			break;
-		}
+		if (data[i] == tk)
+			return true;
 	}
 	return false;
 }

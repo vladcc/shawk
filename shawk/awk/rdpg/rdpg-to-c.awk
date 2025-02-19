@@ -2,7 +2,7 @@
 
 # <to-c>
 function SCRIPT_NAME()    {return "rdpg-to-c.awk"}
-function SCRIPT_VERSION() {return "2.1.0"}
+function SCRIPT_VERSION() {return "2.1.1"}
 
 function print_help_quit() {
 print sprintf("-- %s - ir to C translator --", SCRIPT_NAME())
@@ -27,11 +27,7 @@ print ""
 print "2. void tok_err(usr_ctx * usr, prs_ctx * prs); - called when the current input"
 print "token is not what's expected. Print error messages here."
 print ""
-print "3. void err_crit(const char * msg); - called when a critical error has occurred."
-print "A call to err_crit() indicates a bug. This call is expected to never happen and"
-print "err_crit() is expected to never return."
-print ""
-print "4. tok_id tok_curr(usr_ctx * usr); - returns the current token. Only with"
+print "3. tok_id tok_curr(usr_ctx * usr); - returns the current token. Only with"
 print "TokHack=1."
 print ""
 print "III. Exported types:"
@@ -211,9 +207,8 @@ function _esc_lst() {return _B_to_c_esc_lst}
 
 # <cback>
 function _cbk_str(    _str) {
-	_str = sprintf("void %s(const char * msg);", _postf("err_crit"))
-	_str = (_str "\n" sprintf("void %s(%s * usr, %s * prs);",
-		_postf("tok_err"), _T_USR_CTX(), _T_PRS_CTX()))
+	_str = sprintf("void %s(%s * usr, %s * prs);", _postf("tok_err"), \
+		_T_USR_CTX(), _T_PRS_CTX())
 	_str = (_str "\n" sprintf("%s %s(%s * usr);", _T_TOK(), \
 		_postf("tok_next"), _T_USR_CTX()))
 
@@ -278,15 +273,12 @@ function _gen_io() {
 	_emit_c("}")
 }
 
-function _gen_sets(    _i, _end, _als, _data, _sz, _al_sz_map, _set, _tp, _nm,
-_sz_max) {
+function _gen_sets(    _i, _end, _als, _data, _sz, _al_sz_map, _set, _tp, _nm) {
 	_end = _set_alias_count()
 	for (_i = 1; _i <= _end; ++_i) {
 		_als = _set_alias_name_by_num(_i)
 		_data = _set_alias_data_by_num(_i)
 		_sz = gsub(" ", ", ", _data)+1
-		if (_sz > _sz_max)
-			_sz_max = _sz
 		_al_sz_map[_als] = _sz
 		_emit_c(sprintf("static const %s %s_d[%d] = {%s};", _T_TOK(), _als, \
 			_sz, _data));
@@ -339,35 +331,20 @@ _sz_max) {
 	}
 
 	_nl_c()
-	_emit_c(sprintf("static bool %s(const %s tk, const %s * data, size_t len)", \
+	_emit_c(sprintf("static bool %s(const %s tk, const %s * data, size_t len)",\
 		_F_IN_SET(), _T_TOK(), _T_TOK()))
 	_emit_c("{")
 	tinc()
-		_emit_c("switch (len)")
+		_emit_c("for (size_t i = 0; i < len; ++i)")
 		_emit_c("{")
-		tinc()
-			_end = _sz_max
-			for (_i = _end; _i >= 1; --_i) {
-				if (_i != 1) {
-					_emit_c(\
-					sprintf("case %d: if (tk == data[%d]) return true;", \
-						_i, _i-1))
-				} else {
-					_emit_c(sprintf("case %d: return (tk == data[%d]);", \
-						_i, _i-1))
-				}
-			}
-			_emit_c("default: {")
 			tinc()
-				_emit_c("// should not return")
-				_emit_c(sprintf("%s(\"is_in_set(): bug in set size\");", \
-					_postf("err_crit")))
-				_emit_c("break;")
+				_emit_c("if (data[i] == tk)")
+				tinc()
+					_emit_c("return true;")
+				tdec()
 			tdec()
-			_emit_c("}")
-		tdec()
 		_emit_c("}")
-	_emit_c("return false;")
+		_emit_c("return false;")
 	tdec()
 	_emit_c("}")
 
