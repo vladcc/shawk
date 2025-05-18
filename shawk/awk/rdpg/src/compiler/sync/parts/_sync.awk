@@ -3,6 +3,12 @@ function SYNC_NONE()    {return "snone"}
 function SYNC_DEFAULT() {return "sdef"}
 function SYNC_CUSTOM()  {return "scustom"}
 
+# Sync=0 - turned off
+# Sync=1 - default
+# Sync="nont_a=TOK1;nont_b=TOK2,TOK3;nont_c=on_sync_nont_c;nont_d=1" - custom
+# =1 in custom means default - don't empty the set
+# a non-terminal becomes a callback to a bool function
+
 function sync_init(str) {
 	if ("" == str)
 		str = "1"
@@ -58,6 +64,11 @@ function _sync_split_semi(str,    _arr, _len, _i, _str) {
 		_sync_split_equals(_str)
 	}
 }
+
+function _sync_is_term_list(str) {
+	return match(str, "^[A-Z_][A-Z_0-9]*(,[A-Z_][A-Z_0-9]*)*$")
+}
+
 function _sync_split_equals(str,    _arr, _len, _i, _head, _tail) {
 	# expected str: "<nont>=TERM[,TERM]"
 	_len = split(str, _arr, "=")
@@ -77,7 +88,14 @@ function _sync_split_equals(str,    _arr, _len, _i, _head, _tail) {
 		_sync_errq(sprintf("'%s' not a non-terminal", _head), str)
 
 	_sync_save_nont(_head)
+
+	IMPLEMENT_THE_SYNCING_LIKE_BELOW()
+	# if ("1" == _tail) # default
+	# else if (is_non_term(_tail)) # save callback
+	# else if (_sync_is_term_list(_tail)) # tok csv
 	_sync_split_comma(_tail)
+	# else
+	#	_sync_errq("bad Sync syntax; see -vSyncHelp=1")
 }
 function _sync_split_comma(str,    _arr, _len, _i, _nm) {
 	# expected str: TERM[,TERM]
