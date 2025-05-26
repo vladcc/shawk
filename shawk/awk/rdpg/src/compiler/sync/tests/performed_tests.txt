@@ -128,6 +128,13 @@ diff ./test_result_stdout.txt accept/empty
 diff ./test_result_stderr.txt accept/err_7.txt
 [ 0 -eq 0 ]
 rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../_sync.awk -vSync='foo=BAR, bAZ, ZIG' -f _main.awk  1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_result_stdout.txt accept/empty
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/err_7.txt
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
 awk -f ../_sync.awk -vSync='=BAZ,,' -f _main.awk  1>./test_result_stdout.txt 2>./test_result_stderr.txt
 [ 1 -ne 0 ]
 diff ./test_result_stdout.txt accept/empty
@@ -140,12 +147,5 @@ awk -f ../_sync.awk -vSync='Foo=BAR' -f _main.awk  1>./test_result_stdout.txt 2>
 diff ./test_result_stdout.txt accept/empty
 [ 0 -eq 0 ]
 diff ./test_result_stderr.txt accept/err_9.txt
-[ 0 -eq 0 ]
-rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
-awk -f ../_sync.awk -vSync='foo=BAR, bAZ, ZIG' -f _main.awk  1>./test_result_stdout.txt 2>./test_result_stderr.txt
-[ 1 -ne 0 ]
-diff ./test_result_stdout.txt accept/empty
-[ 0 -eq 0 ]
-diff ./test_result_stderr.txt accept/err_10.txt
 [ 0 -eq 0 ]
 rm -f ./test_result_stdout.txt ./test_result_stderr.txt 

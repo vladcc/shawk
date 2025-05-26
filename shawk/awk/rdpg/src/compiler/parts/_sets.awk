@@ -361,7 +361,7 @@ function _sets_follow(    _i, _end, _chg) {
 function _sets_flw_cst_errq(msg) {
 	error_quit(sprintf("sync: %s", msg))
 }
-function _sets_flw_cst_nont(nont,    _i, _end, _term) {
+function _sets_flw_cst_term_lst(nont,    _i, _end, _term) {
 	_end = sync_term_count(nont)
 	for (_i = 1; _i <= _end; ++_i) {
 		_term = sync_term(nont, _i)
@@ -378,7 +378,11 @@ function _sets_flw_cst_nont(nont,    _i, _end, _term) {
 	for (_i = 1; _i <= _end; ++_i)
 		_sets_flw_add(nont, sync_term(nont, _i))
 }
-function _sets_flw_customize(    _i, _end, _nont) {
+function _sets_flw_cst_empty(nont) {
+    if (_sets_flw_has_name(nont))
+        _sets_flw_make_empty(nont)
+}
+function _sets_flw_customize(    _i, _end, _nont, _cst_type) {
 	if (sync_type() == SYNC_DEFAULT()) {
 		# Do nothing.
 		return
@@ -386,6 +390,7 @@ function _sets_flw_customize(    _i, _end, _nont) {
 		_end = sync_nont_count()
 		for (_i = 1; _i <= _end; ++_i) {
 			_nont = sync_nont(_i)
+            _cst_type = sync_nont_cst_type(_nont)
 			if (!st_name_is_lhs(_nont)) {
 				_sets_flw_cst_errq(sprintf("'%s' not a lhs to be synced", \
 					_nont))
@@ -393,23 +398,28 @@ function _sets_flw_customize(    _i, _end, _nont) {
 			if (!_sets_flw_has_name(_nont)) {
 				_sets_flw_cst_errq(sprintf("'%s' cannot be synced", _nont))
 			}
-			_sets_flw_cst_nont(_nont)
+
+            if (SYNC_NAME_CUSTOM_NOCHAGE() == _cst_type)
+                continue
+            else if (SYNC_NAME_CUSTOM_TERM_LST() == _cst_type)
+                _sets_flw_cst_term_lst(_nont)
+            else if (SYNC_NAME_CUSTOM_CALLBACK() == _cst_type)
+                _sets_flw_cst_empty(_nont)
 		}
 
 		# Empty all follow sets except the ones specified.
 		_end = st_lhs_count()
 		for (_i = 1; _i <= _end; ++_i) {
 			_nont = st_lhs(_i)
-			if (_sets_flw_has_name(_nont) && !sync_has_nont(_nont))
-				_sets_flw_make_empty(_nont)
+			if (!sync_has_nont(_nont))
+				_sets_flw_cst_empty(_nont)
 		}
 	} else if (sync_type() == SYNC_NONE()) {
 		# Empty all follow sets.
 		_end = st_lhs_count()
 		for (_i = 1; _i <= _end; ++_i) {
 			_nont = st_lhs(_i)
-			if (_sets_flw_has_name(_nont))
-				_sets_flw_make_empty(_nont)
+            _sets_flw_cst_empty(_nont)
 		}
 	}
 }

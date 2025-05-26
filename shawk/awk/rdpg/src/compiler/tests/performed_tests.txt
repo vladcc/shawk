@@ -362,6 +362,34 @@ diff ./test_result_stdout.txt accept/sync/sync_custom_3.ir
 diff ./test_result_stderr.txt accept/empty
 [ 0 -eq 0 ]
 rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync='bar=ZIG,ZEG;baz=sync_baz' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_custom_4.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync='foo=1;bar=ZIG,ZEG;baz=sync_baz' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_custom_5.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync='baz=sync_baz' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_custom_6.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
+awk -f ../rdpg-comp.awk -vSync='bar=1' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_result_stdout.txt accept/sync/sync_custom_7.ir
+[ 0 -eq 0 ]
+diff ./test_result_stderr.txt accept/empty
+[ 0 -eq 0 ]
+rm -f ./test_result_stdout.txt ./test_result_stderr.txt 
 test_sync_err_case
 awk -f ../rdpg-comp.awk -vSync='biz=ZIG' data/sync/sync_test.rdpg 1>./test_result_stdout.txt 2>./test_result_stderr.txt
 [ 1 -ne 0 ]

@@ -23,11 +23,13 @@ sets
 {
 	alias set_1 ZAG ZEG
 	alias set_2 ZAG ZEG ZIG
-	alias set_3 ZIG ZEG
+	alias set_3 EOI
+	alias set_4 ZIG ZEG
 	predict baz_opt_1 set_1
 	expect baz set_1
 	expect baz_opt set_2
-	sync bar set_3
+	sync foo set_3
+	sync bar set_4
 }
 func rdpg_parse
 {
@@ -83,7 +85,7 @@ func foo
 	{
 		call expect ZOG
 	}
-	return false
+	return call sync foo
 }
 func baz
 {
@@ -102,7 +104,7 @@ func baz
 	{
 		call expect baz
 	}
-	return false
+	return call sync_baz
 }
 func baz_opt
 {

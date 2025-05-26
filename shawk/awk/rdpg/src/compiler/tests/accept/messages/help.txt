@@ -33,7 +33,20 @@ rules and returns true. Returns false otherwise. Could lead to an error cascade.
 -v Sync=0 - no syncing. All non-terminal functions return false. I.e. the parser
 stops after a single error is encountered.
 
--v Sync="<nont>=<tok-csv>[;<nont>=<tok-csv>]" - sync only non-terminals
-<nont> on tokens in <tok-csv>. <nont> must exist and all tokens in <tok-csv>
-must be in its follow set. E.g. "foo=TOK_A,TOK_B;bar=TOK_C;baz=EOI" will sync
-non-terminal foo only on tokens TOK_A and TOK_B, bar on TOK_C, and baz on EOI.
+-v Sync="<sync-spec>" - customize how syncing happens. Disables synchronization
+except for the specification given by <sync-spec>.
+
+<sync-spec>=(<nont>=<tok-csv>|<nont>=<fn>|<nont>=1)[;<sync-spec>]
+<nont>    - a non-terminal name. Must exist in the grammar.
+<tok-csv> - a list of tokens separated by a comma. The whole <tok-csv> must be
+in the follow set of the associated <nont>.
+<fn>      - function name in snake case, defined by the user, called when the
+associated <nont> is synced. Must return bool reflecting if the synchronization
+was successful or not.
+=1        - leave the default synchronization for the associated <nont>.
+
+Example: -vSync="foo=TOK_A,TOK_B;bar=1;baz=mysync_baz"
+foo will be synced only on TOK_A and TOK_B.
+bar will have its default synchronization.
+baz will be synchronized by a call to mysync_baz().
+All other non-terminals in the grammar will have no synchronization.

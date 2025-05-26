@@ -1,2 +1,0 @@
-sync: 'bAZ' not a terminal:
-BAR,bAZ,ZIG

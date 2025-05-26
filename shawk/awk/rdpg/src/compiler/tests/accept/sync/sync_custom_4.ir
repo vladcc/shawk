@@ -102,7 +102,7 @@ func baz
 	{
 		call expect baz
 	}
-	return false
+	return call sync_baz
 }
 func baz_opt
 {

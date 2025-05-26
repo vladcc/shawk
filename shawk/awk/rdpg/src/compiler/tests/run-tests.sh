@@ -383,6 +383,30 @@ function test_sync_use_case
 	diff_stdout "sync/sync_custom_3.ir"
 	diff_stderr "empty"
 	cleanup
+
+    run "-vSync='bar=ZIG,ZEG;baz=sync_baz' data/sync/sync_test.rdpg"
+	bt_assert_success
+	diff_stdout "sync/sync_custom_4.ir"
+	diff_stderr "empty"
+	cleanup
+
+    run "-vSync='foo=1;bar=ZIG,ZEG;baz=sync_baz' data/sync/sync_test.rdpg"
+	bt_assert_success
+	diff_stdout "sync/sync_custom_5.ir"
+	diff_stderr "empty"
+	cleanup
+
+    run "-vSync='baz=sync_baz' data/sync/sync_test.rdpg"
+	bt_assert_success
+	diff_stdout "sync/sync_custom_6.ir"
+	diff_stderr "empty"
+	cleanup
+
+    run "-vSync='bar=1' data/sync/sync_test.rdpg"
+	bt_assert_success
+	diff_stdout "sync/sync_custom_7.ir"
+	diff_stderr "empty"
+	cleanup
 }
 function test_sync_err_case
 {

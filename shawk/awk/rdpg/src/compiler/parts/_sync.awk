@@ -1,7 +1,20 @@
 # <sync>
+# Sync=0 - turned off
+# Sync=1 - default
+# Sync="nont_a=TOK1;nont_b=TOK2,TOK3;nont_c=on_sync_nont_c;nont_d=1" - custom
+# =1 in custom means default - don't empty the set
+# a non-terminal becomes a callback to a bool function
+
 function SYNC_NONE()    {return "snone"}
 function SYNC_DEFAULT() {return "sdef"}
 function SYNC_CUSTOM()  {return "scustom"}
+
+# Don't empty follow set
+function SYNC_NAME_CUSTOM_NOCHAGE()  {return "snc-nochg"}
+# Empty follow set and call the callback
+function SYNC_NAME_CUSTOM_CALLBACK() {return "snc-calbk"}
+# Replace the follow set with the terminal list
+function SYNC_NAME_CUSTOM_TERM_LST() {return "snc-tlst"}
 
 function sync_init(str) {
 	if ("" == str)
@@ -32,14 +45,21 @@ function sync_type() {return _B_sync_table["type"]}
 function sync_nont_count() {return _B_sync_table["nont.count"]+0}
 function sync_nont(n) {return _B_sync_table[sprintf("nont=%s", n)]}
 function sync_has_nont(n) {return (sprintf("nont.set=%s", n) in _B_sync_table)}
+function sync_nont_cst_type(n) {
+    return _B_sync_table[sprintf("nont.cst.type=%s", n)]
+}
+function sync_nont_cst_callback(n) {
+    return _B_sync_table[sprintf("nont.cst.cbk=%s", n)]
+}
 function sync_term_count(nont) {
 	return _B_sync_table[sprintf("term.count=%s", nont)]+0
 }
 function sync_term(nont, n) {
 	return _B_sync_table[sprintf("term=%s.%s", nont, n)]
 }
-
 # <private>
+function _SYNC_NAME_CUSTOM_DEFAULT() {return "1"}
+
 function _sync_process(str) {
 	# expected str: "<nont>=TERM[,TERM][;<nont>=TERM[,TERM]]"
 	gsub("[[:space:]]", "", str)
@@ -58,8 +78,17 @@ function _sync_split_semi(str,    _arr, _len, _i, _str) {
 		_sync_split_equals(_str)
 	}
 }
+
+function _sync_is_term_list(str) {
+	return match(str, "^[A-Z_][A-Z_0-9]*(,[A-Z_][A-Z_0-9]*)*$")
+}
+
 function _sync_split_equals(str,    _arr, _len, _i, _head, _tail) {
-	# expected str: "<nont>=TERM[,TERM]"
+	# expected str:
+    # <nont>=TERM[,TERM] <-- sync on these tokens
+    # <nont>=1           <-- default sync behavior
+    # <nont>=<nont>      <-- call rhs <nont> on lhs <nont> sync
+
 	_len = split(str, _arr, "=")
 	if (_len != 2)
 		_sync_errq("string does not split in two fields at '='", str)
@@ -77,7 +106,18 @@ function _sync_split_equals(str,    _arr, _len, _i, _head, _tail) {
 		_sync_errq(sprintf("'%s' not a non-terminal", _head), str)
 
 	_sync_save_nont(_head)
-	_sync_split_comma(_tail)
+
+    if (_SYNC_NAME_CUSTOM_DEFAULT() == _tail) {
+        _sync_set_nont_cst_type(SYNC_NAME_CUSTOM_NOCHAGE())
+    } else if (is_non_term(_tail)) {
+        _sync_set_nont_cst_type(SYNC_NAME_CUSTOM_CALLBACK())
+        _sync_set_nont_cst_callback(_tail)
+    } else if (_sync_is_term_list(_tail)) {
+        _sync_set_nont_cst_type(SYNC_NAME_CUSTOM_TERM_LST())
+        _sync_split_comma(_tail)
+	} else {
+		_sync_errq("bad Sync syntax")
+    }
 }
 function _sync_split_comma(str,    _arr, _len, _i, _nm) {
 	# expected str: TERM[,TERM]
@@ -136,6 +176,14 @@ function _sync_save_term(term,    _nont, _c, _n, _s) {
 	_c = ++_B_sync_table[_n]
 	_n = sprintf("term=%s.%s", _nont, _c)
 	_B_sync_table[_n] = term
+}
+function _sync_set_nont_cst_type(type,    _s) {
+    _s = sprintf("nont.cst.type=%s", _sync_nont_last())
+    _B_sync_table[_s] = type
+}
+function _sync_set_nont_cst_callback(fn,    _s) {
+    _s = sprintf("nont.cst.cbk=%s", _sync_nont_last())
+    _B_sync_table[_s] = fn
 }
 # </private>
 # </sync>

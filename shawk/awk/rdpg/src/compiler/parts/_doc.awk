@@ -106,10 +106,24 @@ print ""
 printf("-v %s=0 - no syncing. All non-terminal functions return false. I.e. the parser\n", OPT_SYNC())
 print "stops after a single error is encountered."
 print ""
-printf("-v %s=\"<nont>=<tok-csv>[;<nont>=<tok-csv>]\" - sync only non-terminals\n", OPT_SYNC())
-print "<nont> on tokens in <tok-csv>. <nont> must exist and all tokens in <tok-csv>"
-print "must be in its follow set. E.g. \"foo=TOK_A,TOK_B;bar=TOK_C;baz=EOI\" will sync"
-print "non-terminal foo only on tokens TOK_A and TOK_B, bar on TOK_C, and baz on EOI."
+printf("-v %s=\"<sync-spec>\" - customize how syncing happens. Disables synchronization\n", OPT_SYNC())
+print "except for the specification given by <sync-spec>."
+print ""
+print "<sync-spec>=(<nont>=<tok-csv>|<nont>=<fn>|<nont>=1)[;<sync-spec>]"
+print "<nont>    - a non-terminal name. Must exist in the grammar."
+print "<tok-csv> - a list of tokens separated by a comma. The whole <tok-csv> must be"
+print "in the follow set of the associated <nont>."
+print "<fn>      - function name in snake case, defined by the user, called when the"
+print "associated <nont> is synced. Must return bool reflecting if the synchronization"
+print "was successful or not."
+print "=1        - leave the default synchronization for the associated <nont>."
+print ""
+printf ("Example: -v%s=\"foo=TOK_A,TOK_B;bar=1;baz=mysync_baz\"\n", OPT_SYNC())
+print "foo will be synced only on TOK_A and TOK_B."
+print "bar will have its default synchronization."
+print "baz will be synchronized by a call to mysync_baz()."
+print "All other non-terminals in the grammar will have no synchronization."
+
 }
 
 # </user_messages>

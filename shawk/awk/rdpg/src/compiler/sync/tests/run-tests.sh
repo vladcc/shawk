@@ -142,6 +142,12 @@ function test_err_case
 	diff_stderr "err_7.txt"
 	cleanup
 
+	run "foo=BAR, bAZ, ZIG"
+	bt_assert_failure
+	diff_stdout "empty"
+	diff_stderr "err_7.txt"
+	cleanup
+
 	run "=BAZ,,"
 	bt_assert_failure
 	diff_stdout "empty"
@@ -152,12 +158,6 @@ function test_err_case
 	bt_assert_failure
 	diff_stdout "empty"
 	diff_stderr "err_9.txt"
-	cleanup
-
-	run "foo=BAR, bAZ, ZIG"
-	bt_assert_failure
-	diff_stdout "empty"
-	diff_stderr "err_10.txt"
 	cleanup
 }
 function test_all

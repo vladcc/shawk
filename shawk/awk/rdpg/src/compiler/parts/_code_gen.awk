@@ -323,10 +323,12 @@ _is_no_imm_err) {
 	} else if (_tsync == SYNC_NONE()) {
 		emit(_make_ret(IR_FALSE()))
 	} else if (SYNC_CUSTOM() == _tsync) {
-		if (_is_start || !sync_has_nont(_lhs))
-			emit(_make_ret(IR_FALSE()))
-		else
-			emit(_make_ret(_make_call(_make_sync(_lhs))))
+        if (SYNC_NAME_CUSTOM_CALLBACK() == sync_nont_cst_type(_lhs))
+            emit(_make_ret(_make_call(sync_nont_cst_callback(_lhs))))
+        else if (_is_start || !sync_has_nont(_lhs))
+            emit(_make_ret(IR_FALSE()))
+        else
+            emit(_make_ret(_make_call(_make_sync(_lhs))))
 	}
 
 	_emit_block_close()
