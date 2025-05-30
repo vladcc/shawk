@@ -90,8 +90,7 @@ function _rdpg_init_sets(    _i, _len, _arr) {
 	_RDPG_B_str_sym_set_9 = (SEMI() _RDPG_SEP() MINUS() _RDPG_SEP() NUMBER() _RDPG_SEP() L_PAR() _RDPG_SEP() EOI())
 	_RDPG_B_str_sym_set_10 = (MINUS() _RDPG_SEP() NUMBER() _RDPG_SEP() L_PAR() _RDPG_SEP() SEMI())
 	_RDPG_B_str_sym_set_11 = (POW() _RDPG_SEP() MUL() _RDPG_SEP() DIV() _RDPG_SEP() PLUS() _RDPG_SEP() MINUS() _RDPG_SEP() SEMI() _RDPG_SEP() R_PAR())
-	_RDPG_B_str_sym_set_12 = (EOI())
-	_RDPG_B_str_sym_set_13 = (SEMI())
+	_RDPG_B_str_sym_set_12 = (MINUS() _RDPG_SEP() L_PAR())
 
 	_len = split(_RDPG_B_str_sym_set_1, _arr, _RDPG_SEP())
 	for (_i = 1; _i <= _len; ++_i)
@@ -140,10 +139,6 @@ function _rdpg_init_sets(    _i, _len, _arr) {
 	_len = split(_RDPG_B_str_sym_set_12, _arr, _RDPG_SEP())
 	for (_i = 1; _i <= _len; ++_i)
 		_RDPG_sym_set_12[_arr[_i]]
-
-	_len = split(_RDPG_B_str_sym_set_13, _arr, _RDPG_SEP())
-	for (_i = 1; _i <= _len; ++_i)
-		_RDPG_sym_set_13[_arr[_i]]
 
 	# expect
 	_RDPG_expect_sets["start"] = _RDPG_B_str_sym_set_1
@@ -233,7 +228,7 @@ function _rdpg_expr()
 	{
 		_rdpg_expect("set", "expr")
 	}
-	return _rdpg_sync(_RDPG_sym_set_9)
+	return _rdpg_sync(_RDPG_sym_set_12)
 }
 function _rdpg_expr_plus()
 {
@@ -253,7 +248,7 @@ function _rdpg_expr_plus()
 	{
 		_rdpg_expect("set", "expr_plus")
 	}
-	return _rdpg_sync(_RDPG_sym_set_12)
+	return 0
 }
 function _rdpg_expr_star()
 {
@@ -277,7 +272,7 @@ function _rdpg_expr_star()
 		{
 			_rdpg_expect("set", "expr_star")
 		}
-		return _rdpg_sync(_RDPG_sym_set_12)
+		return 0
 	}
 }
 function _rdpg_expr_add_sub()
@@ -298,7 +293,7 @@ function _rdpg_expr_add_sub()
 	{
 		_rdpg_expect("set", "expr_add_sub")
 	}
-	return _rdpg_sync(_RDPG_sym_set_4)
+	return 0
 }
 function _rdpg_expr_add_sub_opt()
 {
@@ -320,7 +315,7 @@ function _rdpg_expr_add_sub_opt()
 	{
 		_rdpg_expect("set", "expr_add_sub_opt")
 	}
-	return _rdpg_sync(_RDPG_sym_set_13)
+	return 0
 }
 function _rdpg_add_sub()
 {
@@ -347,7 +342,7 @@ function _rdpg_add_sub()
 	{
 		_rdpg_expect("set", "add_sub")
 	}
-	return _rdpg_sync(_RDPG_sym_set_6)
+	return 0
 }
 function _rdpg_add_sub_star()
 {
@@ -371,7 +366,7 @@ function _rdpg_add_sub_star()
 		{
 			_rdpg_expect("set", "add_sub_star")
 		}
-		return _rdpg_sync(_RDPG_sym_set_4)
+		return 0
 	}
 }
 function _rdpg_expr_mul_div()
@@ -392,7 +387,7 @@ function _rdpg_expr_mul_div()
 	{
 		_rdpg_expect("set", "expr_mul_div")
 	}
-	return _rdpg_sync(_RDPG_sym_set_6)
+	return 0
 }
 function _rdpg_mul_div()
 {
@@ -419,7 +414,7 @@ function _rdpg_mul_div()
 	{
 		_rdpg_expect("set", "mul_div")
 	}
-	return _rdpg_sync(_RDPG_sym_set_7)
+	return 0
 }
 function _rdpg_mul_div_star()
 {
@@ -443,7 +438,7 @@ function _rdpg_mul_div_star()
 		{
 			_rdpg_expect("set", "mul_div_star")
 		}
-		return _rdpg_sync(_RDPG_sym_set_6)
+		return 0
 	}
 }
 function _rdpg_expr_expon()
@@ -464,7 +459,7 @@ function _rdpg_expr_expon()
 	{
 		_rdpg_expect("set", "expr_expon")
 	}
-	return _rdpg_sync(_RDPG_sym_set_7)
+	return 0
 }
 function _rdpg_expon()
 {
@@ -482,7 +477,7 @@ function _rdpg_expon()
 	{
 		_rdpg_expect("tok", POW())
 	}
-	return _rdpg_sync(_RDPG_sym_set_7)
+	return 0
 }
 function _rdpg_expon_opt()
 {
@@ -504,7 +499,7 @@ function _rdpg_expon_opt()
 	{
 		_rdpg_expect("set", "expon_opt")
 	}
-	return _rdpg_sync(_RDPG_sym_set_7)
+	return 0
 }
 function _rdpg_expr_base()
 {
@@ -530,7 +525,7 @@ function _rdpg_expr_base()
 	{
 		_rdpg_expect("set", "expr_base")
 	}
-	return _rdpg_sync(_RDPG_sym_set_11)
+	return 0
 }
 function _rdpg_base()
 {
@@ -561,7 +556,7 @@ function _rdpg_base()
 	{
 		_rdpg_expect("set", "base")
 	}
-	return _rdpg_sync(_RDPG_sym_set_11)
+	return 0
 }
 # </rd>
 # </parse>

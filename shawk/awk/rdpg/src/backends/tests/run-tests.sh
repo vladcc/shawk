@@ -12,15 +12,15 @@ function errq
 
 function pretest
 {
-	bt_eval on_start "$@" || errq "function 'on_start' failed"
+	bt_eval on_pretest "$@" || errq "function 'on_pretest' failed"
 }
 function run
 {
-	bt_eval "run_prog $*"
+	bt_eval run_parser "$*"
 }
 function postest
 {
-	bt_eval on_finish
+	bt_eval on_postest
 }
 
 function cleanup
@@ -39,7 +39,7 @@ function diff_stderr
 # <tests>
 function test_default
 {
-	pretest "-v_PlaceHolder_=0" "-v_PlaceHolder_=0"
+	pretest "-v_Dummy_=0" "-v_Dummy_=0"
 	bt_eval test_use_cases
 	bt_eval test_err_cases
 	postest
@@ -74,14 +74,14 @@ function test_imm
 }
 function test_imm_1
 {
-	pretest "-vImm=1" "-v_PlaceHolder_=0"
+	pretest "-vImm=1" "-v_Dummy_=0"
 	bt_eval test_use_cases
 	bt_eval test_err_cases
 	postest
 }
 function test_imm_0
 {
-	pretest "-vImm=0" "-v_PlaceHolder_=0"
+	pretest "-vImm=0" "-v_Dummy_=0"
 	bt_eval test_use_cases
 	bt_eval test_imm_0_err
 	postest
@@ -104,7 +104,7 @@ function test_imm_0_err
 # <sync>
 function test_sync_default
 {
-	pretest "-vSync=1" "-v_PlaceHolder_=0"
+	pretest "-vSync=1" "-v_Dummy_=0"
 	bt_eval test_use_cases
 	bt_eval test_err_cases
 	postest
@@ -126,7 +126,7 @@ function test_sync_none_err
 }
 function test_sync_none
 {
-	pretest "-vSync=0" "-v_PlaceHolder_=0"
+	pretest "-vSync=0" "-v_Dummy_=0"
 	bt_eval test_use_cases
 	bt_eval test_sync_none_err
 	postest
@@ -150,17 +150,17 @@ function test_sync_custom_err
 }
 function test_sync_custom
 {
-	pretest "-vSync=expr=SEMI" "-v_PlaceHolder_=0"
+	pretest "-vSync=expr=SEMI" "-v_Dummy_=0"
 	bt_eval test_use_cases
 	bt_eval test_sync_custom_err "bad_sync_custom_1.txt"
 	postest
 
-	pretest "-vSync=expr=MINUS" "-v_PlaceHolder_=0"
+	pretest "-vSync=expr=MINUS" "-v_Dummy_=0"
 	bt_eval test_use_cases
 	bt_eval test_sync_custom_err "bad_sync_custom_2.txt"
 	postest
 
-	pretest "-vSync=expr=MINUS,L_PAR" "-v_PlaceHolder_=0"
+	pretest "-vSync=expr=MINUS,L_PAR" "-v_Dummy_=0"
 	bt_eval test_use_cases
 	bt_eval test_sync_custom_err "bad_sync_custom_3.txt"
 	postest
@@ -172,35 +172,21 @@ function test_sync
 	bt_eval test_sync_custom
 }
 # </sync>
-function test_custom_cases
-{
-	pretest "-v_PlaceHolder_=0" "-v_PlaceHolder_=0"
-	bt_eval test_custom
-	postest
-}
 function test_tok_hack
 {
-	pretest "-v_PlaceHolder_=0" "-vTokHack=1"
+	pretest "-v_Dummy_=0" "-vTokHack=1"
 	bt_eval test_use_cases
 	bt_eval test_err_cases
 	postest
 }
-function test_tok_enum
-{
-    # "-vTokEnum=0" is replaced in to-c and ignored in non-relevant backends
-	pretest "-v_PlaceHolder_=0" "-vTokEnum=replace-or-ignore"
-	bt_eval test_use_cases
-	bt_eval test_err_cases
-	postest
-}
+
 function test
 {
 	bt_eval test_default
 	bt_eval test_imm
 	bt_eval test_tok_hack
-    bt_eval test_tok_enum
 	bt_eval test_sync
-	bt_eval test_custom_cases
+    bt_eval test_backend_specific
 }
 # </tests>
 

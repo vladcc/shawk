@@ -91,12 +91,17 @@ typedef struct set {
 	const size_t len;
 } set;
 
+typedef struct bit_set {
+	const uint8_t * const data;
+	const size_t len;
+} bit_set;
+
 typedef struct pred_set {
-	const set * const s;
+	const bit_set * const s;
 } pred_set;
 
 typedef struct sync_set {
-	const set * const s;
+	const bit_set * const s;
 } sync_set;
 
 typedef struct exp_set {
@@ -179,10 +184,35 @@ static inline bool rdpg_tok_match(prs_ctx_foo * prs, const tok_id_foo tk)
 // </io>
 
 // <sets>
+static const uint8_t bit_set_1_d[2] = {0x8A,0x02,};
+static const uint8_t bit_set_2_d[2] = {0x8A,0x00,};
+static const uint8_t bit_set_3_d[2] = {0x80,0x01,};
+static const uint8_t bit_set_4_d[2] = {0x04,0x02,};
+static const uint8_t bit_set_5_d[2] = {0x60,0x00,};
+static const uint8_t bit_set_6_d[2] = {0x84,0x03,};
+static const uint8_t bit_set_7_d[2] = {0xE4,0x03,};
+static const uint8_t bit_set_8_d[2] = {0x0A,0x00,};
+static const uint8_t bit_set_9_d[2] = {0x8A,0x06,};
+static const uint8_t bit_set_11_d[2] = {0xF4,0x03,};
+static const uint8_t bit_set_12_d[2] = {0x00,0x04,};
+static const uint8_t bit_set_13_d[2] = {0x00,0x02,};
+
+static const bit_set bit_set_1 = {bit_set_1_d, 12};
+static const bit_set bit_set_2 = {bit_set_2_d, 12};
+static const bit_set bit_set_3 = {bit_set_3_d, 12};
+static const bit_set bit_set_4 = {bit_set_4_d, 12};
+static const bit_set bit_set_5 = {bit_set_5_d, 12};
+static const bit_set bit_set_6 = {bit_set_6_d, 12};
+static const bit_set bit_set_7 = {bit_set_7_d, 12};
+static const bit_set bit_set_8 = {bit_set_8_d, 12};
+static const bit_set bit_set_9 = {bit_set_9_d, 12};
+static const bit_set bit_set_11 = {bit_set_11_d, 12};
+static const bit_set bit_set_12 = {bit_set_12_d, 12};
+static const bit_set bit_set_13 = {bit_set_13_d, 12};
+
 static const tok_id_foo set_1_d[4] = {SEMI_FOO, MINUS_FOO, NUMBER_FOO, L_PAR_FOO};
 static const tok_id_foo set_2_d[3] = {MINUS_FOO, NUMBER_FOO, L_PAR_FOO};
 static const tok_id_foo set_3_d[2] = {PLUS_FOO, MINUS_FOO};
-static const tok_id_foo set_4_d[2] = {SEMI_FOO, R_PAR_FOO};
 static const tok_id_foo set_5_d[2] = {MUL_FOO, DIV_FOO};
 static const tok_id_foo set_6_d[4] = {PLUS_FOO, MINUS_FOO, SEMI_FOO, R_PAR_FOO};
 static const tok_id_foo set_7_d[6] = {MUL_FOO, DIV_FOO, PLUS_FOO, MINUS_FOO, SEMI_FOO, R_PAR_FOO};
@@ -190,13 +220,10 @@ static const tok_id_foo set_8_d[2] = {NUMBER_FOO, L_PAR_FOO};
 static const tok_id_foo set_9_d[5] = {SEMI_FOO, MINUS_FOO, NUMBER_FOO, L_PAR_FOO, EOI_FOO};
 static const tok_id_foo set_10_d[4] = {MINUS_FOO, NUMBER_FOO, L_PAR_FOO, SEMI_FOO};
 static const tok_id_foo set_11_d[7] = {POW_FOO, MUL_FOO, DIV_FOO, PLUS_FOO, MINUS_FOO, SEMI_FOO, R_PAR_FOO};
-static const tok_id_foo set_12_d[1] = {EOI_FOO};
-static const tok_id_foo set_13_d[1] = {SEMI_FOO};
 
 static const set set_1 = {set_1_d, 4};
 static const set set_2 = {set_2_d, 3};
 static const set set_3 = {set_3_d, 2};
-static const set set_4 = {set_4_d, 2};
 static const set set_5 = {set_5_d, 2};
 static const set set_6 = {set_6_d, 4};
 static const set set_7 = {set_7_d, 6};
@@ -204,39 +231,37 @@ static const set set_8 = {set_8_d, 2};
 static const set set_9 = {set_9_d, 5};
 static const set set_10 = {set_10_d, 4};
 static const set set_11 = {set_11_d, 7};
-static const set set_12 = {set_12_d, 1};
-static const set set_13 = {set_13_d, 1};
 
-static const pred_set pset_start_1 = {&set_1};
-static const pred_set pset_expr_1 = {&set_1};
-static const pred_set pset_expr_plus_1 = {&set_1};
-static const pred_set pset_expr_star_1 = {&set_1};
-static const pred_set pset_expr_add_sub_1 = {&set_2};
-static const pred_set pset_expr_add_sub_opt_1 = {&set_2};
-static const pred_set pset_add_sub_star_1 = {&set_3};
-static const pred_set pset_add_sub_star_2 = {&set_4};
-static const pred_set pset_expr_mul_div_1 = {&set_2};
-static const pred_set pset_mul_div_star_1 = {&set_5};
-static const pred_set pset_mul_div_star_2 = {&set_6};
-static const pred_set pset_expr_expon_1 = {&set_2};
-static const pred_set pset_expon_opt_2 = {&set_7};
-static const pred_set pset_expr_base_2 = {&set_8};
+static const pred_set pset_start_1 = {&bit_set_1};
+static const pred_set pset_expr_1 = {&bit_set_1};
+static const pred_set pset_expr_plus_1 = {&bit_set_1};
+static const pred_set pset_expr_star_1 = {&bit_set_1};
+static const pred_set pset_expr_add_sub_1 = {&bit_set_2};
+static const pred_set pset_expr_add_sub_opt_1 = {&bit_set_2};
+static const pred_set pset_add_sub_star_1 = {&bit_set_3};
+static const pred_set pset_add_sub_star_2 = {&bit_set_4};
+static const pred_set pset_expr_mul_div_1 = {&bit_set_2};
+static const pred_set pset_mul_div_star_1 = {&bit_set_5};
+static const pred_set pset_mul_div_star_2 = {&bit_set_6};
+static const pred_set pset_expr_expon_1 = {&bit_set_2};
+static const pred_set pset_expon_opt_2 = {&bit_set_7};
+static const pred_set pset_expr_base_2 = {&bit_set_8};
 
-static const sync_set sset_expr = {&set_9};
-static const sync_set sset_expr_plus = {&set_12};
-static const sync_set sset_expr_star = {&set_12};
-static const sync_set sset_expr_add_sub = {&set_4};
-static const sync_set sset_expr_add_sub_opt = {&set_13};
-static const sync_set sset_add_sub = {&set_6};
-static const sync_set sset_add_sub_star = {&set_4};
-static const sync_set sset_expr_mul_div = {&set_6};
-static const sync_set sset_mul_div = {&set_7};
-static const sync_set sset_mul_div_star = {&set_6};
-static const sync_set sset_expr_expon = {&set_7};
-static const sync_set sset_expon = {&set_7};
-static const sync_set sset_expon_opt = {&set_7};
-static const sync_set sset_expr_base = {&set_11};
-static const sync_set sset_base = {&set_11};
+static const sync_set sset_expr = {&bit_set_9};
+static const sync_set sset_expr_plus = {&bit_set_12};
+static const sync_set sset_expr_star = {&bit_set_12};
+static const sync_set sset_expr_add_sub = {&bit_set_4};
+static const sync_set sset_expr_add_sub_opt = {&bit_set_13};
+static const sync_set sset_add_sub = {&bit_set_6};
+static const sync_set sset_add_sub_star = {&bit_set_4};
+static const sync_set sset_expr_mul_div = {&bit_set_6};
+static const sync_set sset_mul_div = {&bit_set_7};
+static const sync_set sset_mul_div_star = {&bit_set_6};
+static const sync_set sset_expr_expon = {&bit_set_7};
+static const sync_set sset_expon = {&bit_set_7};
+static const sync_set sset_expon_opt = {&bit_set_7};
+static const sync_set sset_expr_base = {&bit_set_11};
+static const sync_set sset_base = {&bit_set_11};
 
 static const exp_set eset_none = {NULL};
 static const exp_set eset_start = {&set_1};
@@ -255,14 +280,10 @@ static const exp_set eset_expon_opt = {&set_11};
 static const exp_set eset_expr_base = {&set_2};
 static const exp_set eset_base = {&set_8};
 
-static bool is_in_set(const tok_id_foo tk, const tok_id_foo * data, size_t len)
+static bool is_in_set(const tok_id_foo tk, const uint8_t * bytes, const size_t bits)
 {
-	for (size_t i = 0; i < len; ++i)
-	{
-		if (data[i] == tk)
-			return true;
-	}
-	return false;
+	size_t bit = (size_t)tk;
+	return (bit < bits) ? (bytes[(bit >> 3)] >> (bit & 7)) & 1 : false;
 }
 
 static inline bool predict(prs_ctx_foo * prs, const pred_set pset)

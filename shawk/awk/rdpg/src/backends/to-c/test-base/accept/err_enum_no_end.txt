@@ -1,0 +1,1 @@
+rdpg-to-c.awk: error: enum parsing did not finish successfully

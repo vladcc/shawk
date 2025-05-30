@@ -1,4 +1,10 @@
 2025-05-30
+    rdpg-to-c.awk 2.2.1
+    minor token lookup improvement
+    negative enum tests added
+
+    to-c, to-awk tests refactored
+
     rdpg-to-c.awk 2.2.0
     -vTokHack tests fixed
     -vTokEnum implemented

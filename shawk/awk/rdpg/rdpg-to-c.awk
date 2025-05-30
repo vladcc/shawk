@@ -2,7 +2,7 @@
 
 # <to-c>
 function SCRIPT_NAME()    {return "rdpg-to-c.awk"}
-function SCRIPT_VERSION() {return "2.2.0"}
+function SCRIPT_VERSION() {return "2.2.1"}
 
 function print_help_quit() {
 print sprintf("-- %s - ir to C translator --", SCRIPT_NAME())
@@ -272,10 +272,6 @@ function _cbset_gen_bytes(arr_name,    _i, _end, _bit, _val, _str) {
     }
     return sprintf("const uint8_t %s[%d] = {%s};", arr_name, _end, _str)
 }
-
-function _cbset_gen_size() {
-    return sprintf("const size_t bits = %d;", _cbset_bit_num())
-}
 # </bit-set>
 # </tokens>
 
@@ -487,7 +483,7 @@ function _gen_set_fns() {
         _emit_c("{")
         tinc()
             _emit_c("size_t bit = (size_t)tk;")
-            _emit_c("return (bit < bits) ? (bytes[(bit / 8)] >> (bit & 7)) & 1 : false;")
+            _emit_c("return (bit < bits) ? (bytes[(bit >> 3)] >> (bit & 7)) & 1 : false;")
         tdec()
         _emit_c("}")
     } else {

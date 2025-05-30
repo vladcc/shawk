@@ -1,0 +1,1 @@
+rdpg-to-c.awk: error: token 'MINUS' not in enum

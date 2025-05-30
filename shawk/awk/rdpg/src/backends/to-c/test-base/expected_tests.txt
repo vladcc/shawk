@@ -11,9 +11,6 @@ test_imm_0_err
 test_tok_hack
 test_use_cases
 test_err_cases
-test_tok_enum
-test_use_cases
-test_err_cases
 test_sync
 test_sync_default
 test_use_cases
@@ -28,5 +25,10 @@ test_use_cases
 test_sync_custom_err bad_sync_custom_2.txt
 test_use_cases
 test_sync_custom_err bad_sync_custom_3.txt
-test_custom_cases
-test_custom
+test_backend_specific
+_test_custom_to_c_tok_enum
+_test_custom_to_c_tok_enum_ok
+test_use_cases
+test_err_cases
+_test_custom_to_c_tok_enum_err
+_test_custom_to_c_base
