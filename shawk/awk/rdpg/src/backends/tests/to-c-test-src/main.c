@@ -72,7 +72,10 @@ static void lex_adv_ch(lexer * lex)
 {
 	++lex->pos;
 }
-
+static tok_id lex_curr(lexer * lex)
+{
+    return lex->curr;
+}
 static tok_id lex_next(lexer * lex)
 {
 	tok_id ret = ERR;
@@ -443,6 +446,10 @@ tok_id tok_next(usr_ctx * usr)
 {
 	return lex_next((lexer *)(usr->ctx));
 }
+tok_id tok_curr(usr_ctx * usr)
+{
+    return lex_curr((lexer *)(usr->ctx));
+}
 // </callbacks>
 
 #ifdef COMPILE_FOO
@@ -487,6 +494,11 @@ void tok_err_foo(usr_ctx_foo * usr, prs_ctx_foo * prs)
 			fprintf(stderr, " %s", lex_to_str((tok_id)exp[i]));
 	}
 	fprintf(stderr, "%c", '\n');
+}
+tok_id_foo tok_curr_foo(usr_ctx_foo * usr)
+{
+	// hack
+	return (tok_id_foo)lex_curr((lexer *)(usr->ctx));
 }
 tok_id_foo tok_next_foo(usr_ctx_foo * usr)
 {

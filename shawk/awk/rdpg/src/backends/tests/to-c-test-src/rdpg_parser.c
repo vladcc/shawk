@@ -1,5 +1,6 @@
 // <source>
 #include "rdpg_parser.h"
+#include <stdint.h>
 
 // <decl>
 // <prs>
@@ -94,13 +95,13 @@ typedef struct pred_set {
 	const set * const s;
 } pred_set;
 
-typedef struct exp_set {
-	const set * const s;
-} exp_set;
-
 typedef struct sync_set {
 	const set * const s;
 } sync_set;
+
+typedef struct exp_set {
+	const set * const s;
+} exp_set;
 
 typedef struct prs_st {
 	usr_ctx * usr;
@@ -192,81 +193,67 @@ static const tok_id set_11_d[7] = {POW, MUL, DIV, PLUS, MINUS, SEMI, R_PAR};
 static const tok_id set_12_d[1] = {EOI};
 static const tok_id set_13_d[1] = {SEMI};
 
-static const set set_1_ = {set_1_d, 4};
-static const set set_2_ = {set_2_d, 3};
-static const set set_3_ = {set_3_d, 2};
-static const set set_4_ = {set_4_d, 2};
-static const set set_5_ = {set_5_d, 2};
-static const set set_6_ = {set_6_d, 4};
-static const set set_7_ = {set_7_d, 6};
-static const set set_8_ = {set_8_d, 2};
-static const set set_9_ = {set_9_d, 5};
-static const set set_10_ = {set_10_d, 4};
-static const set set_11_ = {set_11_d, 7};
-static const set set_12_ = {set_12_d, 1};
-static const set set_13_ = {set_13_d, 1};
+static const set set_1 = {set_1_d, 4};
+static const set set_2 = {set_2_d, 3};
+static const set set_3 = {set_3_d, 2};
+static const set set_4 = {set_4_d, 2};
+static const set set_5 = {set_5_d, 2};
+static const set set_6 = {set_6_d, 4};
+static const set set_7 = {set_7_d, 6};
+static const set set_8 = {set_8_d, 2};
+static const set set_9 = {set_9_d, 5};
+static const set set_10 = {set_10_d, 4};
+static const set set_11 = {set_11_d, 7};
+static const set set_12 = {set_12_d, 1};
+static const set set_13 = {set_13_d, 1};
 
-static const set * const set_1 = &set_1_;
-static const set * const set_2 = &set_2_;
-static const set * const set_3 = &set_3_;
-static const set * const set_4 = &set_4_;
-static const set * const set_5 = &set_5_;
-static const set * const set_6 = &set_6_;
-static const set * const set_7 = &set_7_;
-static const set * const set_8 = &set_8_;
-static const set * const set_9 = &set_9_;
-static const set * const set_10 = &set_10_;
-static const set * const set_11 = &set_11_;
-static const set * const set_12 = &set_12_;
-static const set * const set_13 = &set_13_;
+static const pred_set pset_start_1 = {&set_1};
+static const pred_set pset_expr_1 = {&set_1};
+static const pred_set pset_expr_plus_1 = {&set_1};
+static const pred_set pset_expr_star_1 = {&set_1};
+static const pred_set pset_expr_add_sub_1 = {&set_2};
+static const pred_set pset_expr_add_sub_opt_1 = {&set_2};
+static const pred_set pset_add_sub_star_1 = {&set_3};
+static const pred_set pset_add_sub_star_2 = {&set_4};
+static const pred_set pset_expr_mul_div_1 = {&set_2};
+static const pred_set pset_mul_div_star_1 = {&set_5};
+static const pred_set pset_mul_div_star_2 = {&set_6};
+static const pred_set pset_expr_expon_1 = {&set_2};
+static const pred_set pset_expon_opt_2 = {&set_7};
+static const pred_set pset_expr_base_2 = {&set_8};
 
-static const pred_set pset_start_1 = {set_1};
-static const pred_set pset_expr_1 = {set_1};
-static const pred_set pset_expr_plus_1 = {set_1};
-static const pred_set pset_expr_star_1 = {set_1};
-static const pred_set pset_expr_add_sub_1 = {set_2};
-static const pred_set pset_expr_add_sub_opt_1 = {set_2};
-static const pred_set pset_add_sub_star_1 = {set_3};
-static const pred_set pset_add_sub_star_2 = {set_4};
-static const pred_set pset_expr_mul_div_1 = {set_2};
-static const pred_set pset_mul_div_star_1 = {set_5};
-static const pred_set pset_mul_div_star_2 = {set_6};
-static const pred_set pset_expr_expon_1 = {set_2};
-static const pred_set pset_expon_opt_2 = {set_7};
-static const pred_set pset_expr_base_2 = {set_8};
+static const sync_set sset_expr = {&set_9};
+static const sync_set sset_expr_plus = {&set_12};
+static const sync_set sset_expr_star = {&set_12};
+static const sync_set sset_expr_add_sub = {&set_4};
+static const sync_set sset_expr_add_sub_opt = {&set_13};
+static const sync_set sset_add_sub = {&set_6};
+static const sync_set sset_add_sub_star = {&set_4};
+static const sync_set sset_expr_mul_div = {&set_6};
+static const sync_set sset_mul_div = {&set_7};
+static const sync_set sset_mul_div_star = {&set_6};
+static const sync_set sset_expr_expon = {&set_7};
+static const sync_set sset_expon = {&set_7};
+static const sync_set sset_expon_opt = {&set_7};
+static const sync_set sset_expr_base = {&set_11};
+static const sync_set sset_base = {&set_11};
 
 static const exp_set eset_none = {NULL};
-static const exp_set eset_start = {set_1};
-static const exp_set eset_expr = {set_1};
-static const exp_set eset_expr_plus = {set_1};
-static const exp_set eset_expr_star = {set_9};
-static const exp_set eset_expr_add_sub = {set_2};
-static const exp_set eset_expr_add_sub_opt = {set_10};
-static const exp_set eset_add_sub = {set_3};
-static const exp_set eset_add_sub_star = {set_6};
-static const exp_set eset_expr_mul_div = {set_2};
-static const exp_set eset_mul_div = {set_5};
-static const exp_set eset_mul_div_star = {set_7};
-static const exp_set eset_expr_expon = {set_2};
-static const exp_set eset_expon_opt = {set_11};
-static const exp_set eset_expr_base = {set_2};
-static const exp_set eset_base = {set_8};
-
-static const sync_set sset_expr = {set_9};
-static const sync_set sset_expr_plus = {set_12};
-static const sync_set sset_expr_star = {set_12};
-static const sync_set sset_expr_add_sub = {set_4};
-static const sync_set sset_expr_add_sub_opt = {set_13};
-static const sync_set sset_add_sub = {set_6};
-static const sync_set sset_add_sub_star = {set_4};
-static const sync_set sset_expr_mul_div = {set_6};
-static const sync_set sset_mul_div = {set_7};
-static const sync_set sset_mul_div_star = {set_6};
-static const sync_set sset_expr_expon = {set_7};
-static const sync_set sset_expon = {set_7};
-static const sync_set sset_expon_opt = {set_7};
-static const sync_set sset_expr_base = {set_11};
-static const sync_set sset_base = {set_11};
+static const exp_set eset_start = {&set_1};
+static const exp_set eset_expr = {&set_1};
+static const exp_set eset_expr_plus = {&set_1};
+static const exp_set eset_expr_star = {&set_9};
+static const exp_set eset_expr_add_sub = {&set_2};
+static const exp_set eset_expr_add_sub_opt = {&set_10};
+static const exp_set eset_add_sub = {&set_3};
+static const exp_set eset_add_sub_star = {&set_6};
+static const exp_set eset_expr_mul_div = {&set_2};
+static const exp_set eset_mul_div = {&set_5};
+static const exp_set eset_mul_div_star = {&set_7};
+static const exp_set eset_expr_expon = {&set_2};
+static const exp_set eset_expon_opt = {&set_11};
+static const exp_set eset_expr_base = {&set_2};
+static const exp_set eset_base = {&set_8};
 
 static bool is_in_set(const tok_id tk, const tok_id * data, size_t len)
 {

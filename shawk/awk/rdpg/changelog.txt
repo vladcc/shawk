@@ -1,3 +1,10 @@
+2025-05-30
+    rdpg-to-c.awk 2.2.0
+    -vTokHack tests fixed
+    -vTokEnum implemented
+
+    to-awk small test fixes
+
 2025-05-26
     rdpg-comp.awk 2.2.0
     -vSync=<sync-spec> implemented

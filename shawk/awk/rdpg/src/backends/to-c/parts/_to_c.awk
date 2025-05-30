@@ -2,7 +2,7 @@
 
 # <to-c>
 function SCRIPT_NAME()    {return "rdpg-to-c.awk"}
-function SCRIPT_VERSION() {return "2.1.1"}
+function SCRIPT_VERSION() {return "2.2.0"}
 
 function print_help_quit() {
 print sprintf("-- %s - ir to C translator --", SCRIPT_NAME())
@@ -49,9 +49,17 @@ print ""
 print "Options:"
 print "-v Dir=<dir> - output the .c and .h files in <dir>; ./ by default"
 print "-v Tag=<str> - use <str> in functions, types, and files; e.g. rdpg_parse_<tag>()"
-print "-v TokHack=1 - Generate rdpg_reread_curr_tok()"
+print "-v TokHack=1 - generate rdpg_reread_curr_tok()"
+print "-v TokEnum=<file>   - use bit sets for token lookup, take the enum from <file>"
+print "-v EnumParserHelp=1 - print more info about the enum parsing process"
 print "-v Help=1    - this screen"
 print "-v Version=1 - version info"
+exit_success()
+}
+function print_enum_parser_help_quit() {
+print sprintf("-- %s enum parser --", SCRIPT_NAME())
+print ""
+print enum_help_str()
 exit_success()
 }
 function print_version_quit() {
@@ -64,6 +72,7 @@ function OPT_OUT()      {return "Out"}
 function OPT_DIR()      {return "Dir"}
 function OPT_TAG()      {return "Tag"}
 function OPT_TOK_HACK() {return "TokHack"}
+function OPT_TOK_ENUM() {return "TokEnum"}
 
 function opt_tok_hack_set(n) {_B_to_c_opt_tbl[OPT_TOK_HACK()] = n}
 function opt_tok_hack()      {return _B_to_c_opt_tbl[OPT_TOK_HACK()]}
@@ -76,6 +85,9 @@ function opt_dir()        {return _B_to_c_opt_tbl[OPT_DIR()]}
 
 function opt_tag_set(str) {_B_to_c_opt_tbl[OPT_TAG()] = str}
 function opt_tag()        {return _B_to_c_opt_tbl[OPT_TAG()]}
+
+function opt_tok_enum_set(str) {_B_to_c_opt_tbl[OPT_TOK_ENUM()] = str}
+function opt_tok_enum()        {return _B_to_c_opt_tbl[OPT_TOK_ENUM()]}
 # </options>
 
 function init() {
@@ -84,8 +96,12 @@ function init() {
 	if (Version)
 		print_version_quit()
 
+    if (EnumParserHelp)
+        print_enum_parser_help_quit()
+
 	opt_tag_set(Tag)
 	opt_tok_hack_set(TokHack)
+    opt_tok_enum_set(TokEnum)
 
 	if (!Dir)
 		Dir = "."
@@ -105,13 +121,13 @@ function _flush_h()   {bflush(_B_to_c_hdr_buff)}
 function _emit_c(str) {bemit(_B_to_c_src_buff, str)}
 function _nl_c()      {bnl(_B_to_c_src_buff)}
 function _flush_c() {
-	if (_PRS_DECL_MARK() == _B_to_c_src_buff[2]) {
-		_B_to_c_src_buff[2] = \
+	if (_PRS_DECL_MARK() == _B_to_c_src_buff[3]) {
+		_B_to_c_src_buff[3] = \
 			sprintf("\n// <decl>\n// <prs>\n%s\n// </prs>", _tostr_dcl())
 	}
 
-	if (_ESC_DECL_MARK() == _B_to_c_src_buff[3]) {
-		_B_to_c_src_buff[3] = \
+	if (_ESC_DECL_MARK() == _B_to_c_src_buff[4]) {
+		_B_to_c_src_buff[4] = \
 			sprintf("\n// <esc>\n%s\n// </esc>\n// </decl>\n", _esc_lst())
 	}
 
@@ -158,18 +174,18 @@ function _set_alias_data_by_num(n) {return _B_sets[sprintf("alias.data=%d", n)]}
 function _set_save(type, name, alias_name,    _c) {
 	_c = ++_B_sets[sprintf("set.count=%s", type)]
 	_B_sets[sprintf("set.%s.name=%d", type, _c)] = name
-	_B_sets[sprintf("set.%s.aname.d=%d", type, _c)] = alias_name
 	_B_sets[sprintf("set.%s.aname.s=%s", type, name)] = alias_name
+    _B_sets[sprintf("set.%s.aname.t=%s", type, alias_name)]
 }
 function _set_count(type) {return _B_sets[sprintf("set.count=%s", type)]}
 function _set_get_name(type, n) {
 	return _B_sets[sprintf("set.%s.name=%d", type, n)]
 }
-function _set_get_alias_name_by_num(type, n) {
-	return _B_sets[sprintf("set.%s.aname.d=%d", type, n)]
+function _set_get_alias_name_by_sname(type, sname) {
+	return _B_sets[sprintf("set.%s.aname.s=%s", type, sname)]
 }
-function _set_get_alias_name_by_sname(type, name) {
-	return _B_sets[sprintf("set.%s.aname.s=%s", type, name)]
+function _set_is_alias_name_of_type(aname, type) {
+    return (sprintf("set.%s.aname.t=%s", type, aname) in _B_sets)
 }
 # </sets>
 
@@ -177,9 +193,90 @@ function _set_get_alias_name_by_sname(type, name) {
 function _toks_eoi_save(nm) {_B_to_c_tok_eoi = nm}
 function _toks_eoi()        {return _B_to_c_tok_eoi}
 
-function _toks_save(str) {_B_to_c_toks_num = split(str, _B_to_c_toks_arr, " ")}
+function _toks_save(str,    _enum_file) {
+    _B_to_c_toks_num = split(str, _B_to_c_toks_arr, " ")
+    if (_enum_file = opt_tok_enum())
+        _toks_enum(_enum_file)
+}
 function _toks_num()     {return _B_to_c_toks_num}
 function _toks_get(n)    {return _B_to_c_toks_arr[n]}
+
+function _toks_mark(nm)   {_B_to_c_toks_enum_set[nm]}
+function _toks_is_tok(nm) {return (nm in _B_to_c_toks_enum_set)}
+
+# <tok-enum>
+function _toks_enum(fname,    _arr_text, _len, _i, _eprs) {
+    _len = _toks_enum_read(fname, _arr_text)
+    _toks_enum_parse(_arr_text, _len)
+    _toks_enum_mark()
+}
+function _toks_enum_read(fname, arr_out,    _ret) {
+    _ret = read_file(fname, arr_out)
+    if (_ret < 0)
+        error_quit(sprintf("failed to read enum file %s", fname))
+    return _ret
+}
+function _toks_enum_parse(arr_txt, len,    _i, _eprs) {
+    for (_i = 1; _i <= len; ++_i) {
+        _eprs = enum_parse_line(arr_txt[_i])
+        if (ENUM_PARSE_DONE() == _eprs)
+            return
+        else if (ENUM_PARSE_ERR() == _eprs)
+            error_quit(enum_get_err_str())
+    }
+    if (_eprs != ENUM_PARSE_DONE())
+        error_quit("enum parsing did not finish successfully")
+}
+function _toks_enum_mark(    _tok_num, _tok, _i) {
+    # Not all enums might be tokens, that's allowed.
+    # All tokens must be found in the enum.
+    _tok_num = _toks_num()
+    for (_i = 1; _i <= _tok_num; ++_i) {
+        _tok = _toks_get(_i)
+        if (!enum_has_name(_tok))
+            error_quit(sprintf("token '%s' not in enum", _tok))
+        _toks_mark(_tok)
+    }
+}
+# </tok-enum>
+# <bit-set>
+function _cbset_init(bit_num) {
+    delete _B_cbset_on_set
+    _B_cbset_bit_num = bit_num
+    _cbset_set_byte_num(int(bit_num / 8) + (bit_num % 8 > 0))
+}
+function _cbset_bit_num() {return _B_cbset_bit_num}
+
+function _cbset_set_byte_num(n) {_B_cbset_byte_num = n}
+function _cbset_byte_num()      {return _B_cbset_byte_num}
+
+function _cbset_bit_turn_on(n) {_B_cbset_on_set[n]}
+function _cbset_bit_is_on(n) {
+    return (n < _B_cbset_bit_num) && (n in _B_cbset_on_set)
+}
+
+function _cbset_gen_bytes(arr_name,    _i, _end, _bit, _val, _str) {
+    _end = _cbset_byte_num()
+    _bit = 0
+    for (_i = 1; _i <= _end; ++_i) {
+        _val = 0
+        _val += _cbset_bit_is_on(_bit++) * 2^0
+        _val += _cbset_bit_is_on(_bit++) * 2^1
+        _val += _cbset_bit_is_on(_bit++) * 2^2
+        _val += _cbset_bit_is_on(_bit++) * 2^3
+        _val += _cbset_bit_is_on(_bit++) * 2^4
+        _val += _cbset_bit_is_on(_bit++) * 2^5
+        _val += _cbset_bit_is_on(_bit++) * 2^6
+        _val += _cbset_bit_is_on(_bit++) * 2^7
+        _str = (_str  sprintf("0x%02X,", _val))
+    }
+    return sprintf("const uint8_t %s[%d] = {%s};", arr_name, _end, _str)
+}
+
+function _cbset_gen_size() {
+    return sprintf("const size_t bits = %d;", _cbset_bit_num())
+}
+# </bit-set>
 # </tokens>
 
 # <ctx>
@@ -272,11 +369,67 @@ function _gen_io() {
 	tdec()
 	_emit_c("}")
 }
+# <gen-sets>
+function _gen_set_data_enum(    _i, _end, _n, _arr, _als, _nm, _data, _bits,
+_should_gen_map) {
+    _bits = enum_count()
 
-function _gen_sets(    _i, _end, _als, _data, _sz, _al_sz_map, _set, _tp, _nm) {
-	_end = _set_alias_count()
+    _end = _set_alias_count()
+    for (_i = 1; _i <= _end; ++_i) {
+        _als = _set_alias_name_by_num(_i)
+        _should_gen_map[_als] = (                             \
+            _set_is_alias_name_of_type(_als, IR_PREDICT()) || \
+            _set_is_alias_name_of_type(_als, IR_SYNC())       \
+        )
+    }
+
+    for (_i = 1; _i <= _end; ++_i) {
+        _als = _set_alias_name_by_num(_i)
+        if (!_should_gen_map[_als])
+                continue
+
+        _nm = ("bit_" _als)
+        _data = _set_alias_data_by_num(_i)
+
+        split(_data, _arr, " ")
+        _cbset_init(_bits)
+        for (_n in _arr)
+            _cbset_bit_turn_on(enum_get_val_by_name(_arr[_n]))
+        _emit_c(("static " _cbset_gen_bytes((_nm "_d"))))
+    }
+
+    _nl_c()
+    for (_i = 1; _i <= _end; ++_i) {
+        _als = _set_alias_name_by_num(_i)
+        if (!_should_gen_map[_als])
+                continue
+
+        _nm = ("bit_" _set_alias_name_by_num(_i))
+        _emit_c(sprintf("static const bit_set %s = {%s_d, %d};", _nm, _nm, \
+            _bits))
+    }
+}
+function _get_set_data(    _i, _end, _als, _data, _sz, _al_sz_map,
+_should_gen_map) {
+    _end = _set_alias_count()
+
+    if (opt_tok_enum()) {
+        _gen_set_data_enum()
+        for (_i = 1; _i <= _end; ++_i) {
+            _als = _set_alias_name_by_num(_i)
+            _should_gen_map[_als] = \
+                _set_is_alias_name_of_type(_als, IR_EXPECT())
+        }
+        _nl_c()
+    } else {
+        for (_i = 1; _i <= _end; ++_i)
+            _should_gen_map[_set_alias_name_by_num(_i)] = 1
+    }
+
 	for (_i = 1; _i <= _end; ++_i) {
 		_als = _set_alias_name_by_num(_i)
+        if (!_should_gen_map[_als])
+            continue
 		_data = _set_alias_data_by_num(_i)
 		_sz = gsub(" ", ", ", _data)+1
 		_al_sz_map[_als] = _sz
@@ -287,26 +440,33 @@ function _gen_sets(    _i, _end, _als, _data, _sz, _al_sz_map, _set, _tp, _nm) {
 	_nl_c()
 	for (_i = 1; _i <= _end; ++_i) {
 		_als = _set_alias_name_by_num(_i)
+        if (!_should_gen_map[_als])
+            continue
 		_sz = _al_sz_map[_als]
-		_emit_c(sprintf("static const set %s_ = {%s_d, %d};", _als, _als, _sz))
+		_emit_c(sprintf("static const set %s = {%s_d, %d};", _als, _als, _sz))
 	}
+}
+function _gen_set_structs(    _i, _end, _als, _set, _pref, _tp, _nm) {
+    _pref = opt_tok_enum() ? "bit_" : ""
 
-	_nl_c()
-	for (_i = 1; _i <= _end; ++_i) {
-		_als = _set_alias_name_by_num(_i)
-		_sz = _al_sz_map[_als]
-		_emit_c(sprintf("static const set * const %s = &%s_;", _als, _als))
-	}
+    _tp = IR_PREDICT()
+    _end = _set_count(_tp)
+    for (_i = 1; _i <= _end; ++_i) {
+        _set = _set_get_name(_tp, _i)
+        _als = (_pref _set_get_alias_name_by_sname(_tp, _set))
+        _nm = sprintf("pset_%s", _set)
+        _emit_c(sprintf("static const %s %s = {&%s};", _T_PSET(), _nm, _als))
+    }
 
-	_nl_c()
-	_tp = IR_PREDICT()
-	_end = _set_count(_tp)
-	for (_i = 1; _i <= _end; ++_i) {
-		_set = _set_get_name(_tp, _i)
-		_als = _set_get_alias_name_by_sname(_tp, _set)
-		_nm = sprintf("pset_%s", _set)
-		_emit_c(sprintf("static const %s %s = {%s};", _T_PSET(), _nm, _als))
-	}
+    _nl_c()
+    _tp = IR_SYNC()
+    _end = _set_count(_tp)
+    for (_i = 1; _i <= _end; ++_i) {
+        _set = _set_get_name(_tp, _i)
+        _als = (_pref _set_get_alias_name_by_sname(_tp, _set))
+        _nm = sprintf("sset_%s", _set)
+        _emit_c(sprintf("static const %s %s = {&%s};", _T_SSET(), _nm, _als))
+    }
 
 	_nl_c()
 	_tp = IR_EXPECT()
@@ -317,36 +477,37 @@ function _gen_sets(    _i, _end, _als, _data, _sz, _al_sz_map, _set, _tp, _nm) {
 		_nm = sprintf("eset_%s", _set)
 		if (1 == _i)
 			_emit_c(sprintf("static const %s eset_none = {NULL};", _T_ESET()))
-		_emit_c(sprintf("static const %s %s = {%s};", _T_ESET(), _nm, _als))
+		_emit_c(sprintf("static const %s %s = {&%s};", _T_ESET(), _nm, _als))
 	}
-
-	_nl_c()
-	_tp = IR_SYNC()
-	_end = _set_count(_tp)
-	for (_i = 1; _i <= _end; ++_i) {
-		_set = _set_get_name(_tp, _i)
-		_als = _set_get_alias_name_by_sname(_tp, _set)
-		_nm = sprintf("sset_%s", _set)
-		_emit_c(sprintf("static const %s %s = {%s};", _T_SSET(), _nm, _als))
-	}
-
-	_nl_c()
-	_emit_c(sprintf("static bool %s(const %s tk, const %s * data, size_t len)",\
-		_F_IN_SET(), _T_TOK(), _T_TOK()))
-	_emit_c("{")
-	tinc()
-		_emit_c("for (size_t i = 0; i < len; ++i)")
-		_emit_c("{")
-			tinc()
-				_emit_c("if (data[i] == tk)")
-				tinc()
-					_emit_c("return true;")
-				tdec()
-			tdec()
-		_emit_c("}")
-		_emit_c("return false;")
-	tdec()
-	_emit_c("}")
+}
+function _gen_set_fns() {
+    if (opt_tok_enum()) {
+        _emit_c(sprintf("static bool %s(const %s tk, const uint8_t * bytes, const size_t bits)",\
+            _F_IN_SET(), _T_TOK()))
+        _emit_c("{")
+        tinc()
+            _emit_c("size_t bit = (size_t)tk;")
+            _emit_c("return (bit < bits) ? (bytes[(bit / 8)] >> (bit & 7)) & 1 : false;")
+        tdec()
+        _emit_c("}")
+    } else {
+        _emit_c(sprintf("static bool %s(const %s tk, const %s * data, size_t len)",\
+            _F_IN_SET(), _T_TOK(), _T_TOK()))
+        _emit_c("{")
+        tinc()
+            _emit_c("for (size_t i = 0; i < len; ++i)")
+            _emit_c("{")
+                tinc()
+                    _emit_c("if (data[i] == tk)")
+                    tinc()
+                        _emit_c("return true;")
+                    tdec()
+                tdec()
+            _emit_c("}")
+            _emit_c("return false;")
+        tdec()
+        _emit_c("}")
+    }
 
 	_nl_c()
 	_emit_c(sprintf("static inline bool predict(%s * prs, const %s pset)", \
@@ -384,6 +545,14 @@ function _gen_sets(    _i, _end, _als, _data, _sz, _al_sz_map, _set, _tp, _nm) {
 		_emit_c("}")
 	}
 }
+function _gen_sets() {
+    _get_set_data()
+	_nl_c()
+    _gen_set_structs()
+	_nl_c()
+    _gen_set_fns()
+}
+# </gen-sets>
 function _gen_internal() {
 	_nl_c()
 	_emit_c(sprintf("const %s * %s(%s * prs, size_t * out_len)", \
@@ -469,6 +638,7 @@ function bd_on_begin() {
 	_emit_h("#endif")
 
 	_emit_c(sprintf("#include \"%s.h\"",  _postf("rdpg_parser")))
+    _emit_c("#include <stdint.h>")
 	_emit_c(_PRS_DECL_MARK())
 	_emit_c(_ESC_DECL_MARK())
 }
@@ -513,7 +683,7 @@ function bd_on_sets_end() {
 
 }
 function bd_on_tokens(all_toks) {
-	_toks_save(all_toks)
+    _toks_save(all_toks)
 }
 function bd_on_tok_eoi(name) {
 	_toks_eoi_save(name)
@@ -526,11 +696,12 @@ function bd_on_cb_close() {
 	tdec()
 	_emit_c("}")
 }
-function bd_on_parse_main(name) {
+function bd_on_parse_main(name,    _tset) {
 	_ctx_push(IR_RDPG_PARSE())
 	_emit_c("// <internal-types>")
 	_emit_c(sprintf("#define TOK_ENONE ((%s)(-1))", _T_TOK()))
-	_nl_c()
+
+    _nl_c()
 	_emit_c("typedef struct set {")
 	tinc()
 		_emit_c(sprintf("const %s * const data;", _T_TOK()))
@@ -538,12 +709,31 @@ function bd_on_parse_main(name) {
 	tdec()
 	_emit_c("} set;")
 
-	_nl_c()
-	_emit_c(sprintf("typedef struct %s {", _T_PSET()))
-	tinc()
-		_emit_c("const set * const s;")
-	tdec()
-	_emit_c(sprintf("} %s;", _T_PSET()))
+    _tset = "set"
+    if (opt_tok_enum()) {
+        _nl_c()
+        _emit_c("typedef struct bit_set {")
+        tinc()
+            _emit_c("const uint8_t * const data;")
+            _emit_c("const size_t len;")
+        tdec()
+        _emit_c("} bit_set;")
+        _tset = "bit_set"
+    }
+
+    _nl_c()
+    _emit_c(sprintf("typedef struct %s {", _T_PSET()))
+    tinc()
+        _emit_c(sprintf("const %s * const s;", _tset))
+    tdec()
+    _emit_c(sprintf("} %s;", _T_PSET()))
+
+    _nl_c()
+    _emit_c(sprintf("typedef struct %s {", _T_SSET()))
+    tinc()
+        _emit_c(sprintf("const %s * const s;", _tset))
+    tdec()
+    _emit_c(sprintf("} %s;", _T_SSET()))
 
 	_nl_c()
 	_emit_c(sprintf("typedef struct %s {", _T_ESET()))
@@ -551,13 +741,6 @@ function bd_on_parse_main(name) {
 		_emit_c("const set * const s;")
 	tdec()
 	_emit_c(sprintf("} %s;", _T_ESET()))
-
-	_nl_c()
-	_emit_c(sprintf("typedef struct %s {", _T_SSET()))
-	tinc()
-		_emit_c("const set * const s;")
-	tdec()
-	_emit_c(sprintf("} %s;", _T_SSET()))
 
 	_nl_c()
 	_emit_c("typedef struct prs_st {")

@@ -1,0 +1,22 @@
+foo bar
+baz
+
+// enum {
+
+/* ZIG,
+}
+*/
+
+enum {
+    FOO, // ZIG
+    /* ZAG,
+    ZOG
+    */
+    BAR, /* ZEG */ BAZ,
+};
+
+foo bar baz
+
+enum {
+    ZIG, ZAG, ZOG,
+};

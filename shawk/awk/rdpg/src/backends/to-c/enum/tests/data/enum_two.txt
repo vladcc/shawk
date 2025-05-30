@@ -1,0 +1,6 @@
+enum {
+    FOO, BAR, BAZ
+};
+enum {
+    ZIG, ZAG, ZOG,
+};

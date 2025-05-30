@@ -25,11 +25,15 @@ function _generate_parser
 	local L_COMP="../../../rdpg-comp.awk"
 	local L_TO_C="../${_G_C_SRCD}/rdpg-to-c.awk"
 	local L_EXPR="../../common/expr.rdpg"
+    local L_COMP_FLAGS="$1"
+    local L_TO_C_FLAGS="$2"
 
-	bt_eval "$_G_AWK -f $L_COMP $* $L_EXPR | $_G_AWK -f $L_TO_C -vDir=./${_G_C_TDIR}"
+    L_TO_C_FLAGS="$(echo $L_TO_C_FLAGS | sed "s@TokEnum=replace-or-ignore@TokEnum=./${_G_C_TDIR}/rdpg_usr.h@")"
+	bt_eval "$_G_AWK -f $L_COMP $L_COMP_FLAGS $L_EXPR | $_G_AWK -f $L_TO_C $L_TO_C_FLAGS -vDir=./${_G_C_TDIR}"
 	bt_assert_success
 
-	bt_eval "$_G_AWK -f $L_COMP $* $L_EXPR | sed -E 's/[A-Z][A-Z_]+/&_FOO/g' | $_G_AWK -f $L_TO_C -vTag=foo -vDir=./${_G_C_TDIR}"
+    L_TO_C_FLAGS="$(echo $L_TO_C_FLAGS | sed "s/rdpg_usr\.h/rdpg_usr_foo\.h/")"
+	bt_eval "$_G_AWK -f $L_COMP $L_COMP_FLAGS $L_EXPR | sed -E 's/[A-Z][A-Z_]+/&_FOO/g' | $_G_AWK -f $L_TO_C $L_TO_C_FLAGS -vTag=foo -vDir=./${_G_C_TDIR}"
 	bt_assert_success
 
 	local L_CMP_FLAGS="-Wall -Werror -Wfatal-errors"
@@ -79,6 +83,11 @@ function test_custom
 	_run_to_c "-vVersion=1"
 	bt_assert_success
 	bt_diff_ok "$_G_RESULT" "../${_G_C_SRCD}/test-base/accept/version.txt"
+	_cleanup
+
+	_run_to_c "-vEnumParserHelp=1"
+	bt_assert_success
+	bt_diff_ok "$_G_RESULT" "../${_G_C_SRCD}/test-base/accept/enum_parser_help.txt"
 	_cleanup
 
 	bt_eval "echo foo | $_G_AWK -f $_G_TO_C > $_G_RESULT 2>&1"

@@ -1,0 +1,5 @@
+test_all
+test_help
+test_parse_err
+test_no_enum
+test_enum

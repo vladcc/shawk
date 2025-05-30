@@ -42,6 +42,8 @@ with TokHack=1.
 Options:
 -v Dir=<dir> - output the .c and .h files in <dir>; ./ by default
 -v Tag=<str> - use <str> in functions, types, and files; e.g. rdpg_parse_<tag>()
--v TokHack=1 - Generate rdpg_reread_curr_tok()
+-v TokHack=1 - generate rdpg_reread_curr_tok()
+-v TokEnum=<file>   - use bit sets for token lookup, take the enum from <file>
+-v EnumParserHelp=1 - print more info about the enum parsing process
 -v Help=1    - this screen
 -v Version=1 - version info
