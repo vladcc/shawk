@@ -1,1 +1,1 @@
-enum {FOO, BAR   ,  BAZ};
+enum {FOO, BAR   ,  BAZ,};

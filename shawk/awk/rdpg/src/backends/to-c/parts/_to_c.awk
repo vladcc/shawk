@@ -2,7 +2,7 @@
 
 # <to-c>
 function SCRIPT_NAME()    {return "rdpg-to-c.awk"}
-function SCRIPT_VERSION() {return "2.2.1"}
+function SCRIPT_VERSION() {return "2.2.2"}
 
 function print_help_quit() {
 print sprintf("-- %s - ir to C translator --", SCRIPT_NAME())
@@ -207,7 +207,7 @@ function _toks_is_tok(nm) {return (nm in _B_to_c_toks_enum_set)}
 # <tok-enum>
 function _toks_enum(fname,    _arr_text, _len, _i, _eprs) {
     _len = _toks_enum_read(fname, _arr_text)
-    _toks_enum_parse(_arr_text, _len)
+    _toks_enum_parse(fname, _arr_text, _len)
     _toks_enum_mark()
 }
 function _toks_enum_read(fname, arr_out,    _ret) {
@@ -216,16 +216,24 @@ function _toks_enum_read(fname, arr_out,    _ret) {
         error_quit(sprintf("failed to read enum file %s", fname))
     return _ret
 }
-function _toks_enum_parse(arr_txt, len,    _i, _eprs) {
+function _toks_enum_errq(fname, line, msg) {
+    error_print(sprintf("enum: %s:%d", fname, line))
+    error_quit(sprintf("enum: %s", msg))
+}
+function _toks_enum_parse(fname, arr_txt, len,    _i, _eprs) {
     for (_i = 1; _i <= len; ++_i) {
         _eprs = enum_parse_line(arr_txt[_i])
-        if (ENUM_PARSE_DONE() == _eprs)
+        if (ENUM_PARSE_SUCCESS() == _eprs)
             return
         else if (ENUM_PARSE_ERR() == _eprs)
-            error_quit(enum_get_err_str())
+            break
     }
-    if (_eprs != ENUM_PARSE_DONE())
-        error_quit("enum parsing did not finish successfully")
+    if (_eprs != ENUM_PARSE_SUCCESS()) {
+        _toks_enum_errq(fname, _i,                          \
+            sprintf("parsing ended in unexpected state %s", \
+            enum_parse_last_state())                        \
+        )
+    }
 }
 function _toks_enum_mark(    _tok_num, _tok, _i) {
     # Not all enums might be tokens, that's allowed.

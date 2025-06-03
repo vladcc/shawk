@@ -1,0 +1,7 @@
+enum {
+    FOO, BAR, BAZ,
+//};
+
+struct foo {
+    int a;
+};

@@ -13,7 +13,7 @@ enum tok_id_foo {
 	PLUS_FOO,
 	SEMI_FOO,
 	EOI_FOO,
-	ERR_FOO
+	ERR_FOO,
 };
 
 struct usr_ctx_foo {

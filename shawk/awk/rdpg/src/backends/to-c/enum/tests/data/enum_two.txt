@@ -1,5 +1,5 @@
 enum {
-    FOO, BAR, BAZ
+    FOO, BAR, BAZ,
 };
 enum {
     ZIG, ZAG, ZOG,

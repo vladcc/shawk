@@ -1,1 +1,1 @@
-error: enum: unexpected state 1000
+error: enum: parsing ended in unexpected state: foo-bar-baz

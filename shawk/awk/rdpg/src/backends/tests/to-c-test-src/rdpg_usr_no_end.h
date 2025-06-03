@@ -13,10 +13,10 @@ enum tok_id {
 	PLUS,
 	SEMI,
 	EOI,
-	ERR
+	ERR,
 //};
 
 struct usr_ctx {
 	void * ctx;
-//};
+};
 #endif

@@ -2,7 +2,7 @@
 
 # <to-c>
 function SCRIPT_NAME()    {return "rdpg-to-c.awk"}
-function SCRIPT_VERSION() {return "2.2.1"}
+function SCRIPT_VERSION() {return "2.2.2"}
 
 function print_help_quit() {
 print sprintf("-- %s - ir to C translator --", SCRIPT_NAME())
@@ -207,7 +207,7 @@ function _toks_is_tok(nm) {return (nm in _B_to_c_toks_enum_set)}
 # <tok-enum>
 function _toks_enum(fname,    _arr_text, _len, _i, _eprs) {
     _len = _toks_enum_read(fname, _arr_text)
-    _toks_enum_parse(_arr_text, _len)
+    _toks_enum_parse(fname, _arr_text, _len)
     _toks_enum_mark()
 }
 function _toks_enum_read(fname, arr_out,    _ret) {
@@ -216,16 +216,24 @@ function _toks_enum_read(fname, arr_out,    _ret) {
         error_quit(sprintf("failed to read enum file %s", fname))
     return _ret
 }
-function _toks_enum_parse(arr_txt, len,    _i, _eprs) {
+function _toks_enum_errq(fname, line, msg) {
+    error_print(sprintf("enum: %s:%d", fname, line))
+    error_quit(sprintf("enum: %s", msg))
+}
+function _toks_enum_parse(fname, arr_txt, len,    _i, _eprs) {
     for (_i = 1; _i <= len; ++_i) {
         _eprs = enum_parse_line(arr_txt[_i])
-        if (ENUM_PARSE_DONE() == _eprs)
+        if (ENUM_PARSE_SUCCESS() == _eprs)
             return
         else if (ENUM_PARSE_ERR() == _eprs)
-            error_quit(enum_get_err_str())
+            break
     }
-    if (_eprs != ENUM_PARSE_DONE())
-        error_quit("enum parsing did not finish successfully")
+    if (_eprs != ENUM_PARSE_SUCCESS()) {
+        _toks_enum_errq(fname, _i,                          \
+            sprintf("parsing ended in unexpected state %s", \
+            enum_parse_last_state())                        \
+        )
+    }
 }
 function _toks_enum_mark(    _tok_num, _tok, _i) {
     # Not all enums might be tokens, that's allowed.
@@ -861,13 +869,21 @@ function bd_on_continue() {
 # </events>
 # </to-c>
 # <enum>
-function ENUM_PARSE_GOING() {return 0}
-function ENUM_PARSE_DONE()  {return 1}
-function ENUM_PARSE_ERR()   {return 2}
+function ENUM_PARSE_NEXT_LINE() {return 0}
+function ENUM_PARSE_SUCCESS()   {return 1}
+function ENUM_PARSE_ERR()       {return 2}
+
+function ENUM_STATE_LOOK_FOR_ENUM()           {return "find-enum"}
+function ENUM_STATE_LOOK_FOR_LCURLY()         {return "find-{"}
+function ENUM_STATE_LOOK_FOR_NAME_OR_RCURLY() {return "find-name-or-}"}
+function ENUM_STATE_LOOK_FOR_COMMA()          {return "find-comma"}
+function ENUM_STATE_ML_CMNT()                 {return "read-ml-comment"}
+function ENUM_STATE_DONE()                    {return "done"}
+function ENUM_STATE_ERR()                     {return "error"}
 
 function enum_parse_line(str) {return _enum_parse_line(str)}
 
-function enum_get_err_str() {return _enum_get_err_str()}
+function enum_parse_last_state() {return _enum_state_top()}
 
 function enum_count()             {return _enum_count()}
 function enum_get_name_by_num(n)  {return _enum_get_name_by_num(n)}
@@ -877,12 +893,6 @@ function enum_has_name(nm)        {return _enum_has_name(nm)}
 function enum_help_str() {return _enum_help_str()}
 
 # <private>
-function _ENUM_STATE_LOOK_FOR_ENUM()   {return 1}
-function _ENUM_STATE_LOOK_FOR_LCURLY() {return 2}
-function _ENUM_STATE_LOOK_FOR_NAME()   {return 3}
-function _ENUM_STATE_ML_CMNT()         {return 4}
-function _ENUM_STATE_DONE()            {return 5}
-
 function _enum_state_push(st) {_B_enum_state_stk[++_B_enum_state_stk_num] = st}
 function _enum_state_pop(st)  {--_B_enum_state_stk_num}
 function _enum_state_top()    {return _B_enum_state_stk[_B_enum_state_stk_num]}
@@ -901,7 +911,6 @@ function _enum_match_text()  {return _B_enum_match_text}
 function _enum_match_suffix() {return _B_enum_match_suffix}
 
 function _enum_name_save(name) {
-    gsub("[[:space:],]", "", name)
     _B_enum_name_arr[++_B_enum_name_arr_len] = name
     _B_enum_name_val_tbl[name] = _B_enum_name_arr_len - 1
 }
@@ -910,78 +919,90 @@ function _enum_get_name_by_num(n)  {return _B_enum_name_arr[n]}
 function _enum_get_val_by_name(nm) {return _B_enum_name_val_tbl[nm]+0}
 function _enum_has_name(nm)        {return (nm in _B_enum_name_val_tbl)}
 
-function _enum_set_err_str(str) {_B_enum_err_str = sprintf("enum: %s", str)}
-function _enum_get_err_str()    {return _B_enum_err_str}
-
 function _enum_parse_line(str,    _st) {
 
     if (!(_st = _enum_state_top())) {
-        _enum_state_push(_ENUM_STATE_LOOK_FOR_ENUM())
+        _enum_state_push(ENUM_STATE_LOOK_FOR_ENUM())
         return _enum_parse_line(str)
     }
 
-    if (_ENUM_STATE_DONE() == _st)
-        return ENUM_PARSE_DONE()
+    if (ENUM_STATE_DONE() == _st)
+        return ENUM_PARSE_SUCCESS()
+
+    if (ENUM_STATE_ERR() == _st) {
+        _enum_state_pop()
+        return ENUM_PARSE_ERR()
+    }
 
     if (!str)
-        return ENUM_PARSE_GOING()
+        return ENUM_PARSE_NEXT_LINE()
 
     gsub("^[[:space:]]+|[[:space:]]+$", "", str)
 
     if (_enum_match(str, "^([/][*])")) {
-        _enum_state_push(_ENUM_STATE_ML_CMNT())
+        _enum_state_push(ENUM_STATE_ML_CMNT())
         return _enum_parse_line(_enum_match_suffix())
     }
 
-    if (_ENUM_STATE_ML_CMNT() != _st) {
+    if (ENUM_STATE_ML_CMNT() != _st) {
         if (match(str, "^//")) {
-            return ENUM_PARSE_GOING()
+            return ENUM_PARSE_NEXT_LINE()
         }
     }
 
-    if (_ENUM_STATE_ML_CMNT() == _st) {
-        if (_enum_match(str, "[*][/]")) {
+    if (ENUM_STATE_ML_CMNT() == _st) {
+        if (_enum_match(str, "[*]/")) {
             _enum_state_pop()
             return _enum_parse_line(_enum_match_suffix())
         }
-        return ENUM_PARSE_GOING()
-    } else if (_ENUM_STATE_LOOK_FOR_ENUM() == _st) {
-        if (_enum_match(str, "enum ")) {
+        return ENUM_PARSE_NEXT_LINE()
+    } else if (ENUM_STATE_LOOK_FOR_ENUM() == _st) {
+        if (_enum_match(str, "([^[:alpha:]]|^)enum([^[:alpha:]]|$)")) {
             _enum_state_pop()
-            _enum_state_push(_ENUM_STATE_LOOK_FOR_LCURLY())
+            _enum_state_push(ENUM_STATE_LOOK_FOR_LCURLY())
             return _enum_parse_line(_enum_match_suffix())
         }
-        return ENUM_PARSE_GOING()
-    } else if (_ENUM_STATE_LOOK_FOR_LCURLY() == _st) {
-        if (_enum_match(str, "[{]")) {
+        return ENUM_PARSE_NEXT_LINE()
+    } else if (ENUM_STATE_LOOK_FOR_LCURLY() == _st) {
+        if (_enum_match(str, "{")) {
             _enum_state_pop()
-            _enum_state_push(_ENUM_STATE_LOOK_FOR_NAME())
+            _enum_state_push(ENUM_STATE_LOOK_FOR_NAME_OR_RCURLY())
             return _enum_parse_line(_enum_match_suffix())
         }
-        return ENUM_PARSE_GOING()
-    } else if (_ENUM_STATE_LOOK_FOR_NAME() == _st) {
+        return ENUM_PARSE_NEXT_LINE()
+    } else if (ENUM_STATE_LOOK_FOR_NAME_OR_RCURLY() == _st) {
         if (_enum_match(str, \
-            "^([[:upper:]_][[:upper:]_[:digit:]]*[[:space:]]*,?)")) {
+            "^([[:upper:]_][[:upper:]_[:digit:]]*)")) {
             _enum_name_save(_enum_match_text())
+            _enum_state_push(ENUM_STATE_LOOK_FOR_COMMA())
             return _enum_parse_line(_enum_match_suffix())
-        }  else if (match(str, "^[}]")) {
+        } else if (match(str, "^}")) {
             _enum_state_pop()
-            _enum_state_push(_ENUM_STATE_DONE())
+            _enum_state_push(ENUM_STATE_DONE())
+            return _enum_parse_line("")
+        } else if (str) {
+            _enum_state_push(ENUM_STATE_ERR())
             return _enum_parse_line("")
         }
-        return ENUM_PARSE_GOING()
+        return ENUM_PARSE_NEXT_LINE()
+    } else if (ENUM_STATE_LOOK_FOR_COMMA() == _st) {
+        if (_enum_match(str, "^,")) {
+            _enum_state_pop()
+            return _enum_parse_line(_enum_match_suffix())
+        }
+        return ENUM_PARSE_NEXT_LINE()
     }
 
-    _enum_set_err_str(sprintf("unexpected state %d", _st))
     return ENUM_PARSE_ERR()
 }
 
 function _enum_help_str() {
 return \
-"This enum parser parses C style curly braces enums. It understands single line\n" \
-"comments with '//', multi line comment with '/* ... */', expects enum constant\n" \
-"names consist of only [A-Z]_[0-9] and are not followed by an assignment. If\n" \
-"there are multiple enum {} declarations in the file, it takes the first one."
+"This enum parser parses C style curly braces enums. It understands single line\n"  \
+"comments with '//', multi line comment with '/* ... */', expects enum constant\n"  \
+"names consist of only [A-Z]_[0-9], are followed by a comma and are not followed\n" \
+"by an assignment. If there are multiple enum {} declarations in the file, it\n"    \
+"takes the first one."
 }
 # </private>
 # </enum>

@@ -33,22 +33,49 @@ function test_help
 }
 function test_parse_err
 {
+    run "data/no_enum.txt"
+	bt_assert_failure
+	diff_stdout "empty"
+	diff_stderr "parse_err_no_enum.txt"
+	cleanup
+
+    run "data/enum_no_lcurl.txt"
+	bt_assert_failure
+	diff_stdout "empty"
+	diff_stderr "parse_err_no_lcurl.txt"
+    cleanup
+
+    run "data/enum_no_rcurl.txt"
+	bt_assert_failure
+	diff_stdout "empty"
+	diff_stderr "parse_err_no_rcurl.txt"
+	cleanup
+
+    run "data/enum_no_comma.txt"
+	bt_assert_failure
+	diff_stdout "empty"
+	diff_stderr "parse_err_no_comma.txt"
+	cleanup
+
+    run "data/enum_no_comma_2.txt"
+	bt_assert_failure
+	diff_stdout "empty"
+	diff_stderr "parse_err_no_comma.txt"
+	cleanup
+
+    run "data/enum_ml_cmnt.txt"
+	bt_assert_failure
+	diff_stdout "empty"
+	diff_stderr "parse_err_ml_cmnt.txt"
+	cleanup
+
     run "-vTestParseErr=1 data/enum_base.txt"
 	bt_assert_failure
 	diff_stdout "empty"
 	diff_stderr "parse_err.txt"
 	cleanup
 }
-function test_no_enum
-{
-    run "data/no_enum.txt"
-	bt_assert_failure
-	diff_stdout "empty"
-	diff_stderr "parse_not_done.txt"
-	cleanup
-}
-
-function test_enum
+function test_enum_ok
 {
     run "data/enum_base.txt"
 	bt_assert_success
@@ -79,14 +106,25 @@ function test_enum
 	diff_stdout "enum_base.txt"
 	diff_stderr "empty"
 	cleanup
+
+    run "data/enum_empty.txt"
+	bt_assert_success
+	diff_stdout "empty"
+	diff_stderr "empty"
+	cleanup
+
+    run "data/enum_typedef.txt"
+	bt_assert_success
+	diff_stdout "enum_base.txt"
+	diff_stderr "empty"
+	cleanup
 }
 
 function test_all
 {
     bt_eval test_help
     bt_eval test_parse_err
-    bt_eval test_no_enum
-    bt_eval test_enum
+    bt_eval test_enum_ok
 }
 # </tests>
 

@@ -1,1 +1,2 @@
-rdpg-to-c.awk: error: enum: unexpected state 1000
+rdpg-to-c.awk: error: enum: ./to-c-test-src/rdpg_usr.h:1
+rdpg-to-c.awk: error: enum: parsing ended in unexpected state 1000

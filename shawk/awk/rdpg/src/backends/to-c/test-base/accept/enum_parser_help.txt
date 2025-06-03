@@ -2,5 +2,6 @@
 
 This enum parser parses C style curly braces enums. It understands single line
 comments with '//', multi line comment with '/* ... */', expects enum constant
-names consist of only [A-Z]_[0-9] and are not followed by an assignment. If
-there are multiple enum {} declarations in the file, it takes the first one.
+names consist of only [A-Z]_[0-9], are followed by a comma and are not followed
+by an assignment. If there are multiple enum {} declarations in the file, it
+takes the first one.

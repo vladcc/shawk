@@ -1,1 +1,2 @@
-rdpg-to-c.awk: error: enum parsing did not finish successfully
+rdpg-to-c.awk: error: enum: ./to-c-test-src/rdpg_usr_no_end.h:19
+rdpg-to-c.awk: error: enum: parsing ended in unexpected state find-name-or-}
