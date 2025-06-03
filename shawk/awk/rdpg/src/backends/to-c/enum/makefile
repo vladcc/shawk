@@ -6,15 +6,19 @@ TARGET := ../parts/$(ENUM)
 
 .PHONY: help
 help:
-	@echo 'make target - enum + sure + place to parent dir'
-	@echo 'make enum   - compile enum'
+	@echo 'make target - build + sure + place in parent dir'
+	@echo 'make build  - enum'
+	@echo 'make enum   - compile the enum parser'
+	@echo 'make sure   - test + make sure all tests run'
 	@echo 'make test   - run tests'
 	@echo 'make testv  - run tests verbosely'
-	@echo 'make sure   - make sure all tests run'
 	@echo 'make help   - this screen'
 
 .PHONY: target
-target: enum $(TARGET)
+target: build $(TARGET)
+
+.PHONY: build
+build: enum
 
 # <tests>
 TEST_DIR   := ./tests

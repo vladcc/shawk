@@ -6,15 +6,20 @@ TARGET := ../parts/$(PARSER)
 
 .PHONY: help
 help:
-	@echo 'make target - parser + sure + place in parent dir'
-	@echo 'make parser - compile the parser'
+	@echo 'make target - build + sure + place in parent dir'
+	@echo 'make build  - parts + parser'
+	@echo 'make parser - compile the parser from its parts'
+	@echo 'make parts  - build the parts of the parser'
 	@echo 'make sure   - test + check'
 	@echo 'make test   - run tests'
-	@echo 'make testv  - run verbose tests'
+	@echo 'make testv  - run tests verbosely'
 	@echo 'make help   - this screen'
 
 .PHONY: target
-target: parser $(TARGET)
+target: build $(TARGET)
+
+.PHONY: build
+build: parts parser
 
 # <tests>
 TEST_DIR   := ./tests
@@ -34,7 +39,7 @@ parts:
 	pushd ./ast   && $(MAKE) target && popd
 
 .PHONY: parser
-parser: parts $(PARSER)
+parser: $(PARSER)
 
 PARTS := parts/_lexer.awk
 PARTS += parts/_prs.awk
@@ -42,7 +47,7 @@ PARTS += parts/_ast.awk
 PARTS += parts/_sym_tbl.awk
 PARTS += parts/_misc.awk
 $(PARSER) : $(PARTS)
-	(echo "# <parser>"; cat $^; echo "# </parser>") > $@
+	(echo "# <parser>" && cat $^ && echo "# </parser>") > $@
 
 .PHONY: test
 test:

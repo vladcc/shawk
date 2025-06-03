@@ -8,15 +8,19 @@ TARGET := $(PRJ_DIR)/$(TO_AWK)
 
 .PHONY: help
 help:
-	@echo 'make target - to-awk + sure + place in project dir'
-	@echo 'make to-awk - compile the to-awk'
-	@echo 'make sure   - test + check'
+	@echo 'make target - build + sure + place in project dir'
+	@echo 'make build  - to-awk'
+	@echo 'make to-awk - compile to-awk'
+	@echo 'make sure   - test + make sure all tests run'
 	@echo 'make test   - run tests'
-	@echo 'make testv  - verbose tests'
+	@echo 'make testv  - run tests verbosely'
 	@echo 'make help   - this screen'
 
 .PHONY: target
-target: $(TARGET)
+target: build $(TARGET)
+
+.PHONY: build
+build: to-awk
 
 # <tests>
 TEST_DIR   := ./test-base

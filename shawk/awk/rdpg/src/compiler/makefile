@@ -6,15 +6,20 @@ TARGET := ../../$(CMPL)
 
 .PHONY: help
 help:
-	@echo 'make target   - compiler + sure + place to project dir'
-	@echo 'make compiler - make the compiler'
+	@echo 'make target   - build + sure + place to project dir'
+	@echo 'make build    - parts + compiler'
+	@echo 'make compiler - compile the compiler from its parts'
+	@echo 'make parts    - build the parts of the compiler'
 	@echo 'make sure     - test + check'
 	@echo 'make test     - run tests'
 	@echo 'make testv    - run verbose tests'
 	@echo 'make help     - this screen'
 
 .PHONY: target
-target: compiler $(TARGET)
+target: build $(TARGET)
+
+.PHONY: build
+build: parts compiler
 
 # <tests>
 TEST_DIR   := ./tests
@@ -33,7 +38,7 @@ parts:
 	pushd ./sync   && $(MAKE) target && popd
 
 .PHONY: compiler
-compiler: parts $(CMPL)
+compiler: $(CMPL)
 
 PARTS := parts/_main.awk
 PARTS += ../common/_rdpg_ir.awk

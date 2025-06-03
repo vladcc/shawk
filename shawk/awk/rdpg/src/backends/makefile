@@ -3,22 +3,27 @@ AWK := awk
 
 .PHONY: help
 help:
-	@echo 'make all    - make all backend'
-	@echo 'make to-c   - generates the C translator'
-	@echo 'make to-awk - generates the awk translator'
-	@echo 'make help   - this screen'
+	@echo 'make target   - parser + backends'
+	@echo 'make backends - to-c + to-awk'
+	@echo 'make to-c     - compile the C translator'
+	@echo 'make to-awk   - compile the awk translator'
+	@echo 'make parser   - compile the common parser'
+	@echo 'make help     - this screen'
 
-.PHONY: all
-all: to-c to-awk
+.PHONY: target
+target: parser backends
+
+.PHONY: backends
+backends: to-c to-awk
 
 .PHONY: parser
 parser:
 	cd parser && make target
 
 .PHONY: to-awk
-to-awk: parser
+to-awk:
 	cd to-awk && make target
 
 .PHONY: to-c
-to-c: parser
+to-c:
 	cd to-c && make target

@@ -8,15 +8,20 @@ TARGET := $(PRJ_DIR)/$(TO_C)
 
 .PHONY: help
 help:
-	@echo 'make target - to-c + sure + place in project dir'
-	@echo 'make to-c   - compile the to-c'
-	@echo 'make sure   - test + check'
+	@echo 'make target - build + sure + place in project dir'
+	@echo 'make build  - parts + to-c'
+	@echo 'make to-c   - compile to-c from its parts'
+	@echo 'make parts  - build the parts of to-c'
+	@echo 'make sure   - test + make sure all tests run'
 	@echo 'make test   - run tests'
-	@echo 'make testv  - verbose tests'
+	@echo 'make testv  - run verbose tests'
 	@echo 'make help   - this screen'
 
 .PHONY: target
-target: $(TARGET)
+target: build $(TARGET)
+
+.PHONY: build
+build: parts to-c
 
 # <tests>
 TEST_DIR   := ./test-base
@@ -34,7 +39,7 @@ parts:
 	pushd ./enum && $(MAKE) target && popd
 
 .PHONY: to-c
-to-c: parts $(TO_C)
+to-c: $(TO_C)
 
 PARTS := parts/_to_c.awk
 PARTS += parts/_enum.awk

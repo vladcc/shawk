@@ -1,4 +1,6 @@
 2025-06-03
+    better makefile structure
+
     rdpg-to-c.awk 2.2.2
     enum parser produces better error messages
 

@@ -6,15 +6,19 @@ TARGET := ../parts/$(SYNC)
 
 .PHONY: help
 help:
-	@echo 'make target - sync + sure + place to parent dir'
+	@echo 'make target - build + sure + place in parent dir'
+	@echo 'make build  - sync'
 	@echo 'make sync   - compile sync'
+	@echo 'make sure   - make sure all tests run'
 	@echo 'make test   - run tests'
 	@echo 'make testv  - run tests verbosely'
-	@echo 'make sure   - make sure all tests run'
 	@echo 'make help   - this screen'
 
 .PHONY: target
-target: sync $(TARGET)
+target: build $(TARGET)
+
+.PHONY: build
+build: sync
 
 # <tests>
 TEST_DIR   := ./tests

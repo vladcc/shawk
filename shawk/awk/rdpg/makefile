@@ -3,14 +3,23 @@ AWK := awk
 
 .PHONY: help
 help:
-	@echo 'make all         - generates rdpg-*'
-	@echo 'make rdpg-comp   - generates the compiler'
-	@echo 'make rdpg-to-c   - generates the C translator'
-	@echo 'make rdpg-to-awk - generates the awk translator'
+	@echo 'make target      - frontend + backends'
+	@echo 'make frontend    - rdpg-comp'
+	@echo 'make backends    - compile all backends'
+	@echo 'make rdpg-comp   - compile the frontend compiler'
+	@echo 'make rdpg-to-c   - compile the C backend'
+	@echo 'make rdpg-to-awk - compile the awk backend'
 	@echo 'make help        - this screen'
 
-.PHONY: all
-all: rdpg-comp rdpg-to-c rdpg-to-awk
+.PHONY: target
+target: frontend backends
+
+.PHONY: frontend
+frontend: rdpg-comp
+
+.PHONY: backends
+backends:
+	cd src/backends && $(MAKE) target
 
 .PHONY: rdpg-comp
 rdpg-comp:
