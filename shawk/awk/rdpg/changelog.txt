@@ -3,6 +3,7 @@
     rdpg-to-c.awk   2.2.3
     rdpg-to-awk.awk 2.1.2
     prettier error messages
+    structs 1.3 used
 
 2025-06-03
     better makefile structure

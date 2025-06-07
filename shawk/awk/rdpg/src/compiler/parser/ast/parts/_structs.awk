@@ -61,7 +61,7 @@ function _ast_type_chk(ent, texp) {
 
 function ast_clear() {
 	delete _STRUCTS_ast_db
-	_ent_set("gen", _ent_get("gen")+1)
+	_ast_set("gen", _ast_get("gen")+1)
 }
 function ast_is(ent) {return (ent in _STRUCTS_ast_db)}
 function ast_type_of(ent) {
