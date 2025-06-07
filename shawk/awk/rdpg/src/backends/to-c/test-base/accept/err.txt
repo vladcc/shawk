@@ -1,4 +1,4 @@
-rdpg-to-c.awk: error: file -, line 1, field 1: unexpected 'name'
-foo
-^
-expected one of: '#' 'tokens' 
+rdpg-to-c.awk: error: -:1:1: unexpected: 'name'
+rdpg-to-c.awk: error: -:1:1: expected:   '#', 'tokens' 
+    1 | foo
+      | ^

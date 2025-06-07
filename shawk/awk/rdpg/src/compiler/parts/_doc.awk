@@ -115,7 +115,7 @@ print "<tok-csv> - a list of tokens separated by a comma. The whole <tok-csv> mu
 print "in the follow set of the associated <nont>."
 print "<fn>      - function name in snake case, defined by the user, called when the"
 print "associated <nont> is synced. Must return bool reflecting if the synchronization"
-print "was successful or not."
+print "was successful or not, takes no arguments."
 print "=1        - leave the default synchronization for the associated <nont>."
 print ""
 printf ("Example: -v%s=\"foo=TOK_A,TOK_B;bar=1;baz=mysync_baz\"\n", OPT_SYNC())
@@ -123,7 +123,6 @@ print "foo will be synced only on TOK_A and TOK_B."
 print "bar will have its default synchronization."
 print "baz will be synchronized by a call to mysync_baz()."
 print "All other non-terminals in the grammar will have no synchronization."
-
 }
 
 # </user_messages>

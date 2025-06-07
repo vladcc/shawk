@@ -1,4 +1,4 @@
 rdpg-comp.awk: error: file 'data/fatal_err/fatal_err.rdpg', line 3, non-terminal 'foo': 'bar' is undefined
 foo : bar foo \esc1
 
-rdpg-comp.awk: exiting due to FatalErr
+rdpg-comp.awk: error: exiting due to FatalErr

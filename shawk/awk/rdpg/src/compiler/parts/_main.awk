@@ -2,7 +2,7 @@
 
 # <rdpg-main>
 function SCRIPT_NAME() {return "rdpg-comp.awk"}
-function SCRIPT_VERSION() {return "2.2.0"}
+function SCRIPT_VERSION() {return "2.2.1"}
 
 # <opts>
 function OPT_IMM()         {return "Imm"}
@@ -90,8 +90,7 @@ function if_fatal_exit(    _str) {
 			if (!_str)
 				_str = OPT_FATAL_ERR()
 
-			msg_stderr(sprintf("exiting due to %s", _str))
-			exit_failure()
+			error_quit(sprintf("exiting due to %s", _str))
 		}
 	}
 }
@@ -131,7 +130,7 @@ function print_tbl()     {pt_print()}
 function parse_grammar() {
 	lex_init()
 	if (!rdpg_parse())
-		error_quit("parsing failed")
+		exit_failure()
 	ast_mod_rewrite()
 	ast_to_sym_tbl()
 }

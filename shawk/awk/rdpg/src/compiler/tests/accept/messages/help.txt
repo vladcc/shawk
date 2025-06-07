@@ -42,7 +42,7 @@ except for the specification given by <sync-spec>.
 in the follow set of the associated <nont>.
 <fn>      - function name in snake case, defined by the user, called when the
 associated <nont> is synced. Must return bool reflecting if the synchronization
-was successful or not.
+was successful or not, takes no arguments.
 =1        - leave the default synchronization for the associated <nont>.
 
 Example: -vSync="foo=TOK_A,TOK_B;bar=1;baz=mysync_baz"

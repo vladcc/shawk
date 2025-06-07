@@ -1,4 +1,4 @@
-file data/tok.txt, line 1, field 1: unexpected '#'
-# sets predict expect sync
-^
-expected: 'foo' 
+data/tok.txt:1:1: unexpected: '#'
+data/tok.txt:1:1: expected:   'foo'
+    1 | # sets predict expect sync
+      | ^

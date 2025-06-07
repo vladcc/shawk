@@ -17,22 +17,19 @@ function tok_curr() {return lex_get_curr_tok()}
 function tok_err(    _str, _i, _end, _arr, _exp, _prev) {
 	parsing_error_set()
 
-	_str = sprintf("unexpected '%s'", tok_curr())
+	_str = sprintf("unexpected: '%s'", tok_curr())
 	if (_prev = _tok_prev())
 		_str = (_str sprintf(" after '%s'", _prev))
-	_str = (_str "\n")
-	_str = (_str sprintf("%s\n", _lex_get_pos_str(_B_lex_curr_nf)))
+	_lex_err_print(_str)
 
 	_end = rdpg_expect(_arr)
-	for (_i = 1; _i <= _end; ++_i)
-		_exp = (_exp sprintf("'%s' ", _arr[_i]))
-
-	if (1 == _end)
-		_str = (_str sprintf("expected: %s", _exp))
-	else if (_end > 1)
-		_str = (_str sprintf("expected one of: %s", _exp))
-
-	_lex_err_quit(_str)
+    if (1 <= _end)
+        _exp = sprintf("'%s'", _arr[1])
+	for (_i = 2; _i <= _end; ++_i)
+		_exp = (_exp sprintf(", '%s' ", _arr[_i]))
+    _str = sprintf("expected:   %s\n", _exp)
+    _str = (_str _lex_get_pos_str_pretty())
+    _lex_err_quit(_str)
 }
 
 function lex_init() {
@@ -50,15 +47,25 @@ function lex_get_line(    _ln) {
 function lex_get_curr_tok() {return _B_lex_curr_tok}
 function lex_get_name()     {return _B_lex_saved_name}
 function _lex_save_name(nm) {
-	if (match(nm, "[_[:alpha:]][_[:alnum:]]*"))
+	if (match(nm, "[_[:alpha:]][_[:alnum:]]*")) {
 		_B_lex_saved_name = nm
-	else
-		_lex_err_quit(sprintf("unknown token '%s'\n%s", nm, _lex_get_pos_str()))
+	} else {
+		_lex_err_quit(sprintf("unknown token '%s'\n%s", nm, \
+            _lex_get_pos_str_pretty()))
+    }
 }
 
+function _lex_line_no()      {return FNR}
+function _lex_fname()        {return FILENAME}
+function _lex_curr_fld_num() {return _B_lex_curr_nf}
+
+function _lex_err_print(msg) {
+    error_print(sprintf("%s:%d:%d: %s", _lex_fname(), _lex_line_no(), \
+        _lex_curr_fld_num(), msg))
+}
 function _lex_err_quit(msg) {
-	error_quit(sprintf("file %s, line %d, field %d: %s", \
-		FILENAME, FNR, _B_lex_curr_nf, msg))
+    _lex_err_print(msg)
+    exit_failure()
 }
 
 function _lex_next() {
@@ -78,6 +85,13 @@ function _lex_next() {
 	return _B_lex_curr_tok
 }
 
+function _lex_get_pos_str_pretty(    _pref, _pos_str) {
+    _pref = sprintf("    %d | ", _lex_line_no())
+    _pos_str = (_pref _lex_get_pos_str())
+    gsub("[^[:space:]|]", " ", _pref)
+    sub("\n", ("\n" _pref), _pos_str)
+    return _pos_str
+}
 function _lex_get_pos_str(    _target, _i, _end, _str, _fld, _len) {
 	_target = _B_lex_curr_nf
 	_end = NF

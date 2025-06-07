@@ -1,3 +1,3 @@
-file data/tok_err.txt, line 2, field 3: unknown token '1234'
-foo1 bar 1234 baz
-         ^
+data/tok_err.txt:2:3: unknown token '1234'
+    2 | foo1 bar 1234 baz
+      |          ^

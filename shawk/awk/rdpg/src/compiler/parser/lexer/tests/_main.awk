@@ -4,9 +4,11 @@ function error_print(msg) {
 	G_error_happend = 1
 	print sprintf("error: %s", msg) > "/dev/stderr"
 }
+function exit_failure() {
+    # pass through for testing
+}
 function error_quit(msg) {
 	error_print(msg)
-	# don't exit in the general case for easier testing of errors
 	if (match(msg, "getline "))
 		exit(1)
 }
@@ -24,7 +26,7 @@ function rdpg_expect(arr) {
 }
 
 function out(msg) {
-	print sprintf("line %d, pos %d: %s", lex_get_line_no(), lex_get_pos(), msg)
+	print sprintf("%d:%d: %s", lex_get_line_no(), lex_get_pos(), msg)
 	print lex_get_pos_str()
 }
 

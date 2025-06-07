@@ -7,9 +7,13 @@ function rdpg_expect(arr) {
 	return 1
 }
 
+function exit_failure() {exit(1)}
+function error_print(msg) {
+    print msg > "/dev/stderr"
+}
 function error_quit(msg) {
-	print msg > "/dev/stderr"
-	exit(1)
+    error_print(msg)
+	exit_failure()
 }
 
 function main(    _tok) {

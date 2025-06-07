@@ -1,3 +1,9 @@
+2025-06-07
+    rdpg-comp.awk   2.2.1
+    rdpg-to-c.awk   2.2.3
+    rdpg-to-awk.awk 2.1.2
+    prettier error messages
+
 2025-06-03
     better makefile structure
 

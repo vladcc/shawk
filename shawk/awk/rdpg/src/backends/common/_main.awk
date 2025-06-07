@@ -3,6 +3,6 @@ BEGIN {
 	init()
 	lex_init()
 	if (!rdpg_parse())
-		error_quit("parsing failed")
+		exit_failure()
 	ast_traverse_for_backed()
 }

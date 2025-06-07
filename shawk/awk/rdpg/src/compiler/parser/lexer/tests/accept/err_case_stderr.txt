@@ -1,27 +1,27 @@
-error: file data/err_case.txt, line 2, pos 1: unknown character '1'
-123 _123 _123_
-^
-error: file data/err_case.txt, line 2, pos 2: unknown character '2'
-123 _123 _123_
- ^
-error: file data/err_case.txt, line 2, pos 3: unknown character '3'
-123 _123 _123_
-  ^
-error: file data/err_case.txt, line 2, pos 8: name must contain at least one letter
-123 _123 _123_
-       ^
-error: file data/err_case.txt, line 2, pos 14: name must contain at least one letter
-123 _123 _123_
-             ^
-error: file data/err_case.txt, line 3, pos 2: non-upper case in a terminal symbol
-Foo fOO
- ^
-error: file data/err_case.txt, line 3, pos 6: non-lower case in a non-terminal symbol
-Foo fOO
-     ^
-error: file data/err_case.txt, line 4, pos 6: non-upper case in a terminal symbol
-_123Foo _1_2_fOO_
-     ^
-error: file data/err_case.txt, line 4, pos 15: non-lower case in a non-terminal symbol
-_123Foo _1_2_fOO_
-              ^
+error: data/err_case.txt:2:1: unknown character '1'
+    2 | 123 _123 _123_
+      | ^
+error: data/err_case.txt:2:2: unknown character '2'
+    2 | 123 _123 _123_
+      |  ^
+error: data/err_case.txt:2:3: unknown character '3'
+    2 | 123 _123 _123_
+      |   ^
+error: data/err_case.txt:2:8: name must contain at least one letter
+    2 | 123 _123 _123_
+      |        ^
+error: data/err_case.txt:2:14: name must contain at least one letter
+    2 | 123 _123 _123_
+      |              ^
+error: data/err_case.txt:3:2: non-upper case in a terminal symbol
+    3 | Foo fOO
+      |  ^
+error: data/err_case.txt:3:6: non-lower case in a non-terminal symbol
+    3 | Foo fOO
+      |      ^
+error: data/err_case.txt:4:6: non-upper case in a terminal symbol
+    4 | _123Foo _1_2_fOO_
+      |      ^
+error: data/err_case.txt:4:15: non-lower case in a non-terminal symbol
+    4 | _123Foo _1_2_fOO_
+      |               ^

@@ -1,16 +1,13 @@
-rdpg-comp.awk: error: file data/fatal_err/fatal_parse.rdpg, line 1, pos 11: unexpected 'terminal' after ':'
-start : FOO EOI ;
-          ^
-expected: 'non-terminal' 
-
-rdpg-comp.awk: error: file data/fatal_err/fatal_parse.rdpg, line 3, pos 7: unexpected ';' after ':'
-bar : ;
-      ^
-expected one of: '\' 'terminal' 'non-terminal' 
-
-rdpg-comp.awk: error: file data/fatal_err/fatal_parse.rdpg, line 5, pos 3: unexpected 'terminal' after ';'
-FOO : bar ;
-  ^
-expected one of: 'non-terminal' 'EOI' 
-
-rdpg-comp.awk: exiting due to FatalErr
+rdpg-comp.awk: error: data/fatal_err/fatal_parse.rdpg:1:11: unexpected: 'terminal' after ':'
+rdpg-comp.awk: error: data/fatal_err/fatal_parse.rdpg:1:11: expected:   'non-terminal'
+    1 | start : FOO EOI ;
+      |           ^
+rdpg-comp.awk: error: data/fatal_err/fatal_parse.rdpg:3:7: unexpected: ';' after ':'
+rdpg-comp.awk: error: data/fatal_err/fatal_parse.rdpg:3:7: expected:   '\', 'terminal' , 'non-terminal' 
+    3 | bar : ;
+      |       ^
+rdpg-comp.awk: error: data/fatal_err/fatal_parse.rdpg:5:3: unexpected: 'terminal' after ';'
+rdpg-comp.awk: error: data/fatal_err/fatal_parse.rdpg:5:3: expected:   'non-terminal', 'EOI' 
+    5 | FOO : bar ;
+      |   ^
+rdpg-comp.awk: error: exiting due to FatalErr

@@ -1,7 +1,7 @@
 # Test definitions
 function if_fatal_exit() {}
 function err_quit_fpos(msg, line_num) {
-	error_quit(sprintf("file '%s' line %d: %s", fname(), line_num, msg))
+	error_quit(sprintf("%s:%d: %s", fname(), line_num, msg))
 }
 function error_print(msg) {
 	print sprintf("error: %s", msg) > "/dev/stderr"
