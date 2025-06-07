@@ -1,0 +1,6 @@
+0
+1
+list
+foo_
+bar_
+baz_

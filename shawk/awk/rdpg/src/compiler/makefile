@@ -10,7 +10,7 @@ help:
 	@echo 'make build    - parts + compiler'
 	@echo 'make compiler - compile the compiler from its parts'
 	@echo 'make parts    - build the parts of the compiler'
-	@echo 'make sure     - test + check'
+	@echo 'make sure     - test + make sure all tests run'
 	@echo 'make test     - run tests'
 	@echo 'make testv    - run verbose tests'
 	@echo 'make help     - this screen'

@@ -4,9 +4,10 @@ SMPG := $(AWK) -f ../smpg/smpg.awk
 
 .PHONY: help
 help:
-	@echo 'make all     - structs + sure'
-	@echo 'make sure    - test + check'
+	@echo 'make target  - build + sure'
+	@echo 'make build   - structs'
 	@echo 'make structs - compile structs'
+	@echo 'make sure    - test + make sure all tests run'
 	@echo 'make test    - run tests'
 	@echo 'make testv   - run tests verbosely'
 	@echo 'make help    - this screen'
@@ -20,8 +21,11 @@ RUN_TESTSV := $(RUN_TESTS) x
 RUN_SURE   := $(RUN_TESTSV) > $(PERF_TESTS) && grep -E '^test_[^ ]+' $(PERF_TESTS) | diff /dev/stdin $(EXP_TESTS)
 # </tests>
 
-.PHONY: all
-all : structs sure
+.PHONY: target
+target: build sure
+
+.PHONY: build
+build: structs
 
 .PHONY: structs
 structs: structs.awk

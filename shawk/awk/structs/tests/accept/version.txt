@@ -1,1 +1,1 @@
-structs.awk 1.2
+structs.awk 1.3

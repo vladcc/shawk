@@ -1,0 +1,1 @@
+error: entity '_foo-0-1' expected type 'node', actual type 'list'

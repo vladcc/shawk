@@ -1,0 +1,12 @@
+start
+
+prefix foo
+
+type list
+has  head node
+
+type node
+has  data
+has  next_ node
+
+end

@@ -71,7 +71,8 @@ function gen_base(    _fname, _db_nm) {
 	emit(sprintf("function %s() {", _fname))
 	tabs_inc()
 		emit(sprintf("delete %s", _db_nm))
-		emit("_ent_set(\"gen\", _ent_get(\"gen\")+1)")
+		emit(sprintf("_%s(\"gen\", _%s(\"gen\")+1)", \
+            make_fnm("set"), make_fnm("get")))
 	tabs_dec()
 	emit("}")
 

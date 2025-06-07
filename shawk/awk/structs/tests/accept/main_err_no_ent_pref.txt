@@ -1,0 +1,1 @@
+error: 'foo_' not an entity

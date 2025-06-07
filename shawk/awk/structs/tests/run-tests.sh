@@ -3,10 +3,10 @@
 
 G_AWK="${G_AWK:-awk}"
 readonly G_STRUCTS="../structs.awk"
-readonly G_MAIN="-f ./test.awk -f ./main.awk"
 readonly G_STDOUT="./test_stdout.txt"
 readonly G_STDERR="./test_stderr.txt"
 
+# <run>
 function run
 {
 	bt_eval "$G_AWK $* 1>$G_STDOUT 2>$G_STDERR"
@@ -19,8 +19,15 @@ function run_structs
 function run_main
 {
 	bt_eval cleanup
-	bt_eval run "$G_MAIN $*"
+	bt_eval run "-f ./test.awk -f ./main.awk $*"
 }
+function run_main_pref
+{
+	bt_eval cleanup
+	bt_eval run "-f ./test-pref.awk -f ./main-pref.awk $*"
+}
+# </run>
+
 function cleanup
 {
 	bt_eval "rm -f $G_STDOUT $G_STDERR $*"
@@ -115,12 +122,44 @@ function test_runs
 	diff_stdout "main_gen_ind_stdout.txt"
 	diff_stderr "main_gen_ind_stderr.txt"
 }
+function test_runs_prefix
+{
+	run_structs "./test.pref.structs"
+	bt_assert_success
+	bt_eval "cp $G_STDOUT test-pref.awk"
+
+	run_main_pref "-vOk=1"
+	bt_assert_success
+	diff_stdout "main_ok_pref.txt"
+
+	run_main_pref "-vUseBadType=1"
+	bt_assert_failure
+	diff_stderr "main_err_bad_type_pref.txt"
+
+	run_main_pref "-vAssignBadType=1"
+	bt_assert_failure
+	diff_stderr "main_err_assign_bad_type_pref.txt"
+
+	run_main_pref "-vNoEnt=1"
+	bt_assert_failure
+	diff_stderr "main_err_no_ent_pref.txt"
+
+	run_main_pref "-vClear=1"
+	bt_assert_failure
+	diff_stderr "main_clear_pref.txt"
+
+	run_main_pref "-vGenInd=1"
+	bt_assert_failure
+	diff_stdout "main_gen_ind_stdout_pref.txt"
+	diff_stderr "main_gen_ind_stderr_pref.txt"
+}
 # </runs>
 
 function test_all
 {
 	bt_eval test_opts
 	bt_eval test_runs
+    bt_eval test_runs_prefix
 	bt_eval cleanup
 }
 # </tests>

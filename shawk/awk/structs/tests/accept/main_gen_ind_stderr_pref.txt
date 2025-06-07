@@ -1,0 +1,1 @@
+error: '_foo-0-1' not an entity

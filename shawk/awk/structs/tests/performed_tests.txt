@@ -105,5 +105,56 @@ diff ./test_stdout.txt accept/main_gen_ind_stdout.txt
 [ 0 -eq 0 ]
 diff ./test_stderr.txt accept/main_gen_ind_stderr.txt
 [ 0 -eq 0 ]
+test_runs_prefix
+cleanup
+rm -f ./test_stdout.txt ./test_stderr.txt 
+run -f ../structs.awk ./test.pref.structs
+awk -f ../structs.awk ./test.pref.structs 1>./test_stdout.txt 2>./test_stderr.txt
+[ 0 -eq 0 ]
+cp ./test_stdout.txt test-pref.awk
+cleanup
+rm -f ./test_stdout.txt ./test_stderr.txt 
+run -f ./test-pref.awk -f ./main-pref.awk -vOk=1
+awk -f ./test-pref.awk -f ./main-pref.awk -vOk=1 1>./test_stdout.txt 2>./test_stderr.txt
+[ 0 -eq 0 ]
+diff ./test_stdout.txt accept/main_ok_pref.txt
+[ 0 -eq 0 ]
+cleanup
+rm -f ./test_stdout.txt ./test_stderr.txt 
+run -f ./test-pref.awk -f ./main-pref.awk -vUseBadType=1
+awk -f ./test-pref.awk -f ./main-pref.awk -vUseBadType=1 1>./test_stdout.txt 2>./test_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_stderr.txt accept/main_err_bad_type_pref.txt
+[ 0 -eq 0 ]
+cleanup
+rm -f ./test_stdout.txt ./test_stderr.txt 
+run -f ./test-pref.awk -f ./main-pref.awk -vAssignBadType=1
+awk -f ./test-pref.awk -f ./main-pref.awk -vAssignBadType=1 1>./test_stdout.txt 2>./test_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_stderr.txt accept/main_err_assign_bad_type_pref.txt
+[ 0 -eq 0 ]
+cleanup
+rm -f ./test_stdout.txt ./test_stderr.txt 
+run -f ./test-pref.awk -f ./main-pref.awk -vNoEnt=1
+awk -f ./test-pref.awk -f ./main-pref.awk -vNoEnt=1 1>./test_stdout.txt 2>./test_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_stderr.txt accept/main_err_no_ent_pref.txt
+[ 0 -eq 0 ]
+cleanup
+rm -f ./test_stdout.txt ./test_stderr.txt 
+run -f ./test-pref.awk -f ./main-pref.awk -vClear=1
+awk -f ./test-pref.awk -f ./main-pref.awk -vClear=1 1>./test_stdout.txt 2>./test_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_stderr.txt accept/main_clear_pref.txt
+[ 0 -eq 0 ]
+cleanup
+rm -f ./test_stdout.txt ./test_stderr.txt 
+run -f ./test-pref.awk -f ./main-pref.awk -vGenInd=1
+awk -f ./test-pref.awk -f ./main-pref.awk -vGenInd=1 1>./test_stdout.txt 2>./test_stderr.txt
+[ 1 -ne 0 ]
+diff ./test_stdout.txt accept/main_gen_ind_stdout_pref.txt
+[ 0 -eq 0 ]
+diff ./test_stderr.txt accept/main_gen_ind_stderr_pref.txt
+[ 0 -eq 0 ]
 cleanup
 rm -f ./test_stdout.txt ./test_stderr.txt 
