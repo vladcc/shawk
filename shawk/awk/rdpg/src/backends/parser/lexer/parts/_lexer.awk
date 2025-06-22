@@ -1,36 +1,9 @@
 # <lex>
 # The backend lexer. It's assumed every single token is separated by space.
 
+# <public>
 function EOI() {return "eoi"}
 function NAME() {return "name"}
-
-function parsing_error_happened() {return _B_parsing_error_flag}
-function parsing_error_set() {_B_parsing_error_flag = 1}
-
-function _tok_prev_set(tok) {_B_lex_tok_prev = tok}
-function _tok_prev()        {return _B_lex_tok_prev}
-function tok_next() {
-	_tok_prev_set(tok_curr())
-	return _lex_next()
-}
-function tok_curr() {return lex_get_curr_tok()}
-function tok_err(    _str, _i, _end, _arr, _exp, _prev) {
-	parsing_error_set()
-
-	_str = sprintf("unexpected: '%s'", tok_curr())
-	if (_prev = _tok_prev())
-		_str = (_str sprintf(" after '%s'", _prev))
-	_lex_err_print(_str)
-
-	_end = rdpg_expect(_arr)
-    if (1 <= _end)
-        _exp = sprintf("'%s'", _arr[1])
-	for (_i = 2; _i <= _end; ++_i)
-		_exp = (_exp sprintf(", '%s' ", _arr[_i]))
-    _str = sprintf("expected:   %s\n", _exp)
-    _str = (_str _lex_get_pos_str_pretty())
-    _lex_err_quit(_str)
-}
 
 function lex_init() {
 	FS = " "
@@ -44,24 +17,35 @@ function lex_get_line(    _ln) {
 	sub("^[[:space:]]*", "", _ln)
 	return _ln
 }
+
 function lex_get_curr_tok() {return _B_lex_curr_tok}
 function lex_get_name()     {return _B_lex_saved_name}
-function _lex_save_name(nm) {
-	if (match(nm, "[_[:alpha:]][_[:alnum:]]*")) {
-		_B_lex_saved_name = nm
-	} else {
-		_lex_err_quit(sprintf("unknown token '%s'\n%s", nm, \
-            _lex_get_pos_str_pretty()))
-    }
+function lex_next_line(    _res) {
+	_B_lex_curr_nf = 0
+	if ((_res = getline) > 0)
+		return 1
+	else if (0 == _res)
+		return 0
+	error_quit(sprintf("getline io with code %s", _res))
 }
-
+# </public>
+# <private>
 function _lex_line_no()      {return FNR}
 function _lex_fname()        {return FILENAME}
 function _lex_curr_fld_num() {return _B_lex_curr_nf}
 
+function _lex_save_name(nm) {
+	if (match(nm, "[_[:alpha:]][_[:alnum:]]*")) {
+		_B_lex_saved_name = nm
+	} else {
+		_lex_err_quit(sprintf("unknown token '%s'", nm))
+    }
+}
+
 function _lex_err_print(msg) {
-    error_print(sprintf("%s:%d:%d: %s", _lex_fname(), _lex_line_no(), \
-        _lex_curr_fld_num(), msg))
+	parsing_error_set()
+    error_print(sprintf("%s:%d:%d\n%s", _lex_fname(), _lex_line_no(), \
+        _lex_curr_fld_num(), _lex_msg_pos_pretty(msg)))
 }
 function _lex_err_quit(msg) {
     _lex_err_print(msg)
@@ -85,6 +69,10 @@ function _lex_next() {
 	return _B_lex_curr_tok
 }
 
+
+function _lex_msg_pos_pretty(msg) {
+    return sprintf("%s\n%s", msg, _lex_get_pos_str_pretty())
+}
 function _lex_get_pos_str_pretty(    _pref, _pos_str) {
     _pref = sprintf("    %d | ", _lex_line_no())
     _pos_str = (_pref _lex_get_pos_str())
@@ -112,14 +100,6 @@ function _lex_get_pos_str(    _target, _i, _end, _str, _fld, _len) {
 	return (_str "\n" (_fld "^"))
 }
 
-function lex_next_line(    _res) {
-	_B_lex_curr_nf = 0
-	if ((_res = getline) > 0)
-		return 1
-	else if (0 == _res)
-		return 0
-	error_quit(sprintf("getline io with code %s", _res))
-}
 
 function _lex_make_ir_set() {
 	_B_lex_ir_set[IR_ALIAS()]
@@ -152,4 +132,5 @@ function _lex_make_ir_set() {
 	_B_lex_ir_set[IR_TOK_ERR()]
 	_B_lex_ir_set[IR_WAS_NO_ERR()]
 }
-# <lex>
+# </private>
+# </lex>

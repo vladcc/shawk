@@ -7,6 +7,9 @@ function rdpg_expect(arr) {
 	return 1
 }
 
+function parsing_error_happened() {return _B_parsing_error_flag}
+function parsing_error_set() {_B_parsing_error_flag = 1}
+
 function exit_failure() {exit(1)}
 function error_print(msg) {
     print msg > "/dev/stderr"

@@ -1,3 +1,4 @@
-data/tok_err.txt:2:3: unknown token '1234'
+data/tok_err.txt:2:3
+unknown token '1234'
     2 | foo1 bar 1234 baz
       |          ^

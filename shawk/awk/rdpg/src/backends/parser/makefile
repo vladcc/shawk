@@ -49,6 +49,7 @@ PARTS += parts/_bprint.awk
 PARTS += parts/_lexer.awk
 PARTS += parts/_prs.awk
 PARTS += parts/_ast.awk
+PARTS += parts/_misc.awk
 $(PARSER) : $(PARTS)
 	(echo "# <parser>" && cat $^ && echo "# </parser>") > $@
 

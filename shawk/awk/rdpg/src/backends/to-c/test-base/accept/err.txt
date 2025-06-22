@@ -1,4 +1,5 @@
-rdpg-to-c.awk: error: -:1:1: unexpected: 'name'
-rdpg-to-c.awk: error: -:1:1: expected:   '#', 'tokens' 
+rdpg-to-c.awk: error: -:1:1
+unexpected: 'name'
+  expected: '#', 'tokens' 
     1 | foo
       | ^

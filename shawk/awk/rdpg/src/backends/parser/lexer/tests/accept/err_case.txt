@@ -1,4 +1,5 @@
-data/tok.txt:1:2: unexpected: 'sets' after '#'
-data/tok.txt:1:2: expected:   'foo'
+data/tok.txt:1:2
+unexpected: 'sets' after '#'
+  expected: 'foo'
     1 | # sets predict expect sync
       |   ^

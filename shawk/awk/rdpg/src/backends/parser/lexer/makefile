@@ -34,7 +34,10 @@ $(TARGET): $(LEXER)
 .PHONY: lexer
 lexer: $(LEXER)
 
-$(LEXER): parts/$(LEXER) ../../../common/_rdpg_ir.awk
+PARTS := parts/$(LEXER)
+PARTS += parts/_tok.awk
+PARTS += ../../../common/_rdpg_ir.awk
+$(LEXER): $(PARTS)
 	(echo "# <lexer>" && cat $^ && echo "# </lexer>") > $@
 
 .PHONY: test
