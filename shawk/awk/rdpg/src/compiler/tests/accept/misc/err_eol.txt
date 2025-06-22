@@ -1,4 +1,5 @@
-rdpg-comp.awk: error: data/misc/err_eol.rdpg:1:12: unexpected: 'EOI' after 'non-terminal'
-rdpg-comp.awk: error: data/misc/err_eol.rdpg:1:12: expected:   '?', '*' , '+' , 'terminal' , '\' , 'non-terminal' , '|' , ';' 
+rdpg-comp.awk: error: data/misc/err_eol.rdpg:1:12
+unexpected: 'EOI' after 'non-terminal' with value 'foo'
+  expected: '?', '*' , '+' , 'terminal' , '\' , 'non-terminal' , '|' , ';' 
     1 | start : foo
       |            ^

@@ -1,8 +1,10 @@
-error: data/tok_err.txt:1:3: unexpected: 'non-terminal'
-error: data/tok_err.txt:1:3: expected:   'foo'
+error: data/tok_err.txt:1:3
+unexpected: 'non-terminal' with value 'bar'
+  expected: 'foo'
     1 | bar BAZ
-      |   ^
-error: data/tok_err.txt:1:7: unexpected: 'terminal'
-error: data/tok_err.txt:1:7: expected:   'zig', 'zag' 
+      | ^
+error: data/tok_err.txt:1:7
+unexpected: 'terminal' with value 'BAZ'
+  expected: 'zig', 'zag' 
     1 | bar BAZ
-      |       ^
+      |     ^

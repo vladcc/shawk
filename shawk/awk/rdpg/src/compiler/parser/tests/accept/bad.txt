@@ -1,8 +1,10 @@
-error: grammars/bad.rdpg:5:10: unexpected: '?' after 'terminal'
-error: grammars/bad.rdpg:5:10: expected:   '\', 'terminal' , 'non-terminal' , '|' , ';' 
+error: grammars/bad.rdpg:5:10
+unexpected: '?' after 'terminal' with value 'BAR'
+  expected: '\', 'terminal' , 'non-terminal' , '|' , ';' 
     5 | foo : BAR? ;
       |          ^
-error: grammars/bad.rdpg:7:10: unexpected: 'terminal' after '\'
-error: grammars/bad.rdpg:7:10: expected:   'non-terminal'
+error: grammars/bad.rdpg:7:10
+unexpected: 'terminal' with value 'BAR' after '\'
+  expected: 'non-terminal'
     7 | foo : \BAR ;
-      |          ^
+      |        ^

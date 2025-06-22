@@ -1,4 +1,7 @@
 # Test definitions
+function parsing_error_happened() {return _B_parsing_error_flag}
+function parsing_error_set() {_B_parsing_error_flag = 1}
+
 function if_fatal_exit() {}
 function error_print(msg) {
 	G_error_happend = 1

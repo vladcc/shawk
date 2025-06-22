@@ -1,3 +1,8 @@
+2025-06-22
+	rdpg-comp.awk 2.2.2
+	tok factored out in the lexer
+	better error messages
+
 2025-06-07
     rdpg-comp.awk   2.2.1
     rdpg-to-c.awk   2.2.3

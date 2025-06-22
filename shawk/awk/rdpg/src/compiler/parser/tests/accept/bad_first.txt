@@ -1,4 +1,5 @@
-error: grammars/bad_first.rdpg:1:5: unexpected: 'terminal'
-error: grammars/bad_first.rdpg:1:5: expected:   'EOI', 'start' 
+error: grammars/bad_first.rdpg:1:5
+unexpected: 'terminal' with value 'START'
+  expected: 'EOI', 'start' 
     1 | START : foo EOI ;
-      |     ^
+      | ^

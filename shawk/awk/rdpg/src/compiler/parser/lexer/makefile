@@ -35,7 +35,10 @@ $(TARGET): $(LEXER)
 lexer: $(LEXER)
 
 LEX_GEN := parts/_lex_gen.awk
-$(LEXER): $(LEX_GEN) parts/_lex_usr.awk
+PARTS := $(LEX_GEN)
+PARTS += parts/_lex_usr.awk
+PARTS += parts/_tok.awk
+$(LEXER): $(PARTS)
 	(echo "# <lexer>" && cat $^ && echo "# </lexer>") > $@
 
 LB_DIR := ../../../../../lex-build

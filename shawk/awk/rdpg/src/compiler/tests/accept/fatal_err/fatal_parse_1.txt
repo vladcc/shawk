@@ -1,5 +1,6 @@
-rdpg-comp.awk: error: data/fatal_err/fatal_parse.rdpg:1:11: unexpected: 'terminal' after ':'
-rdpg-comp.awk: error: data/fatal_err/fatal_parse.rdpg:1:11: expected:   'non-terminal'
+rdpg-comp.awk: error: data/fatal_err/fatal_parse.rdpg:1:11
+unexpected: 'terminal' with value 'FOO' after ':'
+  expected: 'non-terminal'
     1 | start : FOO EOI ;
-      |           ^
+      |         ^
 rdpg-comp.awk: error: exiting due to FatalErr
