@@ -1,4 +1,5 @@
-rdpg-comp.awk: warning: file 'data/checks/warn/all.rdpg', line 3, non-terminal 'foo': escapes after tail recursion are unreachable
-foo : A foo \esc1 \esc2 \esc3
+rdpg-comp.awk: warning: data/checks/warn/all.rdpg:3
+non-terminal 'foo': escapes after tail recursion are unreachable
+    foo : A foo \esc1 \esc2 \esc3
 
 rdpg-comp.awk: exiting due to WarnErr

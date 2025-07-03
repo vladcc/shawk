@@ -1,12 +1,16 @@
-rdpg-comp.awk: error: file 'data/checks/err/left_rec.rdpg', line 3, non-terminal 'foo': left recursion
+rdpg-comp.awk: error: data/checks/err/left_rec.rdpg:3
+non-terminal 'foo': left recursion
 foo -> foo
 
-rdpg-comp.awk: error: file 'data/checks/err/left_rec.rdpg', line 5, non-terminal 'bar': left recursion
+rdpg-comp.awk: error: data/checks/err/left_rec.rdpg:5
+non-terminal 'bar': left recursion
 bar -> baz -> zig -> bar
 
-rdpg-comp.awk: error: file 'data/checks/err/left_rec.rdpg', line 7, non-terminal 'baz': left recursion
+rdpg-comp.awk: error: data/checks/err/left_rec.rdpg:7
+non-terminal 'baz': left recursion
 baz -> zig -> bar -> baz
 
-rdpg-comp.awk: error: file 'data/checks/err/left_rec.rdpg', line 9, non-terminal 'zig': left recursion
+rdpg-comp.awk: error: data/checks/err/left_rec.rdpg:9
+non-terminal 'zig': left recursion
 zig -> bar -> baz -> zig
 

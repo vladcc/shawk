@@ -2,7 +2,7 @@
 
 # <rdpg-main>
 function SCRIPT_NAME() {return "rdpg-comp.awk"}
-function SCRIPT_VERSION() {return "2.2.2"}
+function SCRIPT_VERSION() {return "2.2.3"}
 
 # <opts>
 function OPT_IMM()         {return "Imm"}
@@ -70,7 +70,7 @@ function warn_happened() {return _B_warn_happened}
 function warn_fpos(lhs, msg) {
 	_B_warn_happened = 1
 
-	msg_stderr(sprintf("warning: file '%s', line %s, non-terminal '%s': %s\n", \
+	msg_stderr(sprintf("warning: %s:%s\nnon-terminal '%s': %s\n", \
 		fname(), st_lhs_line_num(lhs), lhs, msg))
 
 	if (opt_warn_is_err())
@@ -105,10 +105,10 @@ function err_checks(    _err) {
 }
 
 function err_quit_fpos(msg, line_num) {
-	error_quit(sprintf("file '%s' line %s: %s", fname(), line_num, msg))
+	error_quit(sprintf("%s:%s\n%s", fname(), line_num, msg))
 }
 function err_fpos(lhs, msg) {
-	error_print(sprintf("file '%s', line %s, non-terminal '%s': %s\n", \
+	error_print(sprintf("%s:%s\nnon-terminal '%s': %s\n", \
 		fname(), st_lhs_line_num(lhs), lhs, msg))
 
 	if_fatal_exit()

@@ -1,6 +1,10 @@
-rdpg-comp.awk: error: file 'data/checks/err/first_follow.rdpg', line -, non-terminal 'bar_opt': first/follow conflict; can both begin with and be followed by
+rdpg-comp.awk: error: data/checks/err/first_follow.rdpg:-
+non-terminal 'bar_opt': first/follow conflict
+'bar_opt' can both begin with and be followed by
 A
 
-rdpg-comp.awk: error: file 'data/checks/err/first_follow.rdpg', line -, non-terminal 'bar_star': first/follow conflict; can both begin with and be followed by
+rdpg-comp.awk: error: data/checks/err/first_follow.rdpg:-
+non-terminal 'bar_star': first/follow conflict
+'bar_star' can both begin with and be followed by
 B C
 

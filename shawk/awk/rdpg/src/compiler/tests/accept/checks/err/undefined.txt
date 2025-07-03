@@ -1,12 +1,16 @@
-rdpg-comp.awk: error: file 'data/checks/err/undefined.rdpg', line 3, non-terminal 'foo': 'bar' is undefined
-foo : A bar B
+rdpg-comp.awk: error: data/checks/err/undefined.rdpg:3
+non-terminal 'foo': 'bar' is undefined
+    foo : A bar B
 
-rdpg-comp.awk: error: file 'data/checks/err/undefined.rdpg', line 3, non-terminal 'foo': 'baz_opt' is undefined
-foo : baz_opt X
+rdpg-comp.awk: error: data/checks/err/undefined.rdpg:3
+non-terminal 'foo': 'baz_opt' is undefined
+    foo : baz_opt X
 
-rdpg-comp.awk: error: file 'data/checks/err/undefined.rdpg', line 3, non-terminal 'foo': 'baz_star' is undefined
-foo : baz_star Y
+rdpg-comp.awk: error: data/checks/err/undefined.rdpg:3
+non-terminal 'foo': 'baz_star' is undefined
+    foo : baz_star Y
 
-rdpg-comp.awk: error: file 'data/checks/err/undefined.rdpg', line 3, non-terminal 'foo': 'baz_plus' is undefined
-foo : baz_plus Z
+rdpg-comp.awk: error: data/checks/err/undefined.rdpg:3
+non-terminal 'foo': 'baz_plus' is undefined
+    foo : baz_plus Z
 

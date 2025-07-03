@@ -15,11 +15,15 @@ function check_err_conflicts(    _err) {
 	return _err
 }
 
+function check_make_rule_for_report(lhs, rhs) {
+	return sprintf("    %s : %s", lhs, rhs)
+}
+
 # <private>
 # <errors>
 # <left-factor>
 function _check_lfact_defn_err(lhs, defns) {
-	err_fpos(lhs, sprintf("rules start with same symbol\n%s", defns))
+	err_fpos(lhs, sprintf("rules start with the same symbol\n%s", defns))
 }
 function _check_lfact(    _i, _end, _lhs, _first, _key, _defn, _map, _ret) {
 	_ret = 0
@@ -27,7 +31,7 @@ function _check_lfact(    _i, _end, _lhs, _first, _key, _defn, _map, _ret) {
 	for (_i = 1; _i <= _end; ++_i) {
 		_lhs = st_rule_lhs(_i)
 		_first = st_rule_pos_name(_i, 1)
-		_defn = sprintf("%s : %s", _lhs, st_rule_str(_i))
+		_defn = check_make_rule_for_report(_lhs, st_rule_str(_i))
 		_key = (_lhs "," _first)
 		if (_key in _map)
 			_map[_key] = (_map[_key] "\n" _defn)
@@ -93,7 +97,8 @@ function _check_lrec_all(    _i, _end, _err) {
 # </left-recursion>
 # <undefined-rules>
 function _check_undef_err(lhs, undef, defn) {
-	err_fpos(lhs, sprintf("'%s' is undefined\n%s : %s", undef, lhs, defn))
+	err_fpos(lhs, sprintf("'%s' is undefined\n%s", undef, \
+		check_make_rule_for_report(lhs, defn)))
 }
 function _check_undef(    _i, _ei, _j, _ej, _nm, _ret) {
 	_ret = 0
@@ -145,7 +150,7 @@ function _check_reach_report(set_reach,    _i, _end, _lhs, _ret) {
 # </reachability>
 # <esc-after-tail-rec>
 function _check_esc_tail_rec_warn(lhs, rstr,    _msg) {
-	rstr = sprintf("%s : %s", lhs, rstr)
+	rstr = check_make_rule_for_report(lhs, rstr)
 	_msg = sprintf("escapes after tail recursion are unreachable\n%s", rstr)
 	warn_fpos(lhs, _msg)
 }

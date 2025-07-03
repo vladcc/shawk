@@ -1,3 +1,4 @@
-rdpg-comp.awk: warning: file 'data/fatal_err/fatal_err.rdpg', line 5, non-terminal 'baz': unreachable
+rdpg-comp.awk: warning: data/fatal_err/fatal_err.rdpg:5
+non-terminal 'baz': unreachable
 
 rdpg-comp.awk: error: exiting due to WarnErr && FatalErr

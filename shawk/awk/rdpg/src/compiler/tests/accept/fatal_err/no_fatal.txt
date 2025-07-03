@@ -1,6 +1,8 @@
-rdpg-comp.awk: error: file 'data/fatal_err/fatal_err.rdpg', line 3, non-terminal 'foo': 'bar' is undefined
-foo : bar foo \esc1
+rdpg-comp.awk: error: data/fatal_err/fatal_err.rdpg:3
+non-terminal 'foo': 'bar' is undefined
+    foo : bar foo \esc1
 
-rdpg-comp.awk: error: file 'data/fatal_err/fatal_err.rdpg', line 3, non-terminal 'foo': 'zig' is undefined
-foo : zig
+rdpg-comp.awk: error: data/fatal_err/fatal_err.rdpg:3
+non-terminal 'foo': 'zig' is undefined
+    foo : zig
 

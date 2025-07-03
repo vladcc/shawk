@@ -1,5 +1,7 @@
-rdpg-comp.awk: warning: file 'data/checks/warn/all.rdpg', line -, non-terminal 'foo_opt': unreachable
+rdpg-comp.awk: warning: data/checks/warn/all.rdpg:-
+non-terminal 'foo_opt': unreachable
 
-rdpg-comp.awk: warning: file 'data/checks/warn/all.rdpg', line 5, non-terminal 'bar': unreachable
+rdpg-comp.awk: warning: data/checks/warn/all.rdpg:5
+non-terminal 'bar': unreachable
 
 rdpg-comp.awk: exiting due to WarnErr

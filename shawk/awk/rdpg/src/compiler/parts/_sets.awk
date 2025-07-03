@@ -530,7 +530,10 @@ function _sets_expect(    _i, _end, _rnm, _lhs) {
 # <conflicts>
 # <first-first>
 function _sets_fsfs_conf_err(lhs, da, db, ssx,    _err) {
-	_err = sprintf("first/first conflict\n%s : %s\n%s : %s", lhs, da, lhs, db)
+	_err = sprintf("first/first conflict\n%s\n%s", \
+		check_make_rule_for_report(lhs, da),       \
+		check_make_rule_for_report(lhs, db)        \
+	)
 	_err = sprintf("%s\ncan both begin with\n%s", _err, ssx)
 	err_fpos(lhs, _err)
 }
@@ -568,7 +571,8 @@ function _sets_fsfs_conf_all(    _i, _end, _conf) {
 # </first-first>
 # <first-follow>
 function _sets_fsfwl_conf_err(lhs, ssx,    _err) {
-	_err = "first/follow conflict; can both begin with and be followed by"
+	_err = "first/follow conflict"
+	_err = (_err sprintf("\n'%s' can both begin with and be followed by", lhs))
 	err_fpos(lhs, sprintf("%s\n%s", _err, ssx))
 }
 function _sets_fsfwl_conf_rule(lhs,    _si, _sx, _ret) {

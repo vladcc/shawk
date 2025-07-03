@@ -1,1 +1,2 @@
-rdpg-comp.awk: error: file 'data/checks/err/redefined.rdpg' line 5: non-terminal 'foo' redefined
+rdpg-comp.awk: error: data/checks/err/redefined.rdpg:5
+non-terminal 'foo' redefined
