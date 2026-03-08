@@ -7,13 +7,13 @@ function main
 	pushd "$(dirname $(realpath $0))"
 
 	echo "$0 generating with $G_AWK"
-	
+
 	if [ "$1" = "awk" ]; then
 		generate_awk
     else
 		generate_c "$1"
 	fi
-	
+
 	popd
 }
 
@@ -25,10 +25,25 @@ function generate_awk
 
 function generate_c
 {
-	$G_AWK -f../lex-first.awk lex.lb |
+	$G_AWK -f../lex-first.awk lex.lb      |
 	$G_AWK -f../lex-c.awk -vKeywords="$1" |
-	$G_AWK -vType="$1" '/<lex_header>/, /<\/lex_header>/ {print $0 > "./lex.h"}
-	/<lex_source>/, /<\/lex_source>/ {print $0 > sprintf("./lex_%s.c", Type)}'
+	$G_AWK -vType="$1" '
+	/<lex_header>/, /<\/lex_header>/ {
+		print $0 > "./lex.h"
+	}
+	/<lex_source>/, /<\/lex_source>/ {
+		print $0 > sprintf("./lex_%s.c", Type)
+	}'
+
+	$G_AWK -f../lex-first.awk lex.lb                               |
+	$G_AWK -f../lex-c.awk -vKeywords="$1" -vClsBias="CH_CLS_SPACE" |
+	$G_AWK -vType="$1_bias" '
+	/<lex_header>/, /<\/lex_header>/ {
+		print $0 > "./lex.h"
+	}
+	/<lex_source>/, /<\/lex_source>/ {
+		print $0 > sprintf("./lex_%s.c", Type)
+	}'
 }
 
 main "$@"

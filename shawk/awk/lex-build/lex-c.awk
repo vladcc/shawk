@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-03-23
+# 2026-03-06
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.93"}
+function SCRIPT_VERSION() {return "1.9.4"}
 # </script>
 
 # <out_signature>
@@ -98,14 +98,14 @@ function out_lex_init_info(    _set, _i, _end, _str) {
 		N_LEX_SAVE_CH()))
 	out_line("unsigned int write_buff_len; // includes the '\\0'")
 	tabs_dec()
-	out_line(sprintf("} %s;", N_LEX_INIT_INFO()))	
+	out_line(sprintf("} %s;", N_LEX_INIT_INFO()))
 }
 function out_lex_save_ch(save_fn, args, save_ch) {
 	out_line("// call this to write to the lexer write space")
 	out_line(sprintf("static inline bool %s(%s)", save_fn, args))
 	out_line("{")
 	tabs_inc()
-	out_line("bool is_saved = (lex->write_buff_pos < lex->write_buff_len);") 
+	out_line("bool is_saved = (lex->write_buff_pos < lex->write_buff_len);")
 	out_line("if (is_saved)")
 	tabs_inc()
 	out_line(sprintf("lex->write_buff[lex->write_buff_pos++] = %s;", save_ch))
@@ -170,11 +170,11 @@ function out_lex_define(    _set, _i, _end, _str) {
 	out_lex_save_ch(N_LEX_SAVE_CH(),
 		sprintf("%s * lex", N_LEX_STATE()),
 		"lex->curr_ch")
-	
+
 	out_lex_save_ch(N_LEX_SAVE_CH_USR(),
 		sprintf("%s * lex, char ch", N_LEX_STATE()),
 		"ch")
-	
+
 	out_line()
 	out_line("// call this after you're done writing to the lexer write space")
 	out_line(sprintf("static inline void %s(%s * lex)",
@@ -221,7 +221,7 @@ function out_lex_define(    _set, _i, _end, _str) {
 		N_LEX_MATCH(), N_LEX_STATE(), N_TOK_ID()))
 	out_line("{return (lex->curr_tok == tok);}")
 	out_line()
-	
+
 	out_line(sprintf("static inline void %s(%s * lex, %s * init)",
 		N_LEX_INIT(), N_LEX_STATE(), N_LEX_INIT_INFO()))
 	out_line("{")
@@ -279,11 +279,11 @@ function out_tok_enum(    _set, _set_const, _set_str, _i, _end, _line_len, _j) {
 	_line_len = 4
 	_i = 1
 	_end = vect_len(_set_const)
-	
+
 	while (_i <= _end) {
 
 		# Print the token value enum constant name.
-		for (_j = 0; _j < _line_len && _i+_j <= _end; ++_j) 
+		for (_j = 0; _j < _line_len && _i+_j <= _end; ++_j)
 			printf("%-20s", sprintf("%s,", _set_const[_i+_j]))
 		out_line()
 
@@ -293,9 +293,9 @@ function out_tok_enum(    _set, _set_const, _set_str, _i, _end, _line_len, _j) {
 		out_line()
 
 		_i += _j
-		
+
 	}
-	
+
 	out_line(sprintf("%s," , TOK_ERR_ENUM()))
 	out_line(sprintf("/* \"%s\" */", TOK_ERR_STR()))
 
@@ -314,7 +314,7 @@ function out_source() {
 		out_line("#include <string.h>")
 		out_line("#include <stdlib.h>")
 	}
-	
+
 	out_line()
 	out_line("// <lex_token_str>")
 	out_tok_tbl()
@@ -345,7 +345,7 @@ function out_tok_tbl(    _set, _set_str, _set_const, _i, _end, _line_len, _j) {
 	lb_vect_make_set(_set, G_patterns_vect, 2)
 	lb_vect_append(_set_const, _set)
 
-	
+
 	# Print all tokens in a static string table.
 	out_line("static const char * tokens[] = {")
 
@@ -356,21 +356,21 @@ function out_tok_tbl(    _set, _set_str, _set_const, _i, _end, _line_len, _j) {
 	while (_i <= _end) {
 
 		# Print the token string representation.
-		for (_j = 0; _j < _line_len && _i+_j <= _end; ++_j) 
+		for (_j = 0; _j < _line_len && _i+_j <= _end; ++_j)
 			printf("%-20s", sprintf("\"%s\",", _set_str[_i+_j]))
 		out_line()
 
 		# Print the name of its enum constant as a comment below.
 		for (_j = 0; _j < _line_len && _i+_j <= _end; ++_j)
-			printf("%-20s", sprintf("/* %s */", _set_const[_i+_j]))		
+			printf("%-20s", sprintf("/* %s */", _set_const[_i+_j]))
 		out_line()
-		
+
 		_i += _j
 	}
-	
+
 	out_line(sprintf("\"%s\"," , TOK_ERR_STR()))
 	out_line(sprintf("/* %s */", TOK_ERR_ENUM()))
-	
+
 	out_line("};")
 
 }
@@ -402,13 +402,13 @@ function out_ch_cls_enum(    _i, _end, _cls_set, _line_len) {
 	lb_vect_make_set(_cls_set, G_char_tbl_vect, 2)
 
 	out_line(sprintf("enum %s {", N_CHAR_CLS()))
-	
+
 	_line_len = 4
 	_i = 1
 	_end = vect_len(_cls_set)
-	
+
 	while (_i <= _end) {
-	
+
 		for (_j = 0; _j < _line_len && _i+_j <= _end; ++_j) {
 			if ((_i+_j) == 1)
 				printf("%-20s", sprintf("%s = 1,", _cls_set[_i+_j]))
@@ -416,10 +416,10 @@ function out_ch_cls_enum(    _i, _end, _cls_set, _line_len) {
 				printf("%-20s", sprintf("%s,", _cls_set[_i+_j]))
 		}
 		out_line()
-		
+
 		_i += _j
 	}
-	
+
 	out_line("};")
 }
 function out_src_defines() {
@@ -428,15 +428,15 @@ function out_src_defines() {
 }
 function out_char_tbl(    _i, _end, _ch, _str, _map_ch_cls,
 _zero_line_len, _zero_new_line, _j, _ch_out) {
-	
+
 	out_line("// <lex_src_defines>")
 	out_src_defines()
 	out_line("// </lex_src_defines>")
-	
+
 	# Print a static constant table for the character classes.
 	# Prints at most 16 zeroes, or two char classes along with their values as
 	# comments per line.
-	
+
 	out_line("// <lex_char_tbl>")
 	out_line("static const byte char_cls_tbl[CHAR_TBL_SZ] = {")
 
@@ -462,7 +462,7 @@ _zero_line_len, _zero_new_line, _j, _ch_out) {
 					out_line()
 					_ch_out = 0
 				}
-				
+
 				if (!(_j % _zero_line_len))
 					out_tabs()
 
@@ -472,7 +472,7 @@ _zero_line_len, _zero_new_line, _j, _ch_out) {
 					out_line()
 					_zero_new_line = 1
 				}
-				
+
 				++_j
 				++_i
 			}
@@ -480,7 +480,7 @@ _zero_line_len, _zero_new_line, _j, _ch_out) {
 
 		if (_j && !_zero_new_line)
 			out_line()
-		
+
 		if (!(_i < _end))
 			break
 
@@ -490,22 +490,22 @@ _zero_line_len, _zero_new_line, _j, _ch_out) {
 			_str = " "
 		else
 			_str = _ch
-	
+
 		printf("%-35s ",
 			sprintf("/* %03d 0x%02X '%s' */ %s,",
 				_i, _i, _str, _map_ch_cls[_ch]))
-		
+
 		++_ch_out
 		if (2 == _ch_out) {
 			out_line()
 			_ch_out = 0
 		}
-		
+
 		++_i
 	}
-		
+
 	out_line("};")
-	
+
 	out_line("#define char_cls_get(ch) ((byte)char_cls_tbl[(byte)(ch)])")
 	out_line("// </lex_char_tbl>")
 }
@@ -530,12 +530,12 @@ function out_tree_symb(tree, root, map_tok,    _next_str, _next_ch, _i, _end) {
 	#         read_ch()
 	#      }
 	# }
-	
+
 	if (ch_ptree_has(tree, root) || ch_ptree_is_word(tree, root)) {
 
 		if (ch_ptree_is_word(tree, root))
 			out_line(sprintf("tok = %s;", map_tok[root]))
-			
+
 		_next_str = ch_ptree_get(tree, root)
 		_end = length(_next_str)
 		for (_i = 1; _i <= _end; ++_i) {
@@ -544,19 +544,19 @@ function out_tree_symb(tree, root, map_tok,    _next_str, _next_ch, _i, _end) {
 			if (_end > 1) {
 				# If more than one call to lex_peek_ch() is needed, cache the
 				# result into peek_ch.
-				
+
 				if (1 == _i)
 					out_line(sprintf("peek_ch = %s(lex);", N_LEX_PEEK_CH()))
-			
+
 				out_line(sprintf("%s ('%s' == peek_ch)",
 					(_i == 1) ? "if" : "else if" ,_next_ch))
 			} else {
 				# Do not cache for only a single call.
-				
+
 				out_line(sprintf("%s ('%s' == %s(lex))",
 					(_i == 1) ? "if" : "else if" ,_next_ch, N_LEX_PEEK_CH()))
 			}
-			
+
 			out_line("{")
 			tabs_inc()
 			out_line(sprintf("%s(lex);", N_LEX_READ_CH()))
@@ -568,7 +568,7 @@ function out_tree_symb(tree, root, map_tok,    _next_str, _next_ch, _i, _end) {
 	}
 }
 function out_lex_next(    _i, _end, _cls_set, _cls, _act, _map_cls_chr,
-_map_symb, _map_act, _tree, _tmp, _dont_go) {
+_map_symb, _map_act, _tree, _tmp, _dont_go, _cls_bias) {
 
 	# Generates lex_next(), which is a big switch statement which switches on
 	# the class of the current character. The class values are contiguous, so
@@ -588,23 +588,48 @@ _map_symb, _map_act, _tree, _tmp, _dont_go) {
 	# case CH_NEW_LINE:
 	#     ++lex->line_no;
 	# ...
-	
+
 	lb_vect_make_set(_cls_set, G_char_tbl_vect, 2)
-	
-	out_line(sprintf("%s %s(%s * lex)",
+	_cls_bias = get_cls_bias()
+
+	if (_cls_bias && !eos_has(_cls_set, _cls_bias)) {
+		err_quit(sprintf("can't bias towards class '%s'; class doesn't exist", \
+			_cls_bias))
+	}
+
+	out_line(sprintf("%s %s(%s * lex)", \
 		N_TOK_ID(), N_LEX_NEXT(), N_LEX_STATE()))
 	out_line("{")
 	tabs_inc()
 
+	out_line("byte cls = 0;")
 	out_line("int peek_ch = 0;")
 	out_line(sprintf("%s tok = %s;", N_TOK_ID(), TOK_ERR_ENUM()))
 	out_line("while (true)")
 	out_line("{")
 	tabs_inc()
-	
-	out_line(sprintf("switch (char_cls_get(%s(lex)))", N_LEX_READ_CH()))
+	out_line(sprintf("cls = char_cls_get(%s(lex));", N_LEX_READ_CH()))
+
+	if (_cls_bias) {
+		out_line(sprintf("if (%s == cls)", _cls_bias))
+		tabs_inc()
+		out_line("continue;")
+		tabs_dec()
+		out_line()
+	}
+
+	out_line("switch (cls)")
 	out_line("{")
 	tabs_inc()
+	out_line("default:")
+	out_line("case 0:")
+	out_line("{")
+	tabs_inc()
+	# Called on unexpected input, e.g. an '@' character in a C file.
+	out_line(sprintf("tok = %s(lex);", N_LEX_USR_ON_UNKNOWN_CH()))
+	out_line("goto done;")
+	tabs_dec()
+	out_line("} break;")
 
 	lb_vect_to_map(_map_cls_chr, G_char_tbl_vect, 2, 1)
 	lb_vect_to_map(_map_symb, G_symbols_vect)
@@ -616,7 +641,7 @@ _map_symb, _map_act, _tree, _tmp, _dont_go) {
 		# the symbol table, but the character sequence E O I is not a token in
 		# the sense in which "==" is for example, so don't put it in the tree
 		# with the other tokens.
-		
+
 		if (!is_constant(_tmp))
 			ch_ptree_insert(_tree, _tmp)
 	}
@@ -630,44 +655,44 @@ _map_symb, _map_act, _tree, _tmp, _dont_go) {
 			out_line(sprintf("case %s: /* '%s' */", _cls, _map_cls_chr[_cls]))
 		else
 			out_line(sprintf("case %s:", _cls))
-		
+
 		out_line("{")
 		tabs_inc()
-		
+
 		if (_cls in _map_act) {
 			_act = _map_act[_cls]
 			if (match(_act, FCALL())) {
 				# If the action ends in (), then it's a user defined callback,
 				# which has to take lex as an argument.
-				
+
 				sub(FCALL(), "(lex)", _act)
 				out_line(sprintf("tok = %s;", npref("lex_usr_" _act)))
 			} else if (NEXT_CH() == _act) {
 				# Immediately jump back to the top of the loop on white space.
-				
+
 				_dont_go = 1
 				out_line("continue;")
 			} else if (NEXT_LINE() == _act) {
 				# Count lines.
-				
+
 				out_line("++lex->input_line;")
 				out_line("lex->input_pos = 0;")
 				out_line("continue;")
 				_dont_go = 1
 			} else if (is_constant(_act)) {
 				# Constants are assumed to be meaningful token enums.
-				
+
 				out_line(sprintf("tok = %s;", _act))
 			} else {
 				# Should never happen.
-				
+
 				out_line("#error \"unknown action\"")
 			}
 		} else {
 			# Generate if trees for all tokens which begin with the current
 			# character class and are longer than a single character. The
 			# character class is assumed to represent only a single character.
-			
+
 			_tmp = _map_cls_chr[_cls]
 			if (length(_tmp) == 1)
 				out_tree_symb(_tree, _tmp, _map_symb)
@@ -675,26 +700,20 @@ _map_symb, _map_act, _tree, _tmp, _dont_go) {
 
 		if (!_dont_go)
 			out_line("goto done;")
-			
+
 		tabs_dec()
 		out_line("} break;")
 	}
-	out_line("default:")
-	out_line("{")
-	tabs_inc()
-	
-	# Called on weird input, e.g. an '@' character in a C file.
-	out_line(sprintf("tok = %s(lex);", N_LEX_USR_ON_UNKNOWN_CH()))
-	out_line("goto done;")
-	tabs_dec()
-	out_line("} break;")
-		
+
 	tabs_dec()
 	out_line("}")
 	tabs_dec()
 	out_line("}")
 
-	print "done:"
+	out_line()
+	tabs_dec()
+	out_line("done:")
+	tabs_inc()
 	out_line("return (lex->curr_tok = tok);")
 	tabs_dec()
 	out_line("}")
@@ -711,7 +730,7 @@ function kw_longest(    _set, _i, _end, _max, _n) {
 		if (_n > _max)
 			_max = _n
 	}
-	
+
 	return _max
 }
 
@@ -719,13 +738,18 @@ function has_keywords() {return vect_len(G_keywords_vect)}
 function set_kw_type(str) {_B_kw_type = str}
 function get_kw_type() {return _B_kw_type}
 
-function kw_len_bitmap_make(arr, len,    _i, _ch) {
+function set_cls_bias(cls) {_B_cls_bias = cls}
+function get_cls_bias()    {return _B_cls_bias}
+
+function kw_len_bitmap_make(arr, len,    _i, _ch, _kw, _kwlen) {
 
 	for (_i = 1; _i <= len; ++_i) {
-		
-		_ch = str_ch_at(arr[_i], 1)
+
+		_kw = arr[_i]
+		_kwlen = length(_kw)
+		_ch = str_ch_at(_kw, 1)
 		_B_kw_len_by_start[_ch] = \
-			bw_or(_B_kw_len_by_start[_ch], bw_lshift(1, length(arr[_i])))
+			bw_or(_B_kw_len_by_start[_ch], bw_lshift(1, _kwlen))
 	}
 }
 function kw_len_bitmap_get(ch) {
@@ -739,9 +763,9 @@ function out_keywords() {
 		out_line("// <lex_keyword_or_base>")
 
 		out_kw_const()
-		
+
 		out_line()
-		
+
 		if (get_kw_type() == KW_BSEARCH())
 			out_kw_bsrch()
 		else if (get_kw_type() == KW_IFS())
@@ -767,10 +791,10 @@ _tbl, _start, _len, _ch, _nout) {
 	lb_vect_make_set(_set, G_keywords_vect, 1)
 	lb_vect_to_map(_map_kw, G_keywords_vect)
 	_end = lb_vect_to_array(_sorted, _set)
-	
+
 	qsort(_sorted, _end)
 	kw_len_bitmap_make(_sorted, _end)
-	
+
 	# Output keywords table
 	out_line("// sorted; don't jumble up")
 	out_line(sprintf("static const char * kws[%d] = {", _end))
@@ -804,8 +828,8 @@ _tbl, _start, _len, _ch, _nout) {
 	out_line("typedef struct kw_len_data {")
 	tabs_inc()
 	out_line("unsigned int valid_lengths;")
-	out_line("byte start;")
-	out_line("byte span;")
+	out_line("unsigned short int start;")
+	out_line("unsigned short int span;")
 	tabs_dec()
 	out_line("} kw_len_data;")
 
@@ -826,10 +850,10 @@ _tbl, _start, _len, _ch, _nout) {
 	# Count of how many empty structs have been output so some formatting exists
 	_nout = 0
 	_pad = 4
-	
+
 	_end = CHR_TBL_END()
 	for (_i = 0; _i < _end; ++_i) {
-		_ch = num_to_ch(_i) 
+		_ch = num_to_ch(_i)
 		if ((_ch in _tbl)) {
 			# Print the struct for a particular character and reset the counter
 			# for empty structs
@@ -867,25 +891,28 @@ function out_kw_bsrch() {
 
 	out_kw_static_tbls_bsrc()
 	out_line()
-	
+
 	out_line(sprintf("%s tok = base;", N_TOK_ID()))
-	out_line("const char * txt = lex->write_buff;")
-	out_line("byte first = (byte)*txt;")
-	out_line("unsigned int vlens = kwlen[first].valid_lengths;")
 	out_line("unsigned int txt_len = lex->write_buff_pos;")
-	
-	# Call bsearch() only if a keyword with length(input) exists and limit the
-	# search to the range of keywords with exactly that length.
-	out_line()
-	out_line(sprintf("if (!(%s))", KW_LEN_CHECK()))
+	out_line("if (txt_len > KW_LONGEST)")
 	tabs_inc()
 	out_line("return tok;")
 	tabs_dec()
-
 	out_line()
-	out_line("unsigned int start = kwlen[first].start;")
-	out_line("unsigned int span = kwlen[first].span;")
-	
+
+	out_line("const char * txt = lex->write_buff;")
+	out_line("byte first = (byte)*txt;")
+	out_line("const kw_len_data * kwl = (kwlen + first);")
+	out_line("unsigned int vlens = kwl->valid_lengths;")
+	out_line("if (!(vlens & (1 << txt_len)))")
+	tabs_inc()
+	out_line("return tok;")
+	tabs_dec()
+	out_line()
+
+	out_line("unsigned int start = kwl->start;")
+	out_line("unsigned int span = kwl->span;")
+
 	out_line("switch (span)")
 	out_line("{")
 	tabs_inc()
@@ -903,13 +930,16 @@ function out_kw_bsrch() {
 	tabs_inc()
 	out_line("return tks[start];")
 	tabs_dec()
+	tabs_dec()
+	out_line("case 0:")
+	tabs_inc()
 	out_line("return tok;")
 	tabs_dec()
 	out_line("default:")
 	out_line("{")
 	tabs_inc()
 	out_line("int left = (int)start;")
-	out_line("int right = left + (int)span;")
+	out_line("int right = left + (int)span-1;")
 	out_line("int mid, res;")
 	out_line("byte second = txt[1];")
 	out_line("const char * pkw = NULL;")
@@ -950,9 +980,9 @@ function out_kw_bsrch() {
 function out_kw_walk(tree, root, map_kw, n,    _next, _ch, _i, _end, _rlen) {
 
 	if (ch_ptree_has(tree, root) || ch_ptree_is_word(tree, root)) {
-		
+
 		if ((_rlen = length(root)) > 1) {
-			
+
 			_ch = str_ch_at(root, _rlen)
 			out_line(sprintf("%s ('%s' == *ch)", (1 == n) ? "if" : "else if",
 				_ch))
@@ -963,14 +993,14 @@ function out_kw_walk(tree, root, map_kw, n,    _next, _ch, _i, _end, _rlen) {
 			if (ch_ptree_is_word(tree, root))
 				out_line(sprintf("tok = %s;", map_kw[root]))
 		}
-		
+
 		_next = ch_ptree_get(tree, root)
 		_end = length(_next)
 		for (_i = 1; _i <= _end; ++_i)
 			out_kw_walk(tree, (root str_ch_at(_next, _i)), map_kw, _i)
-		
+
 		if (_rlen > 1) {
-			
+
 			tabs_dec()
 			out_line("}")
 		}
@@ -983,7 +1013,7 @@ _map_kw, _ch, _hex, _nout) {
 	lb_vect_make_set(_set, G_keywords_vect, 1)
 	lb_vect_to_map(_map_kw, G_keywords_vect)
 	_end = lb_vect_to_array(_sorted, _set)
-	
+
 	qsort(_sorted, _end)
 	kw_len_bitmap_make(_sorted, _end)
 
@@ -994,20 +1024,20 @@ _map_kw, _ch, _hex, _nout) {
 	tabs_dec()
 	out_line("} kw_info;")
 	out_line()
-	
+
 	out_line("enum {")
 	tabs_inc()
-	
+
 	_end = eos_size(set_ch)
 	out_line(sprintf("CH_%c = 1,", set_ch[1]))
-	
+
 	for (_i = 2; _i <= _end; ++_i)
 		out_line(sprintf("CH_%c,", set_ch[_i]))
-	
+
 	tabs_dec()
 	out_line("};")
 	out_line()
-	
+
 	# Output the len data per first character
 	out_line(sprintf("static const kw_info kwinf[CHAR_TBL_SZ] = {", _end))
 	out_tabs()
@@ -1015,12 +1045,12 @@ _map_kw, _ch, _hex, _nout) {
 	# Count of how many empty structs have been output so some formatting exists
 	_nout = 0
 	_pad = 8
-	
+
 	_end = CHR_TBL_END()
 	for (_i = 0; _i < _end; ++_i) {
-		_ch = num_to_ch(_i) 
+		_ch = num_to_ch(_i)
 		if (_hex = kw_len_bitmap_get(_ch)) {
-		
+
 			# Ugly 'make sure you don't output two new lines after each other'
 			if (_nout % _pad) {
 				out_line()
@@ -1054,64 +1084,64 @@ _ch) {
 	lb_vect_make_set(_set_kw, G_keywords_vect, 1)
 	lb_vect_to_map(_map_kw, G_keywords_vect)
 	ch_ptree_init(_tree)
-	
+
 	_end = vect_len(_set_kw)
 	for (_i = 1; _i <= _end; ++_i) {
 		ch_ptree_insert(_tree, _set_kw[_i])
 		vect_push(_vect, str_ch_at(_set_kw[_i], 1))
 	}
 	lb_vect_make_set(_set_ch, _vect)
-	
+
 	out_is_kw_head()
 	out_line("{")
 	tabs_inc()
-	
+
 	out_kw_static_tbls_ifs(_set_ch)
 	out_line()
-	
+
 	out_line("const char * txt = lex->write_buff;")
 	out_line("unsigned int txt_len = lex->write_buff_pos;")
 	out_line("const kw_info * pkwi = kwinf+((byte)*txt);")
 	out_line("unsigned int vlens = pkwi->valid_lengths;")
 	out_line("unsigned int target = pkwi->target;")
 	out_line()
-	
+
 	out_line(sprintf("if (vlens && (%s))", KW_LEN_CHECK()))
 	out_line("{")
 	tabs_inc()
-	
+
 	out_line("const char * ch = txt+1;")
 	out_line(sprintf("%s tok = base;", N_TOK_ID()))
 	out_line()
-	
+
 	out_line("switch (target)")
 	out_line("{")
 	tabs_inc()
-	
+
 	_end = eos_size(_set_ch)
 	# Generate one big if - else if tree for all keywords.
 	for (_i = 1; _i <= _end; ++_i) {
 		_ch = _set_ch[_i]
-		
+
 		out_line(sprintf("case CH_%c:", _ch))
 		out_line("{")
 		tabs_inc()
-		
+
 		out_kw_walk(_tree, _ch, _map_kw, _i)
-		
+
 		tabs_dec()
 		out_line("} break;")
 	}
-	
+
 	out_line("default:")
 	out_line("{")
 	tabs_inc()
 	out_line("return base;")
 	tabs_dec()
 	out_line("} break;")
-	
+
 	out_line()
-	
+
 	tabs_dec()
 	out_line("}")
 	out_line("return *ch ? base : tok;")
@@ -1146,7 +1176,7 @@ function kw_len_check(    _kw_set) {
 		if (length(_kw_set[_i]) > KW_LEN_LIMIT()) {
 			# We have a limit because an int bitmap is used to check if a
 			# keyword of a certain length exists.
-	
+
 			err_quit(sprintf("keyword '%s': length cannot be greater than %d",
 				_kw_set[_i], KW_LEN_LIMIT()))
 		}
@@ -1185,9 +1215,19 @@ print sprintf("%s     - a literal character by character if - else if tree. " \
 print sprintf("Faster than %s, doesn't use stdlib.h and string.h, but more " \
 "code. %s", KW_BSEARCH(), KW_BSEARCH())
 print "is the default."
+print ""
 print "-vNamePrefix=<string> - prefixes all function and constant names with "\
 "<string>."
 print "E.g. -vNamePrefix='foo_' will result in foo_lex_usr_get_input()"
+print ""
+print "-vClsBias=<ch-cls> - bias the loop in lex_next() towards <ch-cls>. " \
+"<ch-cls> will"
+print "be handled with a direct branch instead of indirect. May improve " \
+"performance on "
+print "some architectures and generally wouldn't hurt performance otherwise. " \
+"Worth it "
+print "only if <ch-cls> is encountered more often than others, e.g. white " \
+"space."
 print ""
 }
 
@@ -1197,18 +1237,20 @@ print sprintf("%s %s", SCRIPT_NAME(), SCRIPT_VERSION())
 
 function on_begin() {
 	lex_lib_is_included()
-	
+
 	vect_init(G_char_tbl_vect)
 	vect_init(G_symbols_vect)
 	vect_init(G_keywords_vect)
 	vect_init(G_patterns_vect)
 	vect_init(G_actions_vect)
-	
+
 	if (!Keywords)
 		Keywords = KW_BSEARCH()
 	check_kw_lookup_type(Keywords)
 	set_kw_type(Keywords)
-	
+
+	set_cls_bias(ClsBias)
+
 	npref_set(NamePrefix)
 }
 function on_char_tbl() {save_to(G_char_tbl_vect)}
