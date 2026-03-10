@@ -1,5 +1,9 @@
+2026-03-11
+	lex-c.awk 1.9.4 -> 1.9.5
+	bugfix - class bias now works for all actions, not only white space
+
 2026-03-08
-	lex-c.awk 1.9.4
+	lex-c.awk 1.93 -> 1.9.4
 	span bug fixed
 	class bias implemented
 

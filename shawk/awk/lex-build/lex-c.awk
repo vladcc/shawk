@@ -2,7 +2,7 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2026-03-06
+# 2026-03-11
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +16,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.9.4"}
+function SCRIPT_VERSION() {return "1.9.5"}
 # </script>
 
 # <out_signature>
@@ -567,8 +567,55 @@ function out_tree_symb(tree, root, map_tok,    _next_str, _next_ch, _i, _end) {
 		}
 	}
 }
+function out_ch_cls_action(ch_cls, map_act, map_symb, map_cls_chr, tree,
+    _act, _done, _ch) {
+
+	_done = 1
+	if (ch_cls in map_act) {
+
+		_act = map_act[ch_cls]
+		if (match(_act, FCALL())) {
+			# If the action ends in (), then it's a user defined callback,
+			# which has to take lex as an argument.
+
+			sub(FCALL(), "(lex)", _act)
+			out_line(sprintf("tok = %s;", npref("lex_usr_" _act)))
+		} else if (NEXT_CH() == _act) {
+			# Immediately jump back to the top of the loop on white space.
+
+			out_line("continue;")
+			_done = 0
+		} else if (NEXT_LINE() == _act) {
+			# Count lines.
+
+			out_line("++lex->input_line;")
+			out_line("lex->input_pos = 0;")
+			out_line("continue;")
+			_done = 0
+		} else if (is_constant(_act)) {
+			# Constants are assumed to be meaningful token enums.
+
+			out_line(sprintf("tok = %s;", _act))
+		} else {
+			# Should never happen.
+
+			out_line("#error \"unknown action\"")
+		}
+	} else {
+		# Generate if trees for all tokens which begin with the current
+		# character class and are longer than a single character. The
+		# character class is assumed to represent only a single character.
+
+		_ch = map_cls_chr[ch_cls]
+		if (length(_ch) == 1)
+			out_tree_symb(tree, _ch, map_symb)
+	}
+
+	if (_done)
+		out_line("goto done;")
+}
 function out_lex_next(    _i, _end, _cls_set, _cls, _act, _map_cls_chr,
-_map_symb, _map_act, _tree, _tmp, _dont_go, _cls_bias) {
+_map_symb, _map_act, _tree, _tmp, _cls_bias) {
 
 	# Generates lex_next(), which is a big switch statement which switches on
 	# the class of the current character. The class values are contiguous, so
@@ -588,7 +635,10 @@ _map_symb, _map_act, _tree, _tmp, _dont_go, _cls_bias) {
 	# case CH_NEW_LINE:
 	#     ++lex->line_no;
 	# ...
-
+	ch_ptree_init(_tree)
+	lb_vect_to_map(_map_cls_chr, G_char_tbl_vect, 2, 1)
+	lb_vect_to_map(_map_symb, G_symbols_vect)
+	lb_vect_to_map(_map_act, G_actions_vect)
 	lb_vect_make_set(_cls_set, G_char_tbl_vect, 2)
 	_cls_bias = get_cls_bias()
 
@@ -612,9 +662,11 @@ _map_symb, _map_act, _tree, _tmp, _dont_go, _cls_bias) {
 
 	if (_cls_bias) {
 		out_line(sprintf("if (%s == cls)", _cls_bias))
+		out_line("{")
 		tabs_inc()
-		out_line("continue;")
+		out_ch_cls_action(_cls_bias, _map_act, _map_symb, _map_cls_chr, _tree)
 		tabs_dec()
+		out_line("}")
 		out_line()
 	}
 
@@ -631,11 +683,6 @@ _map_symb, _map_act, _tree, _tmp, _dont_go, _cls_bias) {
 	tabs_dec()
 	out_line("} break;")
 
-	lb_vect_to_map(_map_cls_chr, G_char_tbl_vect, 2, 1)
-	lb_vect_to_map(_map_symb, G_symbols_vect)
-	lb_vect_to_map(_map_act, G_actions_vect)
-	ch_ptree_init(_tree)
-
 	for (_tmp in _map_symb) {
 		# Constants are not symbol tokens. I.e. EOI (end of input) can exist in
 		# the symbol table, but the character sequence E O I is not a token in
@@ -649,7 +696,6 @@ _map_symb, _map_act, _tree, _tmp, _dont_go, _cls_bias) {
 	_end = vect_len(_cls_set)
 	for (_i = 1; _i <= _end; ++_i) {
 		_cls = _cls_set[_i]
-		_dont_go = 0 # <-- stays 0 if a complete token was read
 
 		if (match(_cls, CH_CLS_AUTO_RE()))
 			out_line(sprintf("case %s: /* '%s' */", _cls, _map_cls_chr[_cls]))
@@ -658,49 +704,7 @@ _map_symb, _map_act, _tree, _tmp, _dont_go, _cls_bias) {
 
 		out_line("{")
 		tabs_inc()
-
-		if (_cls in _map_act) {
-			_act = _map_act[_cls]
-			if (match(_act, FCALL())) {
-				# If the action ends in (), then it's a user defined callback,
-				# which has to take lex as an argument.
-
-				sub(FCALL(), "(lex)", _act)
-				out_line(sprintf("tok = %s;", npref("lex_usr_" _act)))
-			} else if (NEXT_CH() == _act) {
-				# Immediately jump back to the top of the loop on white space.
-
-				_dont_go = 1
-				out_line("continue;")
-			} else if (NEXT_LINE() == _act) {
-				# Count lines.
-
-				out_line("++lex->input_line;")
-				out_line("lex->input_pos = 0;")
-				out_line("continue;")
-				_dont_go = 1
-			} else if (is_constant(_act)) {
-				# Constants are assumed to be meaningful token enums.
-
-				out_line(sprintf("tok = %s;", _act))
-			} else {
-				# Should never happen.
-
-				out_line("#error \"unknown action\"")
-			}
-		} else {
-			# Generate if trees for all tokens which begin with the current
-			# character class and are longer than a single character. The
-			# character class is assumed to represent only a single character.
-
-			_tmp = _map_cls_chr[_cls]
-			if (length(_tmp) == 1)
-				out_tree_symb(_tree, _tmp, _map_symb)
-		}
-
-		if (!_dont_go)
-			out_line("goto done;")
-
+		out_ch_cls_action(_cls, _map_act, _map_symb, _map_cls_chr, _tree)
 		tabs_dec()
 		out_line("} break;")
 	}

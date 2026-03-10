@@ -131,7 +131,7 @@ function test_c_run_tests
 }
 function test_c_ver
 {
-	run_test_version_info "lex-c.awk" "lex-c.awk 1.9.4"
+	run_test_version_info "lex-c.awk" "lex-c.awk 1.9.5"
 }
 function test_c_kw_len
 {
