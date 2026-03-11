@@ -1,1 +1,0 @@
-gcc main.c rdpg_parser.c -o main.bin -Wall
