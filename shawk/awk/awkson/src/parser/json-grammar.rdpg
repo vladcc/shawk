@@ -1,0 +1,38 @@
+start : _json _TOK_EOI ;
+
+_json : _element ;
+
+_element : _object
+         | _array
+         | _string
+         | _number
+         | _bool
+         | _null
+         ;
+
+_object : _TOK_LCURL \_prs_usr_on_obj_start
+              _members?
+          _TOK_RCURL \_prs_usr_on_obj_end
+        ;
+
+_array : _TOK_LSQR \_prs_usr_on_arr_start
+             _elements?
+         _TOK_RSQR \_prs_usr_on_arr_end
+       ;
+
+_string : _TOK_STRING \_prs_usr_on_string ;
+
+_number : _TOK_NUMBER \_prs_usr_on_number ;
+
+_bool : _TOK_TRUE  \_prs_usr_on_bool
+      | _TOK_FALSE \_prs_usr_on_bool
+      ;
+
+_null : _TOK_NULL \_prs_usr_on_null ;
+
+_elements      : _element _elements_rest* ;
+_elements_rest : _TOK_COMMA _element ;
+
+_members      : _member _members_rest* ;
+_member       : _TOK_STRING \_prs_usr_on_member_name _TOK_COLON _element ;
+_members_rest : _TOK_COMMA _member ;

@@ -46,7 +46,7 @@ function test_parser_api_err
 	L_RES="$(eval $G_AWK -f $G_AWKSON -f <(echo "$L_SRC") <(echo {\"foo\":5}) 2>&1 1>/dev/null)"
 	bt_assert_failure
 	bt_diff_ok "<(echo \"awkson.awk: error: tried to set invalid type 'bar'\") <(echo \"$L_RES\")"
-	
+
 }
 
 function test_parser_multi_file
@@ -54,7 +54,7 @@ function test_parser_multi_file
 	local L_JSON="./test-inputs/parser-tests/api_test.json"
 	local L_ACCEPT="./test-accept/parser-accept/parser_accept_multi.txt"
 	local L_IN_OK="./test-inputs/parser-tests/parser_test_ok.json"
-	
+
 	local L_SRC=\
 'function on_json() {
 	print get_file_name()
@@ -62,7 +62,7 @@ function test_parser_multi_file
 	json_rm("r")
 	json_print("r")
 }'
-	
+
 	bt_eval "$G_AWK -f $G_AWKSON -f <(echo '$L_SRC') $L_JSON $L_IN_OK "\
 "> $G_TEST_RESULT"
 
@@ -74,7 +74,7 @@ function test_parser_api_ok
 {
 	local L_JSON="./test-inputs/parser-tests/api_test.json"
 	local L_ACCEPT="./test-accept/parser-accept/parser_accept_api.txt"
-	
+
 	local L_SRC=\
 'function on_json() {
 	print "# <get_file_name>"
@@ -205,7 +205,7 @@ function test_parser_api_ok
 	arr_print(arr, len, "\n")
 	print "# </json_get_children>"
 }'
-	
+
 	bt_eval "$G_AWK -f $G_AWKSON -f <(echo '$L_SRC') $L_JSON > $G_TEST_RESULT"
 	bt_diff_ok "$G_TEST_RESULT $L_ACCEPT"
 	bt_eval "rm -f $G_TEST_RESULT"
@@ -221,7 +221,7 @@ function test_parser_base
 	local L_ACC_OK="./test-accept/parser-accept/parser_accept_ok.txt"
 	local L_IN_OK="./test-inputs/parser-tests/parser_test_ok.json"
 	local L_RUN="$G_AWK -f $G_AWKSON -f <(echo \"function on_json() {}\")"
-	
+
 	# test single elements
 	bt_eval "$L_RUN <(echo '\"a string\"')"
 	bt_assert_success
@@ -239,7 +239,7 @@ function test_parser_base
 	bt_assert_success
 	bt_eval "$L_RUN <(echo '3.14')"
 	bt_assert_success
-	
+
 	# add the code to dump the tables here; must know internal var names
 	local L_RUN_NO_JSON="$G_AWK -f $G_AWKSON"
 
@@ -250,11 +250,11 @@ function test_parser_base
 		gsub(SUBSEP, what, str)
 	return str
 }
-function _dump_json_tbl_ord(tbl, msg,    _n, _i, _end) {	
+function _dump_json_tbl_ord(tbl, msg,    _n, _i, _end) {
 	print msg
 	_end = vect_len(_G_input_order_keeper)
 	for (_i = 1; _i <= _end; ++_i) {
-		_n = _G_input_order_keeper[_i] 
+		_n = _G_input_order_keeper[_i]
 		print sprintf(\"%s = %s\", _dbg_replace_subsep(_n), tbl[_n])
 	}
 }
@@ -263,23 +263,23 @@ function on_json() {
 	_dump_json_tbl_ord(_G_json_values_tbl, \"@@@ values @@@\")
 }')" $L_IN_OK)"
 	bt_assert_success
-	
+
 	bt_diff_ok "<(echo \"$L_RES\") $L_ACC_OK"
-	
+
 	# fatal error; quit on the first sign of trouble
 	local L_OPT_FATAL="-vFatalError=1"
 	bt_eval "$L_RUN $L_OPT_FATAL $L_IN_ERR 2>/dev/null"
 	bt_assert_failure
-	
+
 	bt_eval "diff <($L_RUN $L_OPT_FATAL $L_IN_ERR 2>&1) $L_ACC_FATAL"
 	bt_assert_success
-	
+
 	# show all errors
 	bt_eval "$L_RUN $L_IN_ERR 2>/dev/null"
 	bt_assert_failure
-	
+
 	bt_diff_ok "<($L_RUN $L_IN_ERR 2>&1 1>/dev/null) $L_ACC_ERR"
-	
+
 	# test multiple jsons in a file; must be an error
 	# 2>&1 | awk ... appended removes the automatic fd name
 	local L_RM_FNAME="2>&1 | awk '\$3==\"file\" {\$4=\"\"} {print}'"
@@ -288,7 +288,7 @@ function on_json() {
 "$L_RUN <(echo '[] []')"
 "$L_RUN <(echo '1234 false')"
 "$L_RUN <(echo 'null \"foo\"')"
-)	
+)
 	local L_EOI_ERR=(
 "awkson.awk: error: file  line 1, pos 4
 awkson.awk: error: expected 'EOI', got '{' instead
@@ -333,7 +333,7 @@ function test_lexer
 # <test_version>
 function test_version
 {
-	bt_diff_ok "<($G_AWK -f $G_AWKSON -f <(echo 'function on_json(){}') -vVersion=1) <(echo 'awkson.awk 1.13')"
+	bt_diff_ok "<($G_AWK -f $G_AWKSON -f <(echo 'function on_json(){}') -vVersion=1) <(echo 'awkson.awk 1.2')"
 }
 # </test_version>
 
@@ -352,11 +352,11 @@ function run_from_str
 function main
 {
 	source "$(dirname $(realpath $0))/../../../bash/bashtest/bashtest.sh"
-	
+
 	if [ "$#" -gt 0 ]; then
 		bt_set_verbose
 	fi
-	
+
 	bt_enter
 	bt_eval test_all
 	bt_exit_success

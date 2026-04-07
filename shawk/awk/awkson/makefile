@@ -37,18 +37,17 @@ $(LEX_GEN): $(LEX_LB)
 RDPG_DIR = ../rdpg
 RDPG_STRICT = 0
 RDPG_OLVL = 4
-PRS_RDPG = ./src/parser/parser.rdpg
+PRS_JSON_GRAMMAR = ./src/parser/json-grammar.rdpg
 PRS_AWK = ./src/_parser.awk
 PRS_GEN = ./src/parser/_parser_gen.awk
 PRS_USR = ./src/parser/_parser_usr.awk
 .PHONY: parser
 parser: $(PRS_AWK)
 $(PRS_AWK): $(PRS_GEN) $(PRS_USR)
-	cat $^  > $@
-$(PRS_GEN): $(PRS_RDPG)
-	awk -f $(RDPG_DIR)/rdpg.awk -vStrict=$(RDPG_STRICT) $(PRS_RDPG) | \
-	awk -f $(RDPG_DIR)/rdpg-opt.awk -vOlvl=$(RDPG_OLVL) | \
-	awk -f $(RDPG_DIR)/rdpg-to-awk -vTokCallPrefix="_" > $@
+	cat $^ > $@
+$(PRS_GEN): $(PRS_JSON_GRAMMAR)
+	awk -f $(RDPG_DIR)/rdpg-comp.awk -vSync=0 $(PRS_JSON_GRAMMAR) \
+		| $(RDPG_DIR)/rdpg-to-awk.awk > $@
 # </parser>
 
 # <libraries>
@@ -104,7 +103,7 @@ clean:
 .PHONY: test
 test:
 	bash ./tests/run-tests.sh
-	
+
 .PHONY: testv
 testv:
 	bash ./tests/run-tests.sh x
