@@ -5,11 +5,11 @@ G_AWK="${G_AWK:-awk}"
 function main
 {
 	source "$(dirname $(realpath $0))/../../../bash/bashtest/bashtest.sh"
-	
+
 	if [ "$#" -gt -0 ]; then
 		bt_set_verbose
 	fi
-	
+
 	bt_enter
 	bt_eval test_all
 	bt_exit_success
@@ -29,16 +29,16 @@ function run2 { run "$@ 2>&1 1>/dev/null"; }
 function test_errors
 {
 	local L_RUN=""
-	
+
 	L_RUN="$(run2)"
 	bt_assert_failure
-	
+
 	local L_RES=\
 'Use: smpg.awk [options] <input-file>
 Try: smpg.awk -vHelp=1'
-	
+
 	bt_diff_ok "<(echo '$L_RES') <(echo '$L_RUN')"
-	
+
 	L_RUN="$(run2 <(echo 'foo'))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line 1: line not source or a comment$\" <(echo \"$L_RUN\")) <(echo 1)"
@@ -50,7 +50,7 @@ Try: smpg.awk -vHelp=1'
 	L_RUN="$(run2 <(echo '@BEGIN'))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line end-of-file: expected 'GENERATE', got 'BEGIN' instead$\" <(echo \"$L_RUN\")) <(echo 1)"
-	
+
 	local L_SRC=\
 '@BEGIN
 @INCLUDE
@@ -59,7 +59,7 @@ foo'
 	L_RUN="$(run2 <(echo "$L_SRC"))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line 4: line not source or a comment$\" <(echo \"$L_RUN\")) <(echo 1)"
-	
+
 	L_SRC=\
 '@BEGIN
 @INCLUDE
@@ -68,7 +68,7 @@ foo'
 	L_RUN="$(run2 <(echo "$L_SRC"))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line 4: expected 'FSM', got 'FOO' instead$\" <(echo \"$L_RUN\")) <(echo 1)"
-	
+
 	L_SRC=\
 '@BEGIN
 @INCLUDE
@@ -76,7 +76,7 @@ foo'
 	L_RUN="$(run2 <(echo "$L_SRC"))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line end-of-file: expected 'GENERATE', got 'INCLUDE' instead$\" <(echo \"$L_RUN\")) <(echo 1)"
-	
+
 	L_SRC=\
 '@BEGIN
 @INCLUDE
@@ -86,7 +86,7 @@ foo'
 	L_RUN="$(run2 <(echo "$L_SRC"))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line 4: syntax should be '@FSM <fsm-name>'$\" <(echo \"$L_RUN\")) <(echo 1)"
-	
+
 	L_SRC=\
 '@BEGIN
 @INCLUDE
@@ -99,7 +99,7 @@ foo'
 	L_RUN="$(run2 <(echo "$L_SRC"))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line 6: 'FSM' block empty$\" <(echo \"$L_RUN\")) <(echo 1)"
-	
+
 	L_SRC=\
 '@BEGIN
 @INCLUDE
@@ -113,7 +113,7 @@ foo
 	L_RUN="$(run2 <(echo "$L_SRC"))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line 8: syntax should be '@HANDLER <regex> \[args\]'$\" <(echo \"$L_RUN\")) <(echo 1)"
-	
+
 	L_SRC=\
 '@BEGIN
 @INCLUDE
@@ -129,7 +129,7 @@ foo
 	L_RUN="$(run2 <(echo "$L_SRC"))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line 10: syntax should be '@TEMPLATE <regex>'$\" <(echo \"$L_RUN\")) <(echo 1)"
-	
+
 	L_SRC=\
 '@BEGIN
 @INCLUDE
@@ -148,7 +148,7 @@ foo
 	L_RUN="$(run2 <(echo "$L_SRC"))"
 	bt_assert_failure
 	bt_diff_ok "<(grep -c \"smpg.awk: error: file .* line 5: fsm: bad separator$\" <(echo \"$L_RUN\")) <(echo 1)"
-	
+
 	L_SRC=\
 '@BEGIN
 @INCLUDE
@@ -173,7 +173,7 @@ bar -> foo
 
 function test_version
 {
-	bt_diff_ok "<(echo '$(run -vVersion=1)') <(echo 'smpg.awk 2.0')"
+	bt_diff_ok "<(echo '$(run -vVersion=1)') <(echo 'smpg.awk 2.1')"
 }
 
 function test_all

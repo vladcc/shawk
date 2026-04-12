@@ -131,12 +131,14 @@ _args, _hind, _tmplt, _arr_rxs) {
 		}
 	}
 }
-function get_handler_start(arr_out, arr, len) {
-	return arr_match_ind_all(arr_out, arr, len, "function .*on_")
+function get_handler_start(arr_out, arr, len,    _rx) {
+	_rx = sprintf("^function %s_on_", FSM_get_name())
+	return arr_match_ind_all(arr_out, arr, len, _rx)
 }
-function get_handler_names(arr_out, arr_src, arr_ind, ind_len) {
+function get_handler_names(arr_out, arr_src, arr_ind, ind_len,    _rx) {
 	arr_gather(arr_out, arr_src, arr_ind, ind_len)
-	arr_gsub(arr_out, ind_len, "function .*on_|\\(.*$", "")
+	_rx = sprintf("^function %s_on_|[(].*$", FSM_get_name())
+	arr_gsub(arr_out, ind_len, _rx, "")
 	return ind_len
 }
 function generate_includes(    _i, _end, _arr, _len, _fname) {

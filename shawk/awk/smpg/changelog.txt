@@ -1,3 +1,8 @@
+2026-04-12
+	smpg 2.1
+	bugfix: more accurate regexs when enriching templates and handlers now
+	produce the correct result when a user handler name starts with 'on_'
+
 2022-11-27
 	smpg 2.0
 	%[a-z] (%begin, %handler, etc.) now @[A-Z] (@BEGIN, @HANDLER, etc.)

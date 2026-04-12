@@ -63,10 +63,10 @@
 		{&}_save_name($2)
 		_fnr = FNR
 		_len = get_block(_arr)
-		
+
 		if (!_len)
 			equit("'FSM' block empty")
-		
+
 		for (_i = 1; _i <= _len; ++_i) {
 			_line = _arr[_i]
 			if (_line)
@@ -223,7 +223,7 @@ END {leave()}
 
 # <script_main>
 function SCRIPT_NAME() {return "smpg.awk"}
-function SCRIPT_VERSION() {return "2.0"}
+function SCRIPT_VERSION() {return "2.1"}
 
 function main() {
 	# called in the 'generate' state
@@ -235,7 +235,7 @@ function main() {
 # <misc>
 function enter() {
 	set_program_name(SCRIPT_NAME())
-	
+
 	if (Help || Version || Doc || Template || ExampleInput || ExampleData) {
 		if (Help)
 			print_help()
@@ -249,15 +249,15 @@ function enter() {
 			print_example_input()
 		else if (ExampleData)
 			print_example_data()
-		
+
 		skip_end_set()
 		exit_success()
 	}
-	
+
 	if (ARGC != 2) {
 		pstderr(get_use_str())
 		pstderr(sprintf("Try: %s -vHelp=1", get_program_name()))
-		
+
 		skip_end_set()
 		exit_failure()
 	}
