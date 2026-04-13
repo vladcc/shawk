@@ -3,11 +3,11 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2026-04-07
+# 2026-04-13
 
 # <main>
 function SCRIPT_NAME() {return "awkson.awk"}
-function SCRIPT_VERSION() {return "1.2"}
+function SCRIPT_VERSION() {return "2.0"}
 
 function _state_clear() {
 	map_init(_G_json_type_tbl)
@@ -41,16 +41,15 @@ function _process_file(fname,    _len, _i, _res) {
 		for (_i = 1; _i <= _len; ++_i)
 			pft_insert(_G_the_pft, _G_input_order_keeper[_i])
 		on_json()
-
-		close(fname)
 	}
+	close(fname)
+
 	return _res
 }
 function main(    _i, _had_err) {
-	set_program_name(SCRIPT_NAME())
+	init()
 
 	_had_err = 0
-
 	if (ARGC < 2)
 		print_use()
 
@@ -161,6 +160,8 @@ function print_doc() {
 # </messages>
 
 function init() {
+	set_program_name(SCRIPT_NAME())
+
 	if (Help)
 		print_help()
 	if (Version)
@@ -174,7 +175,6 @@ function init() {
 }
 
 BEGIN {
-	init()
 	main()
 }
 # </main>

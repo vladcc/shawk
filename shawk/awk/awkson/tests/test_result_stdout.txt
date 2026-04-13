@@ -1,5 +1,5 @@
 # <get_file_name>
-./test-inputs/parser-tests/api_test.json
+./inputs/api_test.json
 # </get_file_name>
 
 # <json_has>

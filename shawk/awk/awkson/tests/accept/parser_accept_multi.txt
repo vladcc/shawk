@@ -1,4 +1,4 @@
-./test-inputs/parser-tests/api_test.json
+./inputs/api_test.json
 {
 	"firstName" : "John",
 	"lastName" : "Smith",
@@ -25,11 +25,12 @@
 	"spouse" : null
 }
 
-./test-inputs/parser-tests/parser_test_ok.json
+./inputs/parser_test_ok.json
 {
 	"firstName" : "John",
 	"lastName" : "Smith",
 	"isAlive" : true,
+	"isMarried" : false,
 	"age" : 27,
 	"address" : {
 		"streetAddress" : "21 2nd Street",

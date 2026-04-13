@@ -1,7 +1,8 @@
 {
-  "firstName": "John",
+  "firstName": "John,
   "lastName": "Smith",
   "isAlive": true,
+  "isMarried" : false,
   "age": 27,
   "address": {
     "streetAddress": "21 2nd Street",

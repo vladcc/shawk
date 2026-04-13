@@ -1,22 +1,29 @@
 # <help>
 .PHONY: help
 help:
-	@echo 'make all    - lexer parser lib doc awkson'
-	@echo 'make awkson - generates awkson'
-	@echo 'make lexer  - generates the lexer'
-	@echo 'make parser - generates the parser'
-	@echo 'make lib    - generates the library'
-	@echo 'make doc    - generates the api doc'
-	@echo 'make test   - run tests'
-	@echo 'make testv  - like test but verbose'
-	@echo 'make clean  - leave only the base source files'
-	@echo 'make help   - this screen'
+	@echo 'make all     - compile + sure'
+	@echo 'make compile - lexer parser lib doc awkson'
+	@echo 'make awkson  - generates awkson'
+	@echo 'make lexer   - generates the lexer'
+	@echo 'make parser  - generates the parser'
+	@echo 'make lib     - generates the library'
+	@echo 'make doc     - generates the api doc'
+	@echo 'make sure    - run tests + check all run'
+	@echo 'make test    - run tests'
+	@echo 'make testv   - like test but verbose'
+	@echo 'make clean   - leave only the base source files'
+	@echo 'make help    - this screen'
 # </help>
 
 # <all>
 .PHONY: all
-all: lexer parser lib doc awkson
+all: compile sure
 # </all>
+
+# <compile>
+.PHONY: compile
+compile: lexer parser lib doc awkson
+# </compile>
 
 # <lexer>
 LB_DIR = ../lex-build
@@ -100,11 +107,23 @@ clean:
 # </clean>
 
 # <test>
+TEST_DIR := ./tests
+TESTS_RUN := tests_run.txt
+TESTS_EXPECTER := tests_expected.txt
+
+RUN_TESTS  := bash ./run-tests.sh
+RUN_TESTSV := $(RUN_TESTS) x
+
+.PHONY: sure
+sure:
+	cd $(TEST_DIR) && $(RUN_TESTSV) | grep '^test_' | sort > $(TESTS_RUN)
+	cd $(TEST_DIR) && diff $(TESTS_EXPECTER) $(TESTS_RUN)
+
 .PHONY: test
 test:
-	bash ./tests/run-tests.sh
+	cd $(TEST_DIR) && $(RUN_TESTS)
 
 .PHONY: testv
 testv:
-	bash ./tests/run-tests.sh x
+	cd $(TEST_DIR) && $(RUN_TESTSV)
 # </test>

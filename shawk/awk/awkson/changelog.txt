@@ -1,3 +1,9 @@
+2026-04-13
+	awkson.awk 2.0
+	parser migrated to rdpg >= 2.0
+	detects one error per json file
+	tests refactored, json error tests added, make sure added
+
 2022-03-20
 	awkson.awk 1.12 -> 1.13
 	updated to new lex-build
