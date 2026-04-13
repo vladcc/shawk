@@ -1,0 +1,36 @@
+awkson.awk: error: inputs/parser_test_json_err_add_1.json:1:1
+awkson.awk: error: expected one of '{ [ string number true false null', got 'error'
+x{
+^
+awkson.awk: error: inputs/parser_test_json_err_add_2.json:4:3
+awkson.awk: error: expected 'string', got 'error'
+  x"isAlive": true,
+  ^
+awkson.awk: error: inputs/parser_test_json_err_add_3.json:14:5
+awkson.awk: error: expected one of '{ [ string number true false null ]', got 'error'
+    x{
+    ^
+awkson.awk: error: inputs/parser_test_json_err_sub_1.json:2:14
+awkson.awk: error: expected 'EOI', got ':'
+  "firstName": "John",
+             ^
+awkson.awk: error: inputs/parser_test_json_err_sub_2.json:16:14
+awkson.awk: error: expected one of ', }', got 'string'
+      "number": "212 555-1234"
+             ^
+awkson.awk: error: inputs/parser_test_json_err_sub_3.json:26:1
+awkson.awk: error: expected one of '{ [ string number true false null', got '}'
+}
+^
+awkson.awk: error: inputs/parser_test_json_err_wrong_1.json:2:21
+awkson.awk: error: expected one of '{ [ string number true false null', got 'bad string'
+  "firstName": "John,
+                    ^
+awkson.awk: error: inputs/parser_test_json_err_wrong_2.json:5:20
+awkson.awk: error: expected one of '{ [ string number true false null', got 'error'
+  "isMarried" : fals,
+                   ^
+awkson.awk: error: inputs/parser_test_json_err_wrong_3.json:13:18
+awkson.awk: error: expected ':', got 'unknown characters'
+  "phone.Numbers"; [
+                 ^

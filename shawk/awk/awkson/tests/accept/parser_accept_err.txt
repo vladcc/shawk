@@ -1,0 +1,8 @@
+awkson.awk: error: ./inputs/parser_test_err.json:2:3
+awkson.awk: error: expected one of 'string }', got 'unknown characters'
+  @x"firstName": "John",
+  ^
+awkson.awk: error: ./inputs/parser_test_err.json:2:3
+awkson.awk: error: expected one of 'string }', got 'unknown characters'
+  @x"firstName": "John",
+  ^

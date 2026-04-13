@@ -1,13 +1,13 @@
 # <misc>
 function _pretty_pos(str, stop,    _ptr, _arr, _ch, _i) {
-	
+
 	split(str, _arr, "")
-	
+
 	for (_i = 1; _i < stop; ++_i) {
 		_ch = _arr[_i]
 		_ptr = (_ptr (_ch != "\t" ? " " : "\t"))
 	}
-		
+
 	return (_ptr "^")
 }
 function _xdotnot_parse(str,    _ret) {
@@ -25,7 +25,7 @@ function _get_removed_re(    _n, _re) {
 
 	_re = ""
 	if (!map_is_empty(_G_json_removed_set)) {
-		
+
 		_re = "^("
 		for (_n in _G_json_removed_set)
 			_re = (_re _n "|")

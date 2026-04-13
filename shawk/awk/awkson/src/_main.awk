@@ -3,11 +3,11 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2022-03-20
+# 2026-04-13
 
 # <main>
 function SCRIPT_NAME() {return "awkson.awk"}
-function SCRIPT_VERSION() {return "1.13"}
+function SCRIPT_VERSION() {return "2.0"}
 
 function _state_clear() {
 	map_init(_G_json_type_tbl)
@@ -32,30 +32,38 @@ function _run_once() {
 	_lex_usr_init_esc_chars()
 }
 
-function _process_file(fname,    _len, _i) {
+function _process_file(fname,    _len, _i, _res) {
 	_set_file_name(fname)
 	_pre_parse_init()
-	
-	_prs_json()
-	_len = vect_len(_G_input_order_keeper)
-	for (_i = 1; _i <= _len; ++_i)
-		pft_insert(_G_the_pft, _G_input_order_keeper[_i])
-	on_json()
-	
+
+	if ((_res = rdpg_parse())) {
+		_len = vect_len(_G_input_order_keeper)
+		for (_i = 1; _i <= _len; ++_i)
+			pft_insert(_G_the_pft, _G_input_order_keeper[_i])
+		on_json()
+	}
 	close(fname)
+
+	return _res
 }
-function main(    _i) {
-	set_program_name(SCRIPT_NAME())
-	
+function main(    _i, _had_err) {
+	init()
+
+	_had_err = 0
 	if (ARGC < 2)
 		print_use()
-	
+
 	for (_i = 1; _i < ARGC; ++_i) {
-		_process_file(ARGV[_i])
+		if (!_process_file(ARGV[_i]))
+			_had_err = 1
 		ARGV[_i] = ""
 	}
 	_set_file_name("")
 	_state_clear()
+
+	if (_had_err)
+		exit_failure()
+	exit_success()
 }
 
 # <messages>
@@ -65,18 +73,14 @@ print ""
 print USE_STR()
 print ""
 print "awkson parses json into memory and calls the user defined function 'on_json()'"
-print "if parsing is successful. awkson also provides a number of APIs the user can"
-print "use from 'on_json()' in order to query and edit the json object. There are three"
+print "if parsing is successful. awkson provides a number of APIs the user can use"
+print "from 'on_json()' in order to query and edit the json object. There are three"
 print "types of APIs:"
 print "1. json - query, change values and types, add to, remove from the json object"
 print "2. data structures - operations on arrays, vectors, maps, etc."
 print "3. utility - easy file io, error reporting, exit codes, etc."
 print ""
-print "Along with the APIs the user can, of course, use the whole awk language as well,"
-print "since 'on_json()' is an awk user defined function in the awk language."
-print ""
-print "By default, awkson tries to report all json errors limited to one error per"
-print "value (value as defined by the json grammar). This can be overridden."
+print "Along with the APIs the user can, of course, use the whole awk language as well."
 print ""
 print "The API documentation can be overwhelming if printed in its entirety. However,"
 print "it is tagged, so it is easy to lookup e.g.:"
@@ -88,7 +92,7 @@ print "See a specific API:"
 print "awk -f awkson.awk -vDoc=1 | awk '/<awkson_json_api>/, /<\\/awkson_json_api>/'"
 print ""
 print "Options:"
-print "-v FatalError=1 - quit on the first json error"
+print "-v FatalError=1 - quit on the first error; do not process further files"
 print "-v Doc=1        - print API documentation"
 print "-v Help=1       - this screen"
 print "-v Version=1    - version info"
@@ -156,6 +160,8 @@ function print_doc() {
 # </messages>
 
 function init() {
+	set_program_name(SCRIPT_NAME())
+
 	if (Help)
 		print_help()
 	if (Version)
@@ -164,12 +170,11 @@ function init() {
 		print_doc()
 	if (FatalError)
 		_set_fatal_error()
-		
+
 	_run_once()
 }
 
 BEGIN {
-	init()
 	main()
 }
 # </main>

@@ -3,71 +3,26 @@
 G_AWK="${G_AWK:-awk}"
 
 # the lexer is tested separately
-readonly G_TEST_RESULT_STDOUT="./test_result_stdout.txt"
-readonly G_TEST_RESULT_STDERR="./test_result_stderr.txt"
+readonly G_AWKSON_LIB="../src/_lib.awk"
+readonly G_AWKSON_LEXER="../src/_lexer.awk"
+readonly G_TEST_RESULT="./test_result.txt"
+
 
 # parser tests test the whole awkson
 readonly G_AWKSON="../awkson.awk"
 
-G_RUN_PREFIX=""
-
-# </setup>
-function run_base
-{
-	bt_eval "$G_RUN_PREFIX $G_AWK $@" \
-		"1>$G_TEST_RESULT_STDOUT 2>$G_TEST_RESULT_STDERR"
-}
-
-function run
-{
-	run_base "-f $G_AWKSON $@"
-}
-
-function run_ok
-{
-	run "$@"
-	bt_assert_success
-}
-
-function run_nok
-{
-	run "$@"
-	bt_assert_failure
-}
-
-function diff_stdout_stderr
-{
-	bt_diff_ok "$G_TEST_RESULT_STDOUT" "accept/$1"
-	bt_diff_ok "$G_TEST_RESULT_STDERR" "accept/$2"
-}
-
-function diff_stdout
-{
-	bt_diff_ok "$G_TEST_RESULT_STDOUT" "accept/$@"
-	bt_diff_ok "$G_TEST_RESULT_STDERR" "accept/empty"
-}
-
-function diff_stderr
-{
-	bt_diff_ok "$G_TEST_RESULT_STDOUT" "accept/empty"
-	bt_diff_ok "$G_TEST_RESULT_STDERR" "accept/$@"
-}
-# </setup>
+readonly G_RUN_TESTS="test_version test_parser test_lexer"
 
 # <test_parser>
 function test_parser
 {
-	bt_eval test_parser_api_err
-	bt_eval test_parser_multi_file
-	bt_eval test_parser_base
-	bt_eval test_parser_json_err
-	bt_eval test_parser_api_ok
-}
+	local L_PARSER_TESTS=\
+"test_parser_api_err
+test_parser_multi_file
+test_parser_base
+test_parser_api_ok"
 
-function test_parser_json_err
-{
-	run_nok "-f <(echo 'function on_json() {}') inputs/parser_test_json_err_*.json"
-	diff_stderr "parser_accept_parse_json_err.txt"
+	run_from_str $L_PARSER_TESTS
 }
 
 function test_parser_api_err
@@ -79,23 +34,26 @@ function test_parser_api_err
 	json_print("r")
 }'
 
-	run_nok "-f <(echo '$L_SRC') <(echo '{\"foo\":5}')"
-	bt_diff_ok "$G_TEST_RESULT_STDERR" \
-		"<(echo \"awkson.awk: error: tried to set invalid type 'bar'\")"
+	local L_RES=""
+	L_RES="$(eval $G_AWK -f $G_AWKSON -f <(echo "$L_SRC") <(echo {\"foo\":5}) 2>&1 1>/dev/null)"
+	bt_assert_failure
+	bt_diff_ok "<(echo \"awkson.awk: error: tried to set invalid type 'bar'\") <(echo \"$L_RES\")"
 
 	L_SRC=\
 'function on_json() {
 	json_add("r.bar", "bar")
 }'
-	run_nok "-f <(echo '$L_SRC') <(echo '{\"foo\":5}')"
-	bt_diff_ok "$G_TEST_RESULT_STDERR" \
-		"<(echo \"awkson.awk: error: tried to set invalid type 'bar'\")"
+	L_RES="$(eval $G_AWK -f $G_AWKSON -f <(echo "$L_SRC") <(echo {\"foo\":5}) 2>&1 1>/dev/null)"
+	bt_assert_failure
+	bt_diff_ok "<(echo \"awkson.awk: error: tried to set invalid type 'bar'\") <(echo \"$L_RES\")"
+
 }
 
 function test_parser_multi_file
 {
-	local L_JSON="./inputs/api_test.json"
-	local L_IN_OK="./inputs/parser_test_ok.json"
+	local L_JSON="./test-inputs/parser-tests/api_test.json"
+	local L_ACCEPT="./test-accept/parser-accept/parser_accept_multi.txt"
+	local L_IN_OK="./test-inputs/parser-tests/parser_test_ok.json"
 
 	local L_SRC=\
 'function on_json() {
@@ -104,12 +62,19 @@ function test_parser_multi_file
 	json_rm("r")
 	json_print("r")
 }'
-	run_ok "-f <(echo '$L_SRC') $L_JSON $L_IN_OK "
-	diff_stdout "parser_accept_multi.txt"
+
+	bt_eval "$G_AWK -f $G_AWKSON -f <(echo '$L_SRC') $L_JSON $L_IN_OK "\
+"> $G_TEST_RESULT"
+
+	bt_diff_ok "$G_TEST_RESULT $L_ACCEPT"
+	bt_eval "rm -f $G_TEST_RESULT"
 }
 
 function test_parser_api_ok
 {
+	local L_JSON="./test-inputs/parser-tests/api_test.json"
+	local L_ACCEPT="./test-accept/parser-accept/parser_accept_api.txt"
+
 	local L_SRC=\
 'function on_json() {
 	print "# <get_file_name>"
@@ -241,28 +206,46 @@ function test_parser_api_ok
 	print "# </json_get_children>"
 }'
 
-	run_ok "-f <(echo '$L_SRC') ./inputs/api_test.json"
-	diff_stdout "parser_accept_api.txt"
+	bt_eval "$G_AWK -f $G_AWKSON -f <(echo '$L_SRC') $L_JSON > $G_TEST_RESULT"
+	bt_diff_ok "$G_TEST_RESULT $L_ACCEPT"
+	bt_eval "rm -f $G_TEST_RESULT"
 }
 
 function test_parser_base
 {
-	local L_IN_ERR="./inputs/parser_test_err.json"
-	local L_IN_OK="./inputs/parser_test_ok.json"
-	local L_RUN="-f <(echo \"function on_json() {}\")"
+	local L_ACC_FATAL=\
+"./test-accept/parser-accept/parser_accept_fatal_err.txt"
+	local L_ACC_ERR=\
+"./test-accept/parser-accept/parser_accept_err.txt"
+	local L_IN_ERR="./test-inputs/parser-tests/parser_test_err.json"
+	local L_ACC_OK="./test-accept/parser-accept/parser_accept_ok.txt"
+	local L_IN_OK="./test-inputs/parser-tests/parser_test_ok.json"
+	local L_RUN="$G_AWK -f $G_AWKSON -f <(echo \"function on_json() {}\")"
 
 	# test single elements
-	run_ok "$L_RUN <(echo '\"a string\"')"
-	run_ok "$L_RUN <(echo '\"\"')"
-	run_ok "$L_RUN <(echo '{}')"
-	run_ok "$L_RUN <(echo '[]')"
-	run_ok "$L_RUN <(echo 'true')"
-	run_ok "$L_RUN <(echo 'false')"
-	run_ok "$L_RUN <(echo 'null')"
-	run_ok "$L_RUN <(echo '3.14')"
+	bt_eval "$L_RUN <(echo '\"a string\"')"
+	bt_assert_success
+	bt_eval "$L_RUN <(echo '\"\"')"
+	bt_assert_success
+	bt_eval "$L_RUN <(echo '{}')"
+	bt_assert_success
+	bt_eval "$L_RUN <(echo '[]')"
+	bt_assert_success
+	bt_eval "$L_RUN <(echo 'true')"
+	bt_assert_success
+	bt_eval "$L_RUN <(echo 'false')"
+	bt_assert_success
+	bt_eval "$L_RUN <(echo 'null')"
+	bt_assert_success
+	bt_eval "$L_RUN <(echo '3.14')"
+	bt_assert_success
 
 	# add the code to dump the tables here; must know internal var names
-	run_ok "-f <(echo 'function _dbg_replace_subsep(str, what) {
+	local L_RUN_NO_JSON="$G_AWK -f $G_AWKSON"
+
+	local L_RES=""
+	L_RES="$(eval "$L_RUN_NO_JSON "\
+"-f <(echo 'function _dbg_replace_subsep(str, what) {
 	if (!what) what = \"->\"
 		gsub(SUBSEP, what, str)
 	return str
@@ -278,51 +261,58 @@ function _dump_json_tbl_ord(tbl, msg,    _n, _i, _end) {
 function on_json() {
 	_dump_json_tbl_ord(_G_json_type_tbl, \"@@@ types @@@\")
 	_dump_json_tbl_ord(_G_json_values_tbl, \"@@@ values @@@\")
-}') $L_IN_OK"
-	diff_stdout "parser_accept_ok.txt"
+}')" $L_IN_OK)"
+	bt_assert_success
+
+	bt_diff_ok "<(echo \"$L_RES\") $L_ACC_OK"
 
 	# fatal error; quit on the first sign of trouble
-	run_nok "$L_RUN -v FatalError=1 $L_IN_ERR $L_IN_ERR"
-	diff_stderr "parser_accept_fatal_err.txt"
+	local L_OPT_FATAL="-vFatalError=1"
+	bt_eval "$L_RUN $L_OPT_FATAL $L_IN_ERR 2>/dev/null"
+	bt_assert_failure
+
+	bt_eval "diff <($L_RUN $L_OPT_FATAL $L_IN_ERR 2>&1) $L_ACC_FATAL"
+	bt_assert_success
 
 	# show all errors
-	run_nok "$L_RUN $L_IN_ERR $L_IN_ERR"
-	diff_stderr "parser_accept_err.txt"
+	bt_eval "$L_RUN $L_IN_ERR 2>/dev/null"
+	bt_assert_failure
+
+	bt_diff_ok "<($L_RUN $L_IN_ERR 2>&1 1>/dev/null) $L_ACC_ERR"
 
 	# test multiple jsons in a file; must be an error
+	# 2>&1 | awk ... appended removes the automatic fd name
+	local L_RM_FNAME="2>&1 | awk '\$3==\"file\" {\$4=\"\"} {print}'"
 	local L_EOI_RUN=(
-'{} {}'
-'[] []'
-'1234 false'
-'null "foo"'
+"$L_RUN <(echo '{} {}')"
+"$L_RUN <(echo '[] []')"
+"$L_RUN <(echo '1234 false')"
+"$L_RUN <(echo 'null \"foo\"')"
 )
 	local L_EOI_ERR=(
-"awkson.awk: error: -:1:4
-awkson.awk: error: expected 'EOI', got '{'
+"awkson.awk: error: file  line 1, pos 4
+awkson.awk: error: expected 'EOI', got '{' instead
 {} {}
    ^"
-"awkson.awk: error: -:1:4
-awkson.awk: error: expected 'EOI', got '['
+"awkson.awk: error: file  line 1, pos 4
+awkson.awk: error: expected 'EOI', got '[' instead
 [] []
    ^"
-"awkson.awk: error: -:1:10
-awkson.awk: error: expected 'EOI', got 'false'
+"awkson.awk: error: file  line 1, pos 10
+awkson.awk: error: expected 'EOI', got 'false' instead
 1234 false
          ^"
-"awkson.awk: error: -:1:10
-awkson.awk: error: expected 'EOI', got 'string'
-null \\\"foo\\\"
+"awkson.awk: error: file  line 1, pos 10
+awkson.awk: error: expected 'EOI', got 'string' instead
+null \"foo\"
          ^"
 )
 
 	local len="${#L_EOI_RUN[@]}"
 	for (( i=0; i<$len; ++i ));
 	do
-		G_RUN_PREFIX="echo '${L_EOI_RUN[$i]}' |"
-		run_nok "$L_RUN -"
-		bt_diff_ok "$G_TEST_RESULT_STDOUT accept/empty"
-		bt_diff_ok "$G_TEST_RESULT_STDERR <(echo \"${L_EOI_ERR[$i]}\")"
-		G_RUN_PREFIX=""
+		L_RES="$(eval ${L_EOI_RUN[$i]} $L_RM_FNAME)"
+		bt_diff_ok "<(echo \"$L_RES\") <(echo \"${L_EOI_ERR[$i]}\")"
 	done
 }
 # </test_parser>
@@ -330,26 +320,33 @@ null \\\"foo\\\"
 # <test_lexer>
 function test_lexer
 {
-	run_base "-f ../src/_lib.awk -f ../src/_lexer.awk" \
-		"-f ./awkson-lex-test-main.awk ./inputs/lex_tests.txt"
-	bt_assert_success
-	diff_stdout "lex_test_accept.txt"
+	local L_LEX_TEST_MAIN="./awkson-lex-test-main.awk"
+	local L_AWK_ARGS="-f $G_AWKSON_LIB -f $G_AWKSON_LEXER "\
+"-f $L_LEX_TEST_MAIN ./test-inputs/lex_tests.txt"
+
+	bt_eval "$G_AWK $L_AWK_ARGS > $G_TEST_RESULT"
+	bt_diff_ok "$G_TEST_RESULT ./test-accept/lex_test_accept.txt"
+	bt_eval "rm $G_TEST_RESULT"
 }
 # </test_lexer>
 
 # <test_version>
 function test_version
 {
-	run_ok "-f <(echo 'function on_json(){}') -v Version=1"
-	diff_stdout "version.txt"
+	bt_diff_ok "<($G_AWK -f $G_AWKSON -f <(echo 'function on_json(){}') -vVersion=1) <(echo 'awkson.awk 1.2')"
 }
 # </test_version>
 
 function test_all
 {
-	bt_eval test_version
-	bt_eval test_lexer
-	bt_eval test_parser
+	run_from_str $G_RUN_TESTS
+}
+
+function run_from_str
+{
+	for test in $@; do
+		bt_eval $test
+	done
 }
 
 function main

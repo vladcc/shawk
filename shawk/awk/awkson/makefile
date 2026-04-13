@@ -1,22 +1,29 @@
 # <help>
 .PHONY: help
 help:
-	@echo 'make all    - lexer parser lib doc awkson'
-	@echo 'make awkson - generates awkson'
-	@echo 'make lexer  - generates the lexer'
-	@echo 'make parser - generates the parser'
-	@echo 'make lib    - generates the library'
-	@echo 'make doc    - generates the api doc'
-	@echo 'make test   - run tests'
-	@echo 'make testv  - like test but verbose'
-	@echo 'make clean  - leave only the base source files'
-	@echo 'make help   - this screen'
+	@echo 'make all     - compile + sure'
+	@echo 'make compile - lexer parser lib doc awkson'
+	@echo 'make awkson  - generates awkson'
+	@echo 'make lexer   - generates the lexer'
+	@echo 'make parser  - generates the parser'
+	@echo 'make lib     - generates the library'
+	@echo 'make doc     - generates the api doc'
+	@echo 'make sure    - run tests + check all run'
+	@echo 'make test    - run tests'
+	@echo 'make testv   - like test but verbose'
+	@echo 'make clean   - leave only the base source files'
+	@echo 'make help    - this screen'
 # </help>
 
 # <all>
 .PHONY: all
-all: lexer parser lib doc awkson
+all: compile sure
 # </all>
+
+# <compile>
+.PHONY: compile
+compile: lexer parser lib doc awkson
+# </compile>
 
 # <lexer>
 LB_DIR = ../lex-build
@@ -37,18 +44,17 @@ $(LEX_GEN): $(LEX_LB)
 RDPG_DIR = ../rdpg
 RDPG_STRICT = 0
 RDPG_OLVL = 4
-PRS_RDPG = ./src/parser/parser.rdpg
+PRS_JSON_GRAMMAR = ./src/parser/json-grammar.rdpg
 PRS_AWK = ./src/_parser.awk
 PRS_GEN = ./src/parser/_parser_gen.awk
 PRS_USR = ./src/parser/_parser_usr.awk
 .PHONY: parser
 parser: $(PRS_AWK)
 $(PRS_AWK): $(PRS_GEN) $(PRS_USR)
-	cat $^  > $@
-$(PRS_GEN): $(PRS_RDPG)
-	awk -f $(RDPG_DIR)/rdpg.awk -vStrict=$(RDPG_STRICT) $(PRS_RDPG) | \
-	awk -f $(RDPG_DIR)/rdpg-opt.awk -vOlvl=$(RDPG_OLVL) | \
-	awk -f $(RDPG_DIR)/rdpg-to-awk -vTokCallPrefix="_" > $@
+	cat $^ > $@
+$(PRS_GEN): $(PRS_JSON_GRAMMAR)
+	awk -f $(RDPG_DIR)/rdpg-comp.awk -vSync=0 $(PRS_JSON_GRAMMAR) \
+		| $(RDPG_DIR)/rdpg-to-awk.awk > $@
 # </parser>
 
 # <libraries>
@@ -101,11 +107,23 @@ clean:
 # </clean>
 
 # <test>
+TEST_DIR := ./tests
+TESTS_RUN := tests_run.txt
+TESTS_EXPECTER := tests_expected.txt
+
+RUN_TESTS  := bash ./run-tests.sh
+RUN_TESTSV := $(RUN_TESTS) x
+
+.PHONY: sure
+sure:
+	cd $(TEST_DIR) && $(RUN_TESTSV) | grep '^test_' | sort > $(TESTS_RUN)
+	cd $(TEST_DIR) && diff $(TESTS_EXPECTER) $(TESTS_RUN)
+
 .PHONY: test
 test:
-	bash ./tests/run-tests.sh
-	
+	cd $(TEST_DIR) && $(RUN_TESTS)
+
 .PHONY: testv
 testv:
-	bash ./tests/run-tests.sh x
+	cd $(TEST_DIR) && $(RUN_TESTSV)
 # </test>

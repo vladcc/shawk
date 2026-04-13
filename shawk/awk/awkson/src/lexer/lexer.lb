@@ -14,13 +14,13 @@ char_tbl
 end
 
 symbols
-	{     TOK_LCURL
-	}     TOK_RCURL
-	[     TOK_LSQR
-	]     TOK_RSQR
-	:     TOK_COLON
-	,     TOK_COMMA
-	EOI   TOK_EOI
+	{   TOK_LCURL
+	}   TOK_RCURL
+	[   TOK_LSQR
+	]   TOK_RSQR
+	:   TOK_COLON
+	,   TOK_COMMA
+	EOI TOK_EOI
 end
 
 keywords

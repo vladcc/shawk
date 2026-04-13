@@ -1,0 +1,9 @@
+test_all
+test_lexer
+test_parser
+test_parser_api_err
+test_parser_api_ok
+test_parser_base
+test_parser_json_err
+test_parser_multi_file
+test_version
