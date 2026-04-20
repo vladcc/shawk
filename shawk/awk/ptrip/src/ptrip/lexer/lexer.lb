@@ -21,6 +21,7 @@ symbols
 	WORD     TOK_WORD
 	STRING   TOK_STRING
 	EOI      TOK_EOI
+	ptree    PTOK_PTREE_DELIM
 end
 
 keywords

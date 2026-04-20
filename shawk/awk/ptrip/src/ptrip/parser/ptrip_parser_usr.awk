@@ -74,7 +74,7 @@ function _file_lvl_push() {
 		_B_ptree_file_lvl_str = (_B_ptree_file_lvl_str "-")
 	else
 		_B_ptree_file_lvl_str = "-"
-	
+
 	_stack_push(_B_ptree_file_chain, get_file_name())
 }
 function _file_lvl_pop() {
@@ -83,7 +83,7 @@ function _file_lvl_pop() {
 			substr(_B_ptree_file_lvl_str,
 				1, length(_B_ptree_file_lvl_str)-1)
 	}
-	
+
 	_stack_pop(_B_ptree_file_chain)
 }
 function _file_lvl_is_open(fname,    _i, _end) {
@@ -105,7 +105,7 @@ function _file_lvl_get_lvl_string() {
 # <include_functions>
 
 function _include_save_line(    _incl) {
-	
+
 	_output_line_push(_make_out_string(_file_lvl_get_lvl_string(),
 			_last_symbol_get_line_no(),
 			_key_path_get(LEX_USR_INCLUDE()),
@@ -175,10 +175,30 @@ function _error_do(msg,    _err) {
 
 # <parser_callbacks>
 function ptree_tok_match(tok) {return (lex_curr_tok() == tok)}
-function ptree_tok_next() {return lex_next()}
+
+function ptok_set(tok) {_B_ptok = tok}
+function ptok_get()    {return _B_ptok}
+function ptok_insert_ptree_delim() {
+	ptok_set(PTOK_PTREE_DELIM())
+	rdpg_reread_curr_tok()
+}
+
+function tok_curr(    _tok) {
+	if (_tok = ptok_get())
+		return _tok
+	return lex_curr_tok()
+}
+
+function tok_next() {
+	if (ptok_get()) {
+		ptok_set("")
+		return lex_curr_tok()
+	}
+	return lex_next()
+}
 
 function _tokstr(tok) {
-	
+
 	if (TOK_L_CURLY() == tok)
 		return "{"
 	else if (TOK_R_CURLY() == tok)
@@ -195,27 +215,34 @@ function _tokstr(tok) {
 		return "end of input"
 	else if (TOK_ERROR() == tok)
 		return "error"
+	else if (PTOK_PTREE_DELIM() == tok)
+		return ""
 	else if (LEX_USR_INCLUDE() == tok)
 		return LEX_USR_INCLUDE()
 	else if (LEX_USR_NO_CURLY() == tok)
 		return LEX_USR_NO_CURLY()
-	
+
 	return TOK_ERROR()
 }
 
-function ptree_tok_err_exp(arr, len,    _i, _str) {
-	
+function tok_err(    _i, _str, _arr, _len, _tstr) {
+	_len = rdpg_expect(_arr)
+	ptree_tok_err_exp(_arr, _len)
+}
+
+function ptree_tok_err_exp(arr, len) {
+
 	for (_i = 1; _i <= len; ++_i) {
-		if (_str)
-			_str = sprintf("%s, '%s'", _str, _tokstr(arr[_i]))
-		else
-			_str = sprintf("'%s'", _tokstr(arr[_i]))
+		if (!(_tstr = _tokstr(arr[_i])))
+			continue
+		_str = _str ? (_str sprintf(", '%s'", _tstr)) : sprintf("'%s'", _tstr)
 	}
-	
+
 	error_fatal(\
 		lex_usr_pos_msg(\
 			sprintf("%s expected, got '%s'", _str, _tokstr(lex_curr_tok()))))
 }
+
 function _ptree_lvl_push() {_key_path_push()}
 function _ptree_lvl_pop() {_key_path_pop()}
 function _ptree_read_string() {
@@ -225,11 +252,15 @@ function _ptree_read_word() {
 	_last_symbol_save(lex_get_saved(), lex_get_line_no())
 }
 function _ptree_on_include(    _fprev, _fnext) {
+
+	if (lex_curr_tok() != TOK_NEW_LINE())
+		_ptree_bad_include()
+
 	_fprev = get_file_name()
-	
+
 	_fnext = _remove_quotes(_last_symbol_get_str())
 	_include_save_line()
-	
+
 	if (_file_lvl_is_open(_fnext)) {
 		_error_do(sprintf("\"recursive include of file '%s'\"", _fnext))
 	} else if (!_can_read_file(_fnext)) {
@@ -257,20 +288,30 @@ function _ptree_on_val() {_val_save(_last_symbol_get_str())}
 # </parser_callbacks>
 
 # <parser_io>
+function rdpg_parse_hack() {
+	if (!_B_rdpg_was_init) {
+		_rdpg_init_sets()
+		_B_rdpg_was_init = 1
+	}
+	_RDPG_had_error = 0
+	return _rdpg_start() && !_RDPG_had_error
+	# return rdpg_parse()
+}
+
 function _ptree_dump() {_output_print()}
 function _parse_ptree_info(fname) {
 	set_file_name(fname)
-	
+
 	if (_can_read_file(fname)) {
 		_file_lvl_push()
 		_save_file_lvl_str()
-		
+
 		_mark_file_begin()
 		lex_init()
-		ptree_fmt()
+		rdpg_parse_hack()
 		close(fname)
 		_mark_file_end()
-		
+
 		_file_lvl_pop()
 	} else {
 		_file_error(fname)

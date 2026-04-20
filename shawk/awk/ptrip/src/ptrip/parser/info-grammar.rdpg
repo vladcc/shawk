@@ -1,0 +1,52 @@
+#
+# To preserve compatibility with how the boost ptree info parser parses input,
+# at least as of boost 1.77.0, the new line character needs to be considered as
+# a token. The reason for this is that the following:
+#
+# foo
+# bar baz
+# { zig zag }
+#
+# to boost looks like:
+#
+# key(foo) val()
+# key(bar) val(baz) { key(zig) val(zag) }
+#
+# rather than
+#
+# key(foo) val(bar)
+# key(baz) val() { key(zig) val(zag) }
+#
+# i.e., when parsing a tree the new line is meaningful only when a key appears
+# alone on a line. It is also meaningful when parsing an '#include', since the
+# '#include' and the file name are expected to be on the same line.
+#
+
+start : ptree_item* TOK_EOI ;
+
+# PTOK_PTREE_DELIM is a pseudo token. It serves to keep the grammar LL(1). It
+# gets inserted in the token stream by the ptok_insert_ptree_delim() user
+# function so it can be immediately read afterwards.
+ptree_item : ptree_nl* ptree_elem? \ptok_insert_ptree_delim PTOK_PTREE_DELIM ;
+
+ptree_elem : ptree_tree | ptree_include ;
+
+ptree_tree : ptree_key ptree_val? ptree_nl* ptree_subtree? ;
+
+ptree_key : ptree_wos \_ptree_on_key ;
+
+ptree_val : ptree_wos \_ptree_on_val ;
+
+ptree_subtree : TOK_L_CURLY \_ptree_lvl_push
+                    ptree_item*
+                TOK_R_CURLY \_ptree_lvl_pop ;
+
+ptree_include : TOK_INCLUDE ptree_string \_ptree_on_include ;
+
+ptree_wos : ptree_word | ptree_string ;
+
+ptree_word : TOK_WORD \_ptree_read_word ;
+
+ptree_string : TOK_STRING \_ptree_read_string ;
+
+ptree_nl : TOK_NEW_LINE ;

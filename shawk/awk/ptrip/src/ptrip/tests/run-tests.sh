@@ -21,6 +21,7 @@ function main
 function run
 {
 	local L_PTRIP="awk -f ../../../ptrip.awk "
+	#echo "########## $L_PTRIP $@" >&2
 	eval "$L_PTRIP $@"
 }
 function diff_ok_rm
@@ -36,7 +37,7 @@ function test_versions
 
 	L_RES="$(run -vVersion=1)"
 	bt_assert_success
-	bt_diff_ok "<(echo '$L_RES') <(echo 'ptrip.awk 1.2.2')"
+	bt_diff_ok "<(echo '$L_RES') <(echo 'ptrip.awk 2.0')"
 }
 # </test_versions>
 
@@ -64,14 +65,14 @@ function test_parser_errors_fatal
 #includ \"should quit before parsing this\"
       ^"
 "ptrip.awk: error: fatal: file '../data/error/fatal/inc_not_inc_2.info', line 2, pos 8: '#include' expected, got 'error'
-	#includ \"should quit before parsing this\"
-	      ^"
+\t#includ \"should quit before parsing this\"
+\t      ^"
 "ptrip.awk: error: fatal: file '../data/error/fatal/inc_not_inc_3.info', line 2, pos 10: '#include' expected, got 'error'
    #includ \"should quit before parsing this\"
          ^"
 "ptrip.awk: error: fatal: file '../data/error/fatal/inc_not_inc_4.info', line 2, pos 11: '#include' expected, got 'error'
-	   #includ \"should quit before parsing this\"
-	         ^"
+\t   #includ \"should quit before parsing this\"
+\t         ^"
 "ptrip.awk: error: fatal: file '../data/error/fatal/inc_not_str.info', line 3, pos 21: 'string' expected, got 'word'
 #include not-a-string
                     ^"
@@ -100,7 +101,7 @@ key{
 	do
 		L_RES="$(run "${L_FILES[$i]} 2>&1 1>/dev/null")"
 		bt_assert_failure
-		bt_diff_ok "<(echo '$L_RES') <(echo '${L_EXP[$i]}')"
+		bt_diff_ok "<(echo '$L_RES') <(echo -e '${L_EXP[$i]}')"
 	done
 }
 function test_parser_errors_non_fatal
