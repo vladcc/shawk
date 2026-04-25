@@ -28,6 +28,39 @@ function run_tests_str_pos
 	eval_success "diff <($L_EXEC $L_INPUT) $L_ACCEPT"
 }
 
+function run_tests_state
+{
+	eval_success "$G_AWK -f ./awk/lex-state.awk -f ./awk/inc_lex.awk" \
+		"$(make_input_name str_pos)"
+	eval_success "$G_AWK -f ./awk/foo-lex-state.awk -f ./awk/foo_inc_lex.awk" \
+		"$(make_input_name str_pos)"
+}
+
+function run_tests_together
+{
+	# confirms no redefined functions exist
+	eval_success "$G_AWK -f ./awk/inc_lex.awk -f ./awk/foo_inc_lex.awk"
+
+	# test static variable names
+	local L_NUM_STATIC=""
+	local L_NUM_NAMED=""
+	local L_NUM_NONE=""
+
+	L_NUM_STATIC="$(grep -c _B_ ./awk/inc_lex.awk)"
+	L_NUM_NAMED="$(grep _B_ ./awk/inc_lex.awk | grep -c _B_lex)"
+	L_NUM_NONE="$(grep _B_ ./awk/inc_lex.awk | grep -vc _B_lex)"
+	eval_success "[ $L_NUM_STATIC -gt 0 ]"
+	eval_success "[ $L_NUM_STATIC -eq $L_NUM_NAMED ]"
+	eval_success "[ $L_NUM_NONE -eq 0 ]"
+
+	L_NUM_STATIC="$(grep -c _B_ ./awk/foo_inc_lex.awk)"
+	L_NUM_NAMED="$(grep _B_ ./awk/foo_inc_lex.awk | grep -c _B_foo_lex)"
+	L_NUM_NONE="$(grep _B_ ./awk/foo_inc_lex.awk | grep -vc _B_foo_lex)"
+	eval_success "[ $L_NUM_STATIC -gt 0 ]"
+	eval_success "[ $L_NUM_STATIC -eq $L_NUM_NAMED ]"
+	eval_success "[ $L_NUM_NONE -eq 0 ]"
+}
+
 function run_tests_on_multiple_files
 {
 	local L_EXEC="$@"
@@ -70,7 +103,7 @@ function eval_success
 # <awk>
 function test_awk_ver
 {
-	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.7.3"
+	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.8"
 }
 function test_awk_run_test
 {
@@ -82,10 +115,13 @@ function test_awk_run_test
 	bt_eval run_tests_on_single_file "$L_LEX_PREF"
 	bt_eval run_tests_on_multiple_files "$L_LEX_PREF"
 
-	local L_LEX="$G_AWK -f ./awk/lex.awk -vStrPos=1 -f ./awk/inc_lex.awk"
-	local L_LEX_PREF="$G_AWK -f ./awk/foo-lex.awk -vStrPos=1 -f ./awk/foo_inc_lex.awk"
+	L_LEX="$G_AWK -f ./awk/lex.awk -vStrPos=1 -f ./awk/inc_lex.awk"
+	L_LEX_PREF="$G_AWK -f ./awk/foo-lex.awk -vStrPos=1 -f ./awk/foo_inc_lex.awk"
 	bt_eval run_tests_str_pos "$L_LEX"
 	bt_eval run_tests_str_pos "$L_LEX_PREF"
+
+	bt_eval run_tests_state
+	bt_eval run_tests_together
 }
 function test_awk
 {
