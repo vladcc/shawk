@@ -1,3 +1,13 @@
+2026-04-25
+	rdpg-to-c.awk   2.2.5
+	rdpg-to-awk.awk 2.2
+	rdpg-comp.awk   2.2.4
+	all updated to lex-awk.awk 1.8
+	rdpg-to-awk
+		rdpg_state_(get|set)() added + tests
+		sets init only once
+		_RDPG_had_error inits on every rdpg_parse() call
+
 2025-07-03
 	rdpg-comp.awk 2.2.3
 	better post-parse error messages

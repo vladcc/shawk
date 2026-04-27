@@ -15,6 +15,9 @@ rdpg_parse()           - call to parse. Returns true if the parse encountered no
 errors, false otherwise.
 rdpg_expect(arr_out)   - call from tok_err(). Places the set of expected tokens
 in arr_out. Returns the length of arr_out.
+rdpg_state_get()       - returns the internal parser state.
+rdpg_state_set(st)     - sets the internal parser state to the one represented
+by st. st must be returned by rdpg_state_get().
 rdpg_reread_curr_tok() - reread the current token. Necessary when a token is
 pushed as the new current one through an action. Only with TokHack=1.
 
