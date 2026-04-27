@@ -1,3 +1,8 @@
+2026-04-27
+	awkson.awk 2.1
+	updated to rdpg-comp.awk 2.2.4
+	updated to rdpg-to-awk.awk 2.2
+
 2026-04-13
 	awkson.awk 2.0
 	parser migrated to rdpg >= 2.0

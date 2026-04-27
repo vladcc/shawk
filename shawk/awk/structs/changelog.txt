@@ -1,6 +1,10 @@
+2026-04-27
+	structs.awk 1.4
+	updated to smpg.awk 2.1
+
 2025-06-07
-    structs.awk 1.3
-    - bugfix: prefix for _ent_set() _ent_get() in *_clear()
+	structs.awk 1.3
+	- bugfix: prefix for _ent_set() _ent_get() in *_clear()
 
 2024-12-15
 	structs.awk 1.2

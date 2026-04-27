@@ -3,13 +3,23 @@ AWK := awk
 
 .PHONY: help
 help:
+	@echo 'make all         - target'
 	@echo 'make target      - frontend + backends'
+	@echo 'make test        - run all tests'
 	@echo 'make frontend    - rdpg-comp'
 	@echo 'make backends    - compile all backends'
 	@echo 'make rdpg-comp   - compile the frontend compiler'
 	@echo 'make rdpg-to-c   - compile the C backend'
 	@echo 'make rdpg-to-awk - compile the awk backend'
 	@echo 'make help        - this screen'
+
+.PHONY: all
+all: target
+
+.PHONY: test
+test:
+	cd src/compiler && $(MAKE) test
+	cd src/backends && $(MAKE) test
 
 .PHONY: target
 target: frontend backends
