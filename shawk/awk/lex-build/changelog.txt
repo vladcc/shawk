@@ -1,3 +1,7 @@
+2026-04-25
+	lex-awk.awk 1.8
+	lex_state_(set|get)() added + tests
+
 2026-03-11
 	lex-c.awk 1.9.4 -> 1.9.5
 	bugfix - class bias now works for all actions, not only white space

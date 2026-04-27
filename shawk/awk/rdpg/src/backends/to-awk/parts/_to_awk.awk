@@ -2,7 +2,7 @@
 
 # <to-awk>
 function SCRIPT_NAME() {return "rdpg-to-awk.awk"}
-function SCRIPT_VERSION() {return "2.1.3"}
+function SCRIPT_VERSION() {return "2.2"}
 
 function print_help_quit() {
 print sprintf("-- %s - ir to awk translator --", SCRIPT_NAME())
@@ -22,6 +22,9 @@ print "rdpg_parse()           - call to parse. Returns true if the parse encount
 print "errors, false otherwise."
 print "rdpg_expect(arr_out)   - call from tok_err(). Places the set of expected tokens"
 print "in arr_out. Returns the length of arr_out."
+print "rdpg_state_get()       - returns the internal parser state."
+print "rdpg_state_set(st)     - sets the internal parser state to the one represented"
+print "by st. st must be returned by rdpg_state_get()."
 print "rdpg_reread_curr_tok() - reread the current token. Necessary when a token is"
 print "pushed as the new current one through an action. Only with TokHack=1."
 print ""
@@ -63,11 +66,12 @@ function _rpref(str) {return (_RPREF() str)}
 function _F_SEP()        {return _rpref("SEP")}
 function _F_INIT_SETS()  {return _fn_name("init_sets")}
 
-function _V_CURR_TOK() {return _rpref("curr_tok")}
-function _V_ERR()      {return _rpref("had_error")}
-function _V_EXP_TYPE() {return _rpref("expect_type")}
-function _V_EXP_WHAT() {return _rpref("expect_what")}
-function _V_EXP_SETS() {return _rpref("expect_sets")}
+function _V_CURR_TOK()      {return _rpref("curr_tok")}
+function _V_ERR()           {return _rpref("had_error")}
+function _V_EXP_TYPE()      {return _rpref("expect_type")}
+function _V_EXP_WHAT()      {return _rpref("expect_what")}
+function _V_EXP_SETS()      {return _rpref("expect_sets")}
+function _V_ARE_SETS_INIT() {return _rpref("are_sets_init")}
 
 function _v_alias_str(nm) {return _rpref(sprintf("B_str_sym_%s", nm))}
 function _v_alias_set(nm) {return _rpref(sprintf("sym_%s", nm))}
@@ -109,7 +113,7 @@ function _set_prepare(set,    _rep) {
 # </sets>
 
 # <internal-code>
-function _gen_internal(    _i, _end, _set, _nm) {
+function _gen_rest_of_public_and_internal(    _i, _end, _set, _nm) {
 	emit("function rdpg_expect(arr_out,    _len) {")
 	tinc()
 		emit("delete arr_out")
@@ -132,6 +136,25 @@ function _gen_internal(    _i, _end, _set, _nm) {
 		tdec()
 		emit("}")
 	}
+	emit("function rdpg_state_get() {")
+	tinc()
+		emit("return ( \\")
+		emit(sprintf("%s    %s() \\", _V_CURR_TOK(), _F_SEP()))
+		emit(sprintf("%s   %s() \\", _V_ERR(), _F_SEP()))
+		emit(sprintf("%s %s() \\", _V_EXP_TYPE(), _F_SEP()))
+		emit(sprintf("%s %s() \\", _V_EXP_WHAT(), _F_SEP()))
+		emit(")")
+	tdec()
+	emit("}")
+	emit("function rdpg_state_set(st,    _arr_st) {")
+	tinc()
+		emit(sprintf("split(st, _arr_st, %s())", _F_SEP()))
+		emit(sprintf("%s    = _arr_st[1]", _V_CURR_TOK()))
+		emit(sprintf("%s   = _arr_st[2]", _V_ERR()))
+		emit(sprintf("%s = _arr_st[3]", _V_EXP_TYPE()))
+		emit(sprintf("%s = _arr_st[4]", _V_EXP_WHAT()))
+	tdec()
+	emit("}")
 	emit("# </public>")
 
 	emit("# <internal>")
@@ -282,10 +305,16 @@ function bd_on_parse_main(name) {
 	emit(sprintf("function %s()", name))
 }
 function bd_on_parse_main_code() {
-	emit(sprintf("%s()", _F_INIT_SETS()))
+	emit(sprintf("if (!%s) {", _V_ARE_SETS_INIT()))
+	tinc()
+		emit(sprintf("%s()", _F_INIT_SETS()))
+		emit(sprintf("%s = 1", _V_ARE_SETS_INIT()))
+	tdec()
+	emit("}")
+	emit(sprintf("%s = 0", _V_ERR()))
 }
 function bd_on_parse_main_end() {
-	_gen_internal()
+	_gen_rest_of_public_and_internal()
 	emit("# <rd>")
 }
 

@@ -11,7 +11,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.7.3"}
+function SCRIPT_VERSION() {return "1.8"}
 # </script>
 
 # <out_signature>
@@ -141,6 +141,12 @@ function out_kwds(    _set, _i, _end) {
 }
 # </out_kwds>
 
+# <out_sep>
+function out_sep() {
+	out_line(sprintf("function %s() {return \"\\034\"}", C_SEP()))
+}
+# </out_sep>
+
 # <out_input>
 function F_READ_LN() {return fname("read_line")}
 function F_PEEK_CH() {return fname("peek_ch")}
@@ -154,6 +160,8 @@ function fname(str) {return (npref_get() "lex_" str)}
 function fdecl(name) {return sprintf("function %s", fname(name))}
 function _fname(str) {return ("_" fname(str))}
 function _fdecl(name) {return sprintf("function %s", _fname(name))}
+
+function C_SEP() {return toupper(_fname("sep"))}
 
 function VAR_ARE_TABLES_INIT() {return vname("are_tables_init")}
 function VAR_CH_TBL() {return vname("ch_tbl")}
@@ -284,6 +292,50 @@ function out_lex_io() {
 	out_line("}")
 }
 # </out_input>
+
+# <out_state>
+function out_state_get() {
+	out_line(sprintf("%s() {", fdecl("state_get")))
+	tabs_inc()
+	out_line("return \\")
+	out_line("( \\")
+	out_line(sprintf("%s          %s() \\", VAR_LINE_STR(), C_SEP()))
+	out_line(sprintf("%s           %s() \\", VAR_CURR_CH(), C_SEP()))
+	out_line(sprintf("%s %s() \\", VAR_CURR_CH_CLS_CACHE(), C_SEP()))
+	out_line(sprintf("%s          %s() \\", VAR_CURR_TOK(), C_SEP()))
+	out_line(sprintf("%s           %s() \\", VAR_LINE_NO(), C_SEP()))
+	out_line(sprintf("%s          %s() \\", VAR_LINE_POS(), C_SEP()))
+	out_line(sprintf("%s           %s() \\", VAR_PEEK_CH(), C_SEP()))
+	out_line(sprintf("%s   %s() \\", VAR_PEEKED_CH_CACHE(), C_SEP()))
+	out_line(sprintf("%s             %s() \\", VAR_SAVED(), C_SEP()))
+	out_line(")")
+	tabs_dec()
+	out_line("}")
+}
+function out_state_set() {
+	out_line(sprintf("%s(state_str,    _arr_st) {", fdecl("state_set")))
+	tabs_inc()
+	out_line(sprintf("split(state_str, _arr_st, %s())", C_SEP()))
+	out_line()
+	out_line(sprintf("%s          = _arr_st[1]", VAR_LINE_STR()))
+	out_line(sprintf("split(%s, %s, \"\")", VAR_LINE_STR(), VAR_INPUT_LINE()))
+	out_line(sprintf("%s           = _arr_st[2]", VAR_CURR_CH()))
+	out_line(sprintf("%s = _arr_st[3]", VAR_CURR_CH_CLS_CACHE()))
+	out_line(sprintf("%s          = _arr_st[4]", VAR_CURR_TOK()))
+	out_line(sprintf("%s           = _arr_st[5]", VAR_LINE_NO()))
+	out_line(sprintf("%s          = _arr_st[6]", VAR_LINE_POS()))
+	out_line(sprintf("%s           = _arr_st[7]", VAR_PEEK_CH()))
+	out_line(sprintf("%s   = _arr_st[8]", VAR_PEEKED_CH_CACHE()))
+	out_line(sprintf("%s             = _arr_st[9]", VAR_SAVED()))
+	tabs_dec()
+	out_line("}")
+}
+function out_state() {
+	out_state_get()
+	out_line()
+	out_state_set()
+}
+# </out_state>
 
 # <out_lex_next>
 # <lex_next>
@@ -449,6 +501,7 @@ function out_init() {
 	out_line(sprintf("%s = 1", VAR_ARE_TABLES_INIT()))
 	tabs_dec()
 	out_line("}")
+	out_line(sprintf("%s = \"\"", VAR_LINE_STR()))
 	out_line(sprintf("%s = \"\"", VAR_CURR_CH()))
 	out_line(sprintf("%s = \"\"", VAR_CURR_CH_CLS_CACHE()))
 	out_line(sprintf("%s = \"%s\"", VAR_CURR_TOK(), TOK_ERR()))
@@ -457,6 +510,8 @@ function out_init() {
 	out_line(sprintf("%s = \"\"", VAR_PEEK_CH()))
 	out_line(sprintf("%s = \"\"", VAR_PEEKED_CH_CACHE()))
 	out_line(sprintf("%s = \"\"", VAR_SAVED()))
+	out_line(sprintf("%s[\"\"]", VAR_INPUT_LINE()))
+	out_line(sprintf("delete %s", VAR_INPUT_LINE()))
 	out_line(sprintf("%s()", F_READ_LN()))
 	tabs_dec()
 	out_line("}")
@@ -469,13 +524,26 @@ function out_public() {
 	out_const()
 	out_line("# </lex_constants>")
 	out_line()
+	out_line("# <lex_io>")
 	out_lex_io()
+	out_line("# </lex_io>")
 	out_line()
+	out_line("# <lex_state>")
+	out_state()
+	out_line("# </lex_state>")
+	out_line()
+	out_line("# <lex_init>")
 	out_init()
+	out_line("# </lex_init>")
 	out_line()
+	out_line("# <lex_next>")
 	out_lex_next()
+	out_line("# </lex_next>")
 }
 function out_private() {
+	out_line("# state string separator")
+	out_sep()
+	out_line()
 	out_line("# initialize the lexer tables")
 	out_kwds()
 	out_init_ch_tbl()

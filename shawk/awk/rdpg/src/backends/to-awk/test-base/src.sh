@@ -73,6 +73,13 @@ function _test_custom_to_awk_base
     _diff_stderr "err.txt"
 	_cleanup
 }
+
+function _test_parser_state
+{
+	run_parser_state
+	bt_assert_success
+	_cleanup
+}
 # </custom-test-cases>
 # </private>
 
@@ -86,6 +93,11 @@ function on_postest
 	bt_eval true
 }
 
+function run_parser_state
+{
+	bt_eval "$_G_AWK -f ${_G_AWK_TDIR}/_main_state.awk -f ${_G_AWK_TDIR}/_lex.awk -f ${_G_AWK_TDIR}/${_G_RDPG_PARSER}.awk -f ${_G_AWK_TDIR}/_btree.awk -f ${_G_AWK_TDIR}/_eval.awk $* 1>$G_STDOUT 2>$G_STDERR"
+}
+
 function run_parser
 {
 	bt_eval "$_G_AWK -f ${_G_AWK_TDIR}/_main.awk -f ${_G_AWK_TDIR}/_lex.awk -f ${_G_AWK_TDIR}/${_G_RDPG_PARSER}.awk -f ${_G_AWK_TDIR}/_btree.awk -f ${_G_AWK_TDIR}/_eval.awk $* 1>$G_STDOUT 2>$G_STDERR"
@@ -94,5 +106,6 @@ function run_parser
 function test_backend_specific
 {
     bt_eval _test_custom_to_awk_base
+	bt_eval _test_parser_state
 }
 # </public>
