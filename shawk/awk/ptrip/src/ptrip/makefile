@@ -12,12 +12,10 @@ LB_DIR := ../../../lex-build
 LEX_LB := ./lexer/lexer.lb
 LEX_AWK := ./lexer/ptrip_lexer.awk
 LEX_USR := ./lexer/ptrip_lexer_usr.awk
-LEX_HACK := ./lexer/ptrip_lexer_state_hack.awk
 .PHONY: lexer
 lexer: $(LEX_AWK)
 $(LEX_AWK): $(LEX_LB)
 	awk -f $(LB_DIR)/lex-first.awk $(LEX_LB) | awk -f $(LB_DIR)/lex-awk.awk > $@
-	bash ./lexer/lexer-hack-check.sh
 
 RDPG_DIR := ../../../rdpg
 PRS_GRAMMAR := ./parser/info-grammar.rdpg
@@ -35,8 +33,7 @@ LIBS := $(LIB_DIR)/awklib_prog.awk
 MAIN := ./_main.awk
 PTRIP := $(TARGET_DIR)/ptrip.awk
 PRS_ALL := $(PRS_AWK) $(PRS_USR)
-LEX_ALL := $(LEX_AWK) $(LEX_USR) $(LEX_HACK)
-
+LEX_ALL := $(LEX_AWK) $(LEX_USR)
 .PHONY: ptrip
 ptrip: $(PTRIP)
 $(PTRIP): $(MAIN) $(PRS_ALL) $(LEX_ALL) $(LIBS)

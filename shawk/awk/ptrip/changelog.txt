@@ -1,3 +1,8 @@
+2026-04-27
+	ptrip.awk 2.0
+	migrated to rdpg
+	updated to latest lex-build + rdpg
+
 2024-09-22
 	ptrip.awk 1.2.2
 	bugfix - minor bug fixed by lex-awk.awk 1.7.2

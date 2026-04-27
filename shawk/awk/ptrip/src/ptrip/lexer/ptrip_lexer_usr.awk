@@ -6,7 +6,7 @@ function _file_error(fname) {
 function lex_usr_get_line() {
 	# _B_getline_code avoids creating a private variable on each call
 	_B_getline_code = (getline _B_current_input_line < get_file_name())
-		
+
 	if (_B_getline_code > 0) {
 		return (_B_current_input_line "\n")
 	} else if (0 == _B_getline_code) {
@@ -14,7 +14,7 @@ function lex_usr_get_line() {
 	} else {
 		_file_error(get_file_name())
 		exit_failure()
-	} 
+	}
 }
 
 function _should_read_word_ch(ch) {
@@ -39,12 +39,12 @@ function _read_lex_word(    _ch) {
 		else
 			break
 	}
-	
+
 	# The below hack is needed, since a key, or value are not defined by what
 	# characters they are, but rather by what characters they aren't.
 	if (lex_is_ch_cls(_ch, CH_CLS_L_CURLY()) || \
 		lex_is_ch_cls(_ch, CH_CLS_R_CURLY())) {
-		
+
 		# read the curly, so it shows in the error message
 		lex_read_ch()
 		lex_save_curr_ch()
@@ -64,7 +64,7 @@ function lex_usr_read_include(    _arr) {
 	if (LEX_USR_INCLUDE() == lex_get_saved()) {
 		return TOK_INCLUDE()
 	} else {
-		
+
 		# Since the '#include' directive is never mandatory, reading one is
 		# never mandatory as well - not returning one does not lead to a syntax
 		# error. Therefore, the error needs to be detected here.
@@ -79,7 +79,7 @@ function lex_usr_read_string() {
 	# "bar "\
 	# "baz"
 	# becomes "foo bar baz"
-	
+
 	lex_save_init()
 	while (1) {
 		_B_lex_usr_read_string_peek_ch = lex_peek_ch()
@@ -108,7 +108,7 @@ function lex_usr_read_string() {
 		} else {
 			lex_save_curr_ch()
 		}
-		
+
 		if (!lex_is_next_ch_cls(CH_CLS_NEW_LINE()) && \
 			!lex_is_next_ch_cls(CH_CLS_EOI())) {
 			lex_read_ch()
@@ -154,5 +154,9 @@ function _lex_usr_pretty_pos(    _ptr, _arr, _ch, _i, _end) {
 		_ptr = (_ptr (_ch != "\t" ? " " : "\t"))
 	}
 	return (_B_current_input_line "\n" _ptr "^")
+}
+
+function lex_usr_new_line_hack() {
+	return TOK_NEW_LINE()
 }
 # </lex_usr_implementation>

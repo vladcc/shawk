@@ -251,6 +251,16 @@ function _ptree_read_string() {
 function _ptree_read_word() {
 	_last_symbol_save(lex_get_saved(), lex_get_line_no())
 }
+function _ptree_push_state() {
+	++_B_ptree_state_lvl
+	_B_ptree_lex_state[_B_ptree_state_lvl] = lex_state_get()
+	_B_ptree_rdpg_state[_B_ptree_state_lvl] = rdpg_state_get()
+}
+function _ptree_pop_state() {
+	lex_state_set(_B_ptree_lex_state[_B_ptree_state_lvl])
+	rdpg_state_set(_B_ptree_rdpg_state[_B_ptree_state_lvl])
+	--_B_ptree_state_lvl
+}
 function _ptree_on_include(    _fprev, _fnext) {
 
 	if (lex_curr_tok() != TOK_NEW_LINE())
@@ -266,9 +276,9 @@ function _ptree_on_include(    _fprev, _fnext) {
 	} else if (!_can_read_file(_fnext)) {
 		_error_do(sprintf("\"file '%s': %s\"", _fnext, ERRNO))
 	} else {
-		lex_state_hack_push_state()
+		_ptree_push_state()
 		_parse_ptree_info(_fnext)
-		lex_state_hack_pop_state()
+		_ptree_pop_state()
 		set_file_name(_fprev)
 	}
 }

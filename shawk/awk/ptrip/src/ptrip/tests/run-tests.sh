@@ -338,7 +338,7 @@ function test_lexer
 {
 	local L_DIR="../lexer"
 	local L_RUN_LEX=\
-"$G_AWK -f $L_DIR/ptrip_lexer.awk -f $L_DIR/ptrip_lexer_usr.awk -f $L_DIR/ptrip_lexer_state_hack.awk -f $L_DIR/ptrip-lex-test-main.awk"
+"$G_AWK -f $L_DIR/ptrip_lexer.awk -f $L_DIR/ptrip_lexer_usr.awk -f $L_DIR/ptrip-lex-test-main.awk"
 	local L_DATA=\
 "../data/tree_simple.info ../data/tree_more.info ../data/tree_tok_with_err.txt"
 
