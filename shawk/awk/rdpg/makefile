@@ -3,7 +3,7 @@ AWK := awk
 
 .PHONY: help
 help:
-	@echo 'make all         - target'
+	@echo 'make all         - target + test'
 	@echo 'make target      - frontend + backends'
 	@echo 'make test        - run all tests'
 	@echo 'make frontend    - rdpg-comp'
@@ -14,7 +14,7 @@ help:
 	@echo 'make help        - this screen'
 
 .PHONY: all
-all: target
+all: target test
 
 .PHONY: test
 test:

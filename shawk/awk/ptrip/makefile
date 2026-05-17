@@ -1,6 +1,7 @@
 .PHONY: help
 help:
-	@echo 'make all              - generates ptrip + doti + repli'
+	@echo 'make all              - build + test'
+	@echo 'make build            - generates ptrip + doti + repli'
 	@echo 'make ptrip            - generates the whole ptrip'
 	@echo 'make doti             - generates doti'
 	@echo 'make repli            - generates repli'
@@ -16,8 +17,11 @@ ALL = $(subst _,,$(_ALL))
 ALL_T = $(subst _,$(T_),$(_ALL))
 ALL_TV = $(subst _,$(TV_),$(_ALL))
 
-.PHONY: all $(ALL)
-all: $(ALL)
+.PHONY: all
+all: build test
+
+.PHONY: build $(ALL)
+build: $(ALL)
 $(ALL):
 	cd ./src/$@ && $(MAKE) $@
 

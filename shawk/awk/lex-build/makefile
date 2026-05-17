@@ -17,8 +17,7 @@ ALL = lib lex-first lex-c lex-awk
 
 .PHONY: help
 help:
-	@echo 'make all       - lib + lex*'
-	@echo 'make allt      - all + test'
+	@echo 'make all       - lib + lex-* + test'
 	@echo 'make test      - run tests'
 	@echo 'make testv     - like test but verbose'
 	@echo 'make lib       - generates the lex-build library'
@@ -33,23 +32,20 @@ regen: all
 	cd ./c-vs-flex && $(MAKE) -B all CFLAGS=-O3 && $(MAKE) awk && $(MAKE) clean
 
 .PHONY: all
-all: $(ALL)
-
-.PHONY: allt
-allt: all test
+all: $(ALL) test
 
 .PHONY: test
 test:
 	bash tests/run-tests.sh
-	
+
 .PHONY: testv
 testv:
 	bash tests/run-tests.sh x
 
 .PHONY: clean
 clean:
-	rm -f lex*.awk $(LEX_LIB)
-	
+	rm -f lex-*.awk $(LEX_LIB)
+
 .PHONY: lex-first
 lex-first: lex-first.awk
 lex-first.awk: $(LEX_FIRST) $(LEX_LIB)
