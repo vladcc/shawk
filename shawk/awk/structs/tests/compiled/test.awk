@@ -4,19 +4,19 @@
 # prefix ent
 #
 # type list
-# has  head node
+# has head node
 #
 # type node
-# has  data 
-# has  next_ node
+# has data 
+# has next_ node
 #
 # <private>
 function _ent_set(k, v) {_STRUCTS_ent_db[k] = v}
 function _ent_get(k) {return _STRUCTS_ent_db[k]}
 function _ent_type_chk(ent, texp) {
-	if (ent_type_of(ent) == texp)
+	if (ent_type_of(ent) ~ texp)
 		return
-	ent_errq(sprintf("entity '%s' expected type '%s', actual type '%s'", \
+	ent_errq(sprintf("entity '%s': expected type match '%s', entity type '%s'", 
 		 ent, texp, ent_type_of(ent)))
 }
 # <\private>
@@ -48,14 +48,14 @@ function ent_list_make(head,     _ent) {
 }
 
 function ent_list_set_head(ent, head) {
-	_ent_type_chk(ent, "list")
+	_ent_type_chk(ent, "^(list)$")
 	if (head)
-		_ent_type_chk(head, "node")
-	_ent_set(("head=" ent), head)
+		_ent_type_chk(head, "^(node)$")
+	_ent_set((ent ".head"), head)
 }
 function ent_list_get_head(ent) {
-	_ent_type_chk(ent, "list")
-	return _ent_get(("head=" ent))
+	_ent_type_chk(ent, "^(list)$")
+	return _ent_get((ent ".head"))
 }
 
 # <\type-list>
@@ -70,23 +70,23 @@ function ent_node_make(data, next_,     _ent) {
 }
 
 function ent_node_set_data(ent, data) {
-	_ent_type_chk(ent, "node")
-	_ent_set(("data=" ent), data)
+	_ent_type_chk(ent, "^(node)$")
+	_ent_set((ent ".data"), data)
 }
 function ent_node_get_data(ent) {
-	_ent_type_chk(ent, "node")
-	return _ent_get(("data=" ent))
+	_ent_type_chk(ent, "^(node)$")
+	return _ent_get((ent ".data"))
 }
 
 function ent_node_set_next_(ent, next_) {
-	_ent_type_chk(ent, "node")
+	_ent_type_chk(ent, "^(node)$")
 	if (next_)
-		_ent_type_chk(next_, "node")
-	_ent_set(("next_=" ent), next_)
+		_ent_type_chk(next_, "^(node)$")
+	_ent_set((ent ".next_"), next_)
 }
 function ent_node_get_next_(ent) {
-	_ent_type_chk(ent, "node")
-	return _ent_get(("next_=" ent))
+	_ent_type_chk(ent, "^(node)$")
+	return _ent_get((ent ".next_"))
 }
 
 # <\type-node>

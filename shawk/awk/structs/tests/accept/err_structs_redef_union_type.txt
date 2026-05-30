@@ -1,0 +1,1 @@
+structs.awk: error: name 'bar' defined as both an union and a type

@@ -1,0 +1,4 @@
+structs.awk: error: multiple occurrences of name 'type_c'
+first union: uB
+last  union: uC
+path: uC

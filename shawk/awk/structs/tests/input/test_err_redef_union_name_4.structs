@@ -1,0 +1,9 @@
+start
+
+type type_a
+has x
+
+union uA
+name uA
+
+end

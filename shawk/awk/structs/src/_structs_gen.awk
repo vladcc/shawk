@@ -12,10 +12,12 @@ return \
 function DESCRIPT_FSM() {
 return \
 "fsm rules:\n"\
-"start  -> prefix | type\n"\
-"prefix -> type\n"\
+"start  -> prefix | type | union\n"\
+"prefix -> type | union\n"\
 "type   -> has\n"\
-"has    -> has | type | end\n"\
+"has    -> has  | type | union | end\n"\
+"union  -> name\n"\
+"name   -> name | type | union | end\n"\
 "end    -> start\n"\
 "\n"\
 "'->' is read as 'must be followed by'\n"\
@@ -29,10 +31,9 @@ function DESCRIPT() {
 # <other>
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2024-08-06
 
 function SCRIPT_NAME() {return "structs.awk"}
-function SCRIPT_VERSION() {return "1.4"}
+function SCRIPT_VERSION() {return "2.0"}
 
 # <awk_rules>
 function init() {
@@ -71,10 +72,14 @@ function error_qfpos(msg) {
 # </other>
 
 # <templated>
-# 'prefix|type'
+# 'prefix|type|union|name'
 function on_prefix(v) {prefix_save(v)}
 
 function on_type(v) {type_save(v)}
+
+function on_union(v) {union_save(v)}
+
+function on_name(v) {name_save(v)}
 
 # 'has'
 function on_has(memb, type) {has_save(memb, type)}
@@ -97,12 +102,20 @@ function fsm_on_has() {
 	data_or_err()
 	on_has($2, $3)
 }
+function fsm_on_union() {
+	data_or_err()
+	on_union($2)
+}
+function fsm_on_name() {
+	data_or_err()
+	on_name($2)
+}
 function fsm_on_end() {
 	generate()
 	exit_success()
 }
 function fsm_on_error(curr_st, expected, got) {
-	error_qfpos(sprintf("'%s' expected, but got '%s' instead", expected, got))
+	error_qfpos(sprintf("expected '%s', got '%s'", expected, got))
 }
 # </handlers>
 
@@ -111,6 +124,8 @@ function FSM_START() {return "start"}
 function FSM_PREFIX() {return "prefix"}
 function FSM_TYPE() {return "type"}
 function FSM_HAS() {return "has"}
+function FSM_UNION() {return "union"}
+function FSM_NAME() {return "name"}
 function FSM_END() {return "end"}
 function _FSM_STATE() {return "state"}
 # </constants>
@@ -132,14 +147,18 @@ function fsm_next(fsm, next_st,    _st) {
 		{fsm_on_prefix(); _fsm_set_state(fsm, next_st)}
 		else if (FSM_TYPE() == next_st)
 		{fsm_on_type(); _fsm_set_state(fsm, next_st)}
+		else if (FSM_UNION() == next_st)
+		{fsm_on_union(); _fsm_set_state(fsm, next_st)}
 		else
-		{fsm_on_error(_st, FSM_PREFIX()"|"FSM_TYPE(), next_st)}
+		{fsm_on_error(_st, FSM_PREFIX()"|"FSM_TYPE()"|"FSM_UNION(), next_st)}
 	}
 	else if (FSM_PREFIX() == _st) {
 		if (FSM_TYPE() == next_st)
 		{fsm_on_type(); _fsm_set_state(fsm, next_st)}
+		else if (FSM_UNION() == next_st)
+		{fsm_on_union(); _fsm_set_state(fsm, next_st)}
 		else
-		{fsm_on_error(_st, FSM_TYPE(), next_st)}
+		{fsm_on_error(_st, FSM_TYPE()"|"FSM_UNION(), next_st)}
 	}
 	else if (FSM_TYPE() == _st) {
 		if (FSM_HAS() == next_st)
@@ -152,10 +171,30 @@ function fsm_next(fsm, next_st,    _st) {
 		{fsm_on_has(); _fsm_set_state(fsm, next_st)}
 		else if (FSM_TYPE() == next_st)
 		{fsm_on_type(); _fsm_set_state(fsm, next_st)}
+		else if (FSM_UNION() == next_st)
+		{fsm_on_union(); _fsm_set_state(fsm, next_st)}
 		else if (FSM_END() == next_st)
 		{fsm_on_end(); _fsm_set_state(fsm, next_st)}
 		else
-		{fsm_on_error(_st, FSM_HAS()"|"FSM_TYPE()"|"FSM_END(), next_st)}
+		{fsm_on_error(_st, FSM_HAS()"|"FSM_TYPE()"|"FSM_UNION()"|"FSM_END(), next_st)}
+	}
+	else if (FSM_UNION() == _st) {
+		if (FSM_NAME() == next_st)
+		{fsm_on_name(); _fsm_set_state(fsm, next_st)}
+		else
+		{fsm_on_error(_st, FSM_NAME(), next_st)}
+	}
+	else if (FSM_NAME() == _st) {
+		if (FSM_NAME() == next_st)
+		{fsm_on_name(); _fsm_set_state(fsm, next_st)}
+		else if (FSM_TYPE() == next_st)
+		{fsm_on_type(); _fsm_set_state(fsm, next_st)}
+		else if (FSM_UNION() == next_st)
+		{fsm_on_union(); _fsm_set_state(fsm, next_st)}
+		else if (FSM_END() == next_st)
+		{fsm_on_end(); _fsm_set_state(fsm, next_st)}
+		else
+		{fsm_on_error(_st, FSM_NAME()"|"FSM_TYPE()"|"FSM_UNION()"|"FSM_END(), next_st)}
 	}
 	else if (FSM_END() == _st) {
 		if (FSM_START() == next_st)

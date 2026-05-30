@@ -1,0 +1,12 @@
+start
+
+type foo
+has x
+
+type bar
+has y
+
+type foo
+has z
+
+end

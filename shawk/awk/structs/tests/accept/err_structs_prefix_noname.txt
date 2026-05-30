@@ -1,0 +1,1 @@
+structs.awk: error: file './input/test_err_prefix_nodata.structs' line 3: no data after 'prefix'

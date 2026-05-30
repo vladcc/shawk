@@ -6,10 +6,12 @@
 @END
 
 @FSM fsm
-	start  -> prefix | type
-	prefix -> type
+	start  -> prefix | type | union
+	prefix -> type | union
 	type   -> has
-	has    -> has | type | end
+	has    -> has  | type | union | end
+	union  -> name
+	name   -> name | type | union | end
 	end    -> start
 @END
 
@@ -17,7 +19,7 @@
 	prefix_save("ent")
 @END
 
-@HANDLER prefix|type
+@HANDLER prefix|type|union|name
 	data_or_err()
 	on_{&}($2)
 @END
@@ -33,10 +35,10 @@
 @END
 
 @HANDLER error
-	error_qfpos(sprintf("'%s' expected, but got '%s' instead", expected, got))
+	error_qfpos(sprintf("expected '%s', got '%s'", expected, got))
 @END
 
-@TEMPLATE prefix|type
+@TEMPLATE prefix|type|union|name
 function on_{&}(v) {{&}_save(v)}
 @END
 
@@ -47,10 +49,9 @@ function on_{&}(memb, type) {{&}_save(memb, type)}
 @OTHER
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2024-08-06
 
 function SCRIPT_NAME() {return "structs.awk"}
-function SCRIPT_VERSION() {return "1.4"}
+function SCRIPT_VERSION() {return "2.0"}
 
 # <awk_rules>
 function init() {

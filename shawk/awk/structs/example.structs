@@ -2,13 +2,24 @@ start
 
 prefix ast
 
-type foo
-has bar
-has baz
+type uint
+has  val
 
-type btree
-has data
-has left  btree
-has right btree
+type int
+has  val
+
+type double
+has  val
+
+union u_signed
+name  int
+name  double
+
+union u_number
+name  uint
+name  u_signed
+
+type number
+has node u_number
 
 end

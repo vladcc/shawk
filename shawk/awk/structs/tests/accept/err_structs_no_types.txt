@@ -1,0 +1,1 @@
+structs.awk: error: no defined types

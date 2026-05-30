@@ -19,12 +19,23 @@ function run_structs
 function run_main
 {
 	bt_eval cleanup
-	bt_eval run "-f ./test.awk -f ./main.awk $*"
+	bt_eval run "-f ./compiled/test.awk -f ./compiled/main.awk $*"
 }
 function run_main_pref
 {
 	bt_eval cleanup
-	bt_eval run "-f ./test-pref.awk -f ./main-pref.awk $*"
+	bt_eval run "-f ./compiled/test-pref.awk -f ./compiled/main-pref.awk $*"
+}
+function run_main_unions
+{
+	bt_eval cleanup
+	bt_eval run "-f ./compiled/test-unions.awk -f ./compiled/main-unions.awk $*"
+}
+function run_main_unions_pref
+{
+	bt_eval cleanup
+	bt_eval run \
+	"-f ./compiled/test-unions-pref.awk -f ./compiled/main-unions-pref.awk $*"
 }
 # </run>
 
@@ -64,7 +75,16 @@ function test_fsm
 	bt_assert_success
 	diff_stdout "fsm.txt"
 }
-function test_err_files
+function test_opts
+{
+	bt_eval test_ver
+	bt_eval test_help
+	bt_eval test_fsm
+}
+# </options>
+
+# <bad_input>
+function test_bad_input
 {
 	run_structs ""
 	bt_assert_failure
@@ -73,29 +93,83 @@ function test_err_files
 	run_structs "foo bar"
 	bt_assert_failure
 	diff_stderr "err_files.txt"
-}
-function test_err_structs
-{
-	run_structs "./test.err.structs"
+
+	run_structs "./input/test_err_no_types.structs"
 	bt_assert_failure
-	diff_stderr "err_structs.txt"
+	diff_stderr "err_structs_no_types.txt"
+
+	run_structs "./input/test_err_undef_in_type.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_undef_in_type.txt"
+
+	run_structs "./input/test_err_undef_in_union.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_undef_in_union.txt"
+
+	run_structs "./input/test_err_redef_type.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_redef_type.txt"
+
+	run_structs "./input/test_err_redef_type_memb.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_redef_type_memb.txt"
+
+	run_structs "./input/test_err_redef_union_type.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_redef_union_type.txt"
+
+	run_structs "./input/test_err_redef_union.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_redef_union.txt"
+
+	run_structs "./input/test_err_redef_union_name_1.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_redef_union_name_1.txt"
+
+	run_structs "./input/test_err_redef_union_name_2.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_redef_union_name_2.txt"
+
+	run_structs "./input/test_err_redef_union_name_3.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_redef_union_name_3.txt"
+
+	run_structs "./input/test_err_redef_union_name_4.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_redef_union_name_4.txt"
+
+	run_structs "./input/test_err_redef_union_name_5.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_redef_union_name_5.txt"
+
+	run_structs "./input/test_err_prefix_nodata.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_prefix_noname.txt"
+
+	run_structs "./input/test_err_type_nodata.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_type_noname.txt"
+
+	run_structs "./input/test_err_union_nodata.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_union_noname.txt"
+
+	run_structs "./input/test_err_union_rec_ref_1.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_union_rec_ref_1.txt"
+
+	run_structs "./input/test_err_union_rec_ref_2.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_union_rec_ref_2.txt"
 }
-function test_opts
-{
-	bt_eval test_ver
-	bt_eval test_help
-	bt_eval test_fsm
-	bt_eval test_err_files
-	bt_eval test_err_structs
-}
-# </options>
+# </bad_input>
 
 # <runs>
 function test_runs
 {
-	run_structs "./test.structs"
+	run_structs "./input/test.structs"
 	bt_assert_success
-	bt_eval "cp $G_STDOUT test.awk"
+	bt_eval "cp $G_STDOUT compiled/test.awk"
 
 	run_main "-vOk=1"
 	bt_assert_success
@@ -124,9 +198,9 @@ function test_runs
 }
 function test_runs_prefix
 {
-	run_structs "./test.pref.structs"
+	run_structs "./input/test_pref.structs"
 	bt_assert_success
-	bt_eval "cp $G_STDOUT test-pref.awk"
+	bt_eval "cp $G_STDOUT ./compiled/test-pref.awk"
 
 	run_main_pref "-vOk=1"
 	bt_assert_success
@@ -153,13 +227,82 @@ function test_runs_prefix
 	diff_stdout "main_gen_ind_stdout_pref.txt"
 	diff_stderr "main_gen_ind_stderr_pref.txt"
 }
+function test_runs_unions
+{
+	run_structs "./input/test_unions.structs"
+	bt_assert_success
+	bt_eval "cp $G_STDOUT ./compiled/test-unions.awk"
+
+	run_main_unions "-vOk=1"
+	bt_assert_success
+
+	run_main_unions "-vNoEnt=1"
+	bt_assert_failure
+	diff_stderr "main_union_no_ent_1.txt"
+
+	run_main_unions "-vNoEnt=2"
+	bt_assert_failure
+	diff_stderr "main_union_no_ent_2.txt"
+
+	run_main_unions "-vNoEnt=3"
+	bt_assert_failure
+	diff_stderr "main_union_no_ent_3.txt"
+
+	run_main_unions "-vBadEnt=1"
+	bt_assert_failure
+	diff_stderr "main_union_bad_ent_1.txt"
+
+	run_main_unions "-vBadEnt=2"
+	bt_assert_failure
+	diff_stderr "main_union_bad_ent_2.txt"
+
+	run_main_unions "-vBadType=1"
+	bt_assert_failure
+	diff_stderr "main_union_bad_type.txt"
+}
+function test_runs_unions_pref
+{
+	run_structs "./input/test_unions_pref.structs"
+	bt_assert_success
+	bt_eval "cp $G_STDOUT ./compiled/test-unions-pref.awk"
+
+	run_main_unions_pref "-vOk=1"
+	bt_assert_success
+
+	run_main_unions_pref "-vNoEnt=1"
+	bt_assert_failure
+	diff_stderr "main_union_pref_no_ent_1.txt"
+
+	run_main_unions_pref "-vNoEnt=2"
+	bt_assert_failure
+	diff_stderr "main_union_pref_no_ent_2.txt"
+
+	run_main_unions_pref "-vNoEnt=3"
+	bt_assert_failure
+	diff_stderr "main_union_pref_no_ent_3.txt"
+
+	run_main_unions_pref "-vBadEnt=1"
+	bt_assert_failure
+	diff_stderr "main_union_pref_bad_ent_1.txt"
+
+	run_main_unions_pref "-vBadEnt=2"
+	bt_assert_failure
+	diff_stderr "main_union_pref_bad_ent_2.txt"
+
+	run_main_unions_pref "-vBadType=1"
+	bt_assert_failure
+	diff_stderr "main_union_pref_bad_type.txt"
+}
 # </runs>
 
 function test_all
 {
 	bt_eval test_opts
+	bt_eval test_bad_input
 	bt_eval test_runs
     bt_eval test_runs_prefix
+	bt_eval test_runs_unions
+	bt_eval test_runs_unions_pref
 	bt_eval cleanup
 }
 # </tests>

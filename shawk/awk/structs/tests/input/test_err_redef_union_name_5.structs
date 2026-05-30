@@ -1,0 +1,18 @@
+start
+
+type type_a
+has x
+
+union uA
+name uB
+
+union uB
+name uC
+
+union uC
+name uD
+
+union uD
+name uB
+
+end

@@ -1,0 +1,15 @@
+start
+
+union baz
+name foo
+
+union baz
+name bar
+
+type foo
+has x
+
+type bar
+has y
+
+end

@@ -1,3 +1,14 @@
+2026-05-31
+	structs.awk 2.0
+	unions of type names introduced
+	check for union redefinition implemented
+	check for name uniqueness in union implemented
+	check for recursive union reference implemented
+	check for no defined types implemented
+	check for type redefinition implemented
+	check for member uniqueness in type implemented
+	output comments display both unions and types
+
 2026-04-27
 	structs.awk 1.4
 	updated to smpg.awk 2.1

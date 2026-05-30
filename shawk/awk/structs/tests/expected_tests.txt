@@ -1,9 +1,10 @@
 test_all
-test_opts
-test_ver
-test_help
+test_bad_input
 test_fsm
-test_err_files
-test_err_structs
+test_help
+test_opts
 test_runs
 test_runs_prefix
+test_runs_unions
+test_runs_unions_pref
+test_ver

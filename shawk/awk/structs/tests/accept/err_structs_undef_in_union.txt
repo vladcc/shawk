@@ -1,0 +1,1 @@
+structs.awk: error: union 'foo': name 'bar' does not name a type nor an union

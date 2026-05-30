@@ -1,0 +1,1 @@
+error: entity '_ast-0-2': expected type match '^(type_d|type_a|type_b|type_c)$', entity type 'type_no'

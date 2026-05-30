@@ -1,0 +1,1 @@
+structs.awk: error: type 'node', member 'next_': 'foo' does not name a type nor an union

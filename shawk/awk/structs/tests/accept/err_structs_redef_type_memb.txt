@@ -1,0 +1,1 @@
+structs.awk: error: type 'foo': member 'x' defined more than once

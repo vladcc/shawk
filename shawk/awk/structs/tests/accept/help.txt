@@ -4,9 +4,9 @@ Use: structs.awk <structs-file>
 
 Compiles type descriptions into a type system in awk. 'Compiles in awk'
 means it generates awk source code for setters/getters for each type's
-members, along with facilities to create an entity of a certain type, check
-its type, and a table to remember what values all type variables have. For
-an example use the following as an input file:
+members, along with functions to create a variable of a certain type,
+check its type, and a table to remember what values all its members
+have. For a starter example use the following as an input file:
 
 start
 type btree
@@ -15,7 +15,46 @@ has  left  btree
 has  right btree
 end
 
+Unions of type names and prefixing are supported. Unions can refer to
+other unions. E.g. in
+
+start
+
+prefix ast
+
+type uint
+has  val
+
+type int
+has  val
+
+type double
+has  val
+
+union u_signed
+name  int
+name  double
+
+union u_number
+name  uint
+name  u_signed
+
+type number
+has node u_number
+
+end
+
+member 'node' in a variable of type 'number' can be of either type uint,
+int, or double. To set 'node' to a variable of any other type will be an
+error. Because of the prefix option, all generated function names will
+be prefixed by 'ast_', e.g.
+ast_number_make(), ast_number_set_node(), ast_number_get_node() etc.
+The default prefix is 'ent_'
+
+The user must define an error function which the generated code can call.
+In the prefixed example the function looks like: ast_errq(msg)
+
 Options:
--vFsm=1     - print the fsm 'grammar'
+-vFsm=1     - print the fsm grammar
 -vVersion=1 - version information
 -vHelp=1    - this screen

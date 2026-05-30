@@ -1,0 +1,4 @@
+structs.awk: error: multiple occurrences of name 'baz'
+first union: foo
+last  union: foo
+path: foo

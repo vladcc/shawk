@@ -19,7 +19,6 @@ PERF_TESTS := $(TEST_DIR)/performed_tests.txt
 EXP_TESTS  := $(TEST_DIR)/expected_tests.txt
 RUN_TESTS  := $(TEST_DIR)/run-tests.sh
 RUN_TESTSV := $(RUN_TESTS) x
-RUN_SURE   := $(RUN_TESTSV) > $(PERF_TESTS) && grep -E '^test_[^ ]+' $(PERF_TESTS) | diff /dev/stdin $(EXP_TESTS)
 # </tests>
 
 .PHONY: all
@@ -33,10 +32,10 @@ build: structs
 
 .PHONY: structs
 structs: structs.awk
-structs.awk: src/_structs.awk src/_gen.awk src/_doc.awk
+structs.awk: src/_structs_gen.awk src/_structs_usr.awk src/_doc.awk
 	cat $^ > $@ && chmod +x $@
 
-src/_structs.awk: structs.smpg
+src/_structs_gen.awk: structs.smpg
 	$(SMPG) $^ > $@
 
 .PHONY: test
@@ -49,4 +48,5 @@ testv:
 
 .PHONY: sure
 sure:
-	$(RUN_SURE)
+	$(RUN_TESTSV) | grep '^test_' | sort -u > $(PERF_TESTS)
+	diff $(PERF_TESTS) $(EXP_TESTS)

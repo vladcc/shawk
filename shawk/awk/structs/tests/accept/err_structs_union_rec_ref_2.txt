@@ -1,0 +1,1 @@
+structs.awk: error: recursive reference of unions: uA -> uB -> uC-> uA 

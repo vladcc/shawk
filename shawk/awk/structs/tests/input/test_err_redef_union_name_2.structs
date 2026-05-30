@@ -1,0 +1,24 @@
+start
+
+union uA
+name type_a
+name type_b
+
+type type_a
+has x
+
+union uB
+name uA
+name type_c
+
+type type_b
+has x
+
+union uC
+name uB
+name type_c
+
+type type_c
+has x
+
+end

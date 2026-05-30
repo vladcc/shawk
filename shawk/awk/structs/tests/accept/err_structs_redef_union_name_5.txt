@@ -1,0 +1,4 @@
+structs.awk: error: multiple occurrences of name 'uB'
+first union: uA
+last  union: uD
+path: uA -> uB -> uC -> uD
