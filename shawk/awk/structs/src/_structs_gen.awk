@@ -32,8 +32,8 @@ function DESCRIPT() {
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
 
-function SCRIPT_NAME() {return "structs.awk"}
-function SCRIPT_VERSION() {return "2.0"}
+function SCRIPT_NAME()    {return "structs.awk"}
+function SCRIPT_VERSION() {return "2.1"}
 
 # <awk_rules>
 function init() {
@@ -48,6 +48,15 @@ function init() {
 	if (ARGC != 2)
 		print_use_try()
 }
+
+function leave() {
+	if (!should_skip_end()) {
+		fsm_get_state(G_the_fsm)
+		if (fsm_get_state(G_the_fsm) != FSM_END())
+			fsm_on_error("", FSM_END(), fsm_get_state(G_the_fsm))
+	}
+}
+
 BEGIN {
 	init()
 }
@@ -59,6 +68,10 @@ BEGIN {
 {
 	gsub("^[[:space:]]+|[[:space:]]+$", "", $0)
 	fsm_next(G_the_fsm, $1)
+}
+
+END {
+	leave()
 }
 # </awk_rules>
 

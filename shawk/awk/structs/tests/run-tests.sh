@@ -94,6 +94,10 @@ function test_bad_input
 	bt_assert_failure
 	diff_stderr "err_files.txt"
 
+	run_structs "./input/test_err_no_end.structs"
+	bt_assert_failure
+	diff_stderr "err_structs_no_end.txt"
+
 	run_structs "./input/test_err_no_types.structs"
 	bt_assert_failure
 	diff_stderr "err_structs_no_types.txt"

@@ -67,13 +67,15 @@ function print_fsm() {
 	exit_success()
 }
 function print_version() {
-print sprintf("%s %s", SCRIPT_NAME(), SCRIPT_VERSION())
-exit_success()
+	print sprintf("%s %s", SCRIPT_NAME(), SCRIPT_VERSION())
+	exit_success()
 }
-function use_str() {return sprintf("Use: %s <structs-file>", SCRIPT_NAME())}
+function use_str() {
+	return sprintf("Use: %s <structs-file>", SCRIPT_NAME())
+}
 function print_use_try() {
-pstderr(use_str())
-pstderr(sprintf("Try: %s -vHelp=1", SCRIPT_NAME()))
-exit_failure()
+	pstderr(use_str())
+	pstderr(sprintf("Try: %s -vHelp=1", SCRIPT_NAME()))
+	exit_failure()
 }
 # </doc>

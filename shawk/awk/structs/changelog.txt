@@ -1,4 +1,9 @@
 2026-05-31
+	structs.awk 2.1
+	check for end state before exit implemented
+	version printed in header comment
+
+2026-05-31
 	structs.awk 2.0
 	unions of type names introduced
 	check for union redefinition implemented

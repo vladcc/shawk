@@ -2,24 +2,44 @@ start
 
 prefix ast
 
-type uint
+# <number_types>
+type UINT
 has  val
 
-type int
+type INT
 has  val
 
-type double
+type DOUBLE
 has  val
+# </number_types>
 
-union u_signed
-name  int
-name  double
 
-union u_number
-name  uint
-name  u_signed
+# <number_node>
+union u_SIGNED
+name  INT
+name  DOUBLE
 
-type number
-has node u_number
+union u_NUM
+name  UINT
+name  u_SIGNED
+
+type NUMBER
+has node u_NUM
+# </number_node>
+
+
+type EXPR_OP
+has op
+
+# <expr_tree>
+union u_OP_NUM
+name EXPR_OP
+name NUMBER
+
+type EXPR_TREE
+has data  u_OP_NUM
+has left  EXPR_TREE
+has right EXPR_TREE
+# </expr_tree>
 
 end
