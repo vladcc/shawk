@@ -2,21 +2,209 @@
 
 function lex_usr_handle_slash() {}
 
+function __lex_assert(expr, which) {
+	if (!expr)
+		__lex_error_quit(sprintf("assertion %s failed", which))
+}
+
+function __lex_do_peek_n_back(    _a) {
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 1, ++_a)
+	__lex_assert(lex_curr_ch() == "f", ++_a)
+	__lex_assert(lex_peek_ch() == "o", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == "_", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "b", ++_a)
+
+	lex_back_pos()
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 1, ++_a)
+	__lex_assert(lex_curr_ch() == "f", ++_a)
+	__lex_assert(lex_peek_ch() == "o", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == "_", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "b", ++_a)
+	__lex_assert(lex_peek_ch_n(-1000) == "", ++_a)
+	__lex_assert(lex_peek_ch_n(1000) == "", ++_a)
+
+	lex_back_pos()
+	lex_back_pos()
+	lex_back_pos()
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 1, ++_a)
+	__lex_assert(lex_curr_ch() == "f", ++_a)
+	__lex_assert(lex_peek_ch() == "o", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == "_", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "b", ++_a)
+
+	__lex_assert(lex_read_ch() == "o", ++_a)
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 2, ++_a)
+	__lex_assert(lex_curr_ch() == "o", ++_a)
+	__lex_assert(lex_peek_ch() == "_", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == "b", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "a", ++_a)
+
+	__lex_assert(lex_read_ch() == "_", ++_a)
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 3, ++_a)
+	__lex_assert(lex_curr_ch() == "_", ++_a)
+	__lex_assert(lex_peek_ch() == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == "b", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == "a", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "r", ++_a)
+
+	lex_back_pos()
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 2, ++_a)
+	__lex_assert(lex_curr_ch() == "o", ++_a)
+	__lex_assert(lex_peek_ch() == "_", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == "b", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "a", ++_a)
+
+	lex_back_pos()
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 1, ++_a)
+	__lex_assert(lex_curr_ch() == "f", ++_a)
+	__lex_assert(lex_peek_ch() == "o", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == "_", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "b", ++_a)
+
+	lex_back_pos()
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 1, ++_a)
+	__lex_assert(lex_curr_ch() == "f", ++_a)
+	__lex_assert(lex_peek_ch() == "o", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == "_", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "b", ++_a)
+
+	while (lex_peek_ch() != "\n")
+		lex_read_ch()
+
+	__lex_assert(lex_curr_ch() == "z", ++_a)
+	__lex_assert(lex_peek_ch() == "\n", ++_a)
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 11, ++_a)
+
+	lex_back_pos()
+	__lex_assert(lex_curr_ch() == "a", ++_a)
+	__lex_assert(lex_peek_ch() == "z", ++_a)
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 10, ++_a)
+
+	lex_read_ch()
+	__lex_assert(lex_curr_ch() == "z", ++_a)
+	__lex_assert(lex_peek_ch() == "\n", ++_a)
+	__lex_assert(lex_get_line_no() == 1, ++_a)
+	__lex_assert(lex_get_pos() == 11, ++_a)
+
+	lex_read_ch()
+	__lex_assert(lex_curr_ch() == "\n", ++_a)
+	__lex_assert(lex_peek_ch() == "", ++_a)
+	__lex_assert(lex_get_line_no() == 2, ++_a)
+	__lex_assert(lex_get_pos() == 0, ++_a)
+
+	lex_back_pos()
+	__lex_assert(lex_curr_ch() == "\n", ++_a)
+	__lex_assert(lex_peek_ch() == "", ++_a)
+	__lex_assert(lex_get_line_no() == 2, ++_a)
+	__lex_assert(lex_get_pos() == 0, ++_a)
+
+	lex_back_pos()
+	lex_back_pos()
+	lex_back_pos()
+	__lex_assert(lex_curr_ch() == "\n", ++_a)
+	__lex_assert(lex_peek_ch() == "", ++_a)
+	__lex_assert(lex_get_line_no() == 2, ++_a)
+	__lex_assert(lex_get_pos() == 0, ++_a)
+
+	lex_read_ch()
+	lex_read_ch()
+	lex_read_ch()
+	lex_read_ch()
+	lex_read_ch()
+
+	__lex_assert(lex_get_line_no() == 2, ++_a)
+	__lex_assert(lex_get_pos() == 5, ++_a)
+	__lex_assert(lex_curr_ch() == "B", ++_a)
+	__lex_assert(lex_peek_ch() == "A", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == "R", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "B", ++_a)
+
+	lex_back_pos()
+	__lex_assert(lex_get_line_no() == 2, ++_a)
+	__lex_assert(lex_get_pos() == 4, ++_a)
+	__lex_assert(lex_curr_ch() == " ", ++_a)
+	__lex_assert(lex_peek_ch() == "B", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == "A", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == "R", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == " ", ++_a)
+
+	lex_back_pos()
+	lex_back_pos()
+	lex_back_pos()
+	lex_back_pos()
+	lex_back_pos()
+	lex_back_pos()
+	lex_back_pos()
+	__lex_assert(lex_get_line_no() == 2, ++_a)
+	__lex_assert(lex_get_pos() == 1, ++_a)
+	__lex_assert(lex_curr_ch() == "F", ++_a)
+	__lex_assert(lex_peek_ch() == "O", ++_a)
+	__lex_assert(lex_peek_ch_n(0) == lex_curr_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(1) == lex_peek_ch(), ++_a)
+	__lex_assert(lex_peek_ch_n(2) == "_", ++_a)
+	__lex_assert(lex_peek_ch_n(3) == " ", ++_a)
+	__lex_assert(lex_peek_ch_n(4) == "B", ++_a)
+}
+
 function lex_usr_get_word() {
-	lex_save_init()
+	if (PeekBack) {
+		__lex_do_peek_n_back()
+		exit(0)
+	} else {
+		lex_save_init()
 
-	while (1) {
+		while (1) {
 
-		lex_save_curr_ch()
+			lex_save_curr_ch()
 
-		if (lex_is_next_ch_cls(G_CONST_ch_cls_word) ||
-			lex_is_next_ch_cls(G_CONST_ch_cls_num))
-			lex_read_ch()
-		else
-			break
+			if (lex_is_next_ch_cls(__lex_G_CONST_ch_cls_word) ||
+				lex_is_next_ch_cls(__lex_G_CONST_ch_cls_num))
+				lex_read_ch()
+			else
+				break
+		}
+
+		return ((!lex_is_saved_a_keyword()) \
+			? __lex_G_CONST_tok_id : lex_get_saved())
 	}
-
-	return ((!lex_is_saved_a_keyword()) ? G_CONST_tok_id : lex_get_saved())
 }
 
 function lex_usr_get_number() {
@@ -26,13 +214,13 @@ function lex_usr_get_number() {
 
 		lex_save_curr_ch()
 
-		if (lex_is_next_ch_cls(G_CONST_ch_cls_num))
+		if (lex_is_next_ch_cls(__lex_G_CONST_ch_cls_num))
 			lex_read_ch()
 		else
 			break
 	}
 
-	return G_CONST_tok_num
+	return __lex_G_CONST_tok_num
 }
 
 function lex_usr_on_unknown_ch() {
@@ -43,49 +231,51 @@ function lex_usr_on_unknown_ch() {
 
 function lex_usr_get_line() {
 
-	G_getline_code = (getline G_current_line < get_file_name())
+	__lex_G_getline_code = \
+		(getline __lex_G_current_line < __lex_get_file_name())
 
-	if (G_getline_code > 0) {
-		return (G_current_line "\n")
-	} else if (0 == G_getline_code) {
+	if (__lex_G_getline_code > 0) {
+		return (__lex_G_current_line "\n")
+	} else if (0 == __lex_G_getline_code) {
 		return ""
 	} else {
 		print sprintf("error: file '%s': %s",
-			get_file_name(), ERRNO) > "/dev/stderr"
+			__lex_get_file_name(), ERRNO) > "/dev/stderr"
 		exit(1)
 	}
 }
 
-function error_quit(msg) {
+function __lex_error_quit(msg) {
 	print sprintf("lex.awk: error: %s", msg) > "/dev/stderr"
 	exit(1)
 }
 
-function process(    _tok, _ccls, _ncls) {
+function __lex_process(    _tok, _ccls, _ncls) {
 
 	lex_init()
-	while ((_tok = lex_next()) != G_CONST_tok_eoi) {
-
+	while ((_tok = lex_next()) != __lex_G_CONST_tok_eoi) {
 		# code coverage
-		if (!lex_match_tok(lex_curr_tok()) || lex_match_tok(G_CONST_tok_eoi))
-			error_quit("token mismatch")
+		if (!lex_match_tok(lex_curr_tok()) ||
+			lex_match_tok(__lex_G_CONST_tok_eoi)) {
+			__lex_error_quit("token mismatch")
+		}
 
 		_ccls = lex_get_ch_cls(lex_curr_ch())
 		_ncls = lex_get_ch_cls(lex_peek_ch())
 
 		if (!lex_is_ch_cls(lex_curr_ch(), _ccls))
-			error_quit("class lookup is wrong")
+			__lex_error_quit("class lookup is wrong")
 
 		if (!lex_is_curr_ch_cls(_ccls))
-			error_quit("current char class mismatch")
+			__lex_error_quit("current char class mismatch")
 
 		if (!lex_is_next_ch_cls(_ncls))
-			error_quit("next char class mismatch")
+			__lex_error_quit("next char class mismatch")
 
-		if (G_CONST_tok_if == _tok && !lex_is_saved_a_keyword())
-			error_quit("keyword mismatch")
+		if (__lex_G_CONST_tok_if == _tok && !lex_is_saved_a_keyword())
+			__lex_error_quit("keyword mismatch")
 
-		if ((G_CONST_tok_id == _tok) || (G_CONST_tok_num == _tok)) {
+		if ((__lex_G_CONST_tok_id == _tok) || (__lex_G_CONST_tok_num == _tok)) {
 			print sprintf("'%s' '%s' line %d, pos %d",
 				lex_curr_tok(), lex_get_saved(),
 				lex_get_line_no(), lex_get_pos())
@@ -99,13 +289,13 @@ function process(    _tok, _ccls, _ncls) {
 	print sprintf("'%s'", TOK_FCALL())
 }
 
-function str_pos(    _tok, _txt, _pos) {
+function __lex_str_pos(    _tok, _txt, _pos) {
 	lex_init()
-	while ((_tok = lex_next()) != G_CONST_tok_eoi) {
+	while ((_tok = lex_next()) != __lex_G_CONST_tok_eoi) {
 
-		if ((G_CONST_tok_id == _tok) || (G_CONST_tok_num == _tok))
+		if ((__lex_G_CONST_tok_id == _tok) || (__lex_G_CONST_tok_num == _tok))
 			_txt = lex_get_saved()
-		else if (G_CONST_tok_err == _tok)
+		else if (__lex_G_CONST_tok_err == _tok)
 			_txt = "x" # single character
 		else
 			_txt = _tok
@@ -130,41 +320,48 @@ function str_pos(    _tok, _txt, _pos) {
 	print lex_get_pos_str()
 }
 
-function set_file_name(str) {_B_file_name = str ? str : "/dev/stdin"}
-function get_file_name() {return _B_file_name}
+function __lex_peek_n_back() {
+	lex_init()
+	lex_next()
+}
 
-function init() {
+function __lex_set_file_name(str) {_B_file_name = str ? str : "/dev/stdin"}
+function __lex_get_file_name() {return _B_file_name}
+
+function __lex_init() {
 	# global variables for performance
 	# avoids function calls and local variable creations
 
-	G_CONST_ch_cls_word = CH_CLS_WORD()
-	G_CONST_ch_cls_num = CH_CLS_NUMBER()
-	G_CONST_tok_if = TOK_IF()
-	G_CONST_tok_id = TOK_ID()
-	G_CONST_tok_num = TOK_NUMBER()
-	G_CONST_tok_eoi = TOK_EOI()
-	G_CONST_tok_err = TOK_ERROR()
-	G_current_line
-	G_getline_code
+	__lex_G_CONST_ch_cls_word = CH_CLS_WORD()
+	__lex_G_CONST_ch_cls_num = CH_CLS_NUMBER()
+	__lex_G_CONST_tok_if = TOK_IF()
+	__lex_G_CONST_tok_id = TOK_ID()
+	__lex_G_CONST_tok_num = TOK_NUMBER()
+	__lex_G_CONST_tok_eoi = TOK_EOI()
+	__lex_G_CONST_tok_err = TOK_ERROR()
+	__lex_G_current_line
+	__lex_G_getline_code
 }
 
-function main(    _i, _fname) {
+function __lex_main(    _i, _fname) {
 	if (ARGC > 1) {
 		for (_i = 1; _i < ARGC; ++_i) {
 			_fname = ARGV[_i]
 			ARGV[_i] = ""
 
-			set_file_name(_fname)
+			__lex_set_file_name(_fname)
 			if (StrPos)
-				str_pos()
+				__lex_str_pos()
+			else if (PeekBack)
+				__lex_peek_n_back()
 			else
-				process()
-			close(get_file_name())
+				__lex_process()
+			close(__lex_get_file_name())
 		}
 	}
 }
 
 BEGIN {
-	init()
-	main()
+	__lex_init()
+	__lex_main()
 }

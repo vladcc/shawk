@@ -32,14 +32,15 @@ function run_tests_state
 {
 	eval_success "$G_AWK -f ./awk/lex-state.awk -f ./awk/inc_lex.awk" \
 		"$(make_input_name str_pos)"
-	eval_success "$G_AWK -f ./awk/foo-lex-state.awk -f ./awk/foo_inc_lex.awk" \
+	eval_success "$G_AWK -f ./awk/foo-lex-state.awk -f ./awk/inc_foo_lex.awk" \
 		"$(make_input_name str_pos)"
 }
 
 function run_tests_together
 {
 	# confirms no redefined functions exist
-	eval_success "$G_AWK -f ./awk/inc_lex.awk -f ./awk/foo_inc_lex.awk"
+	eval_success "$G_AWK -f ./awk/lex.awk -f ./awk/inc_lex.awk" \
+		"-f ./awk/foo-lex.awk -f ./awk/inc_foo_lex.awk"
 
 	# test static variable names
 	local L_NUM_STATIC=""
@@ -53,12 +54,20 @@ function run_tests_together
 	eval_success "[ $L_NUM_STATIC -eq $L_NUM_NAMED ]"
 	eval_success "[ $L_NUM_NONE -eq 0 ]"
 
-	L_NUM_STATIC="$(grep -c _B_ ./awk/foo_inc_lex.awk)"
-	L_NUM_NAMED="$(grep _B_ ./awk/foo_inc_lex.awk | grep -c _B_foo_lex)"
-	L_NUM_NONE="$(grep _B_ ./awk/foo_inc_lex.awk | grep -vc _B_foo_lex)"
+	L_NUM_STATIC="$(grep -c _B_ ./awk/inc_foo_lex.awk)"
+	L_NUM_NAMED="$(grep _B_ ./awk/inc_foo_lex.awk | grep -c _B_foo_lex)"
+	L_NUM_NONE="$(grep _B_ ./awk/inc_foo_lex.awk | grep -vc _B_foo_lex)"
 	eval_success "[ $L_NUM_STATIC -gt 0 ]"
 	eval_success "[ $L_NUM_STATIC -eq $L_NUM_NAMED ]"
 	eval_success "[ $L_NUM_NONE -eq 0 ]"
+}
+
+function run_tests_peek_n_back
+{
+	eval_success "$G_AWK -f ./awk/lex.awk -vPeekBack=1 " \
+		"-f ./awk/inc_lex.awk $(make_input_name peek_n_back)"
+	eval_success "$G_AWK -f ./awk/foo-lex.awk -vPeekBack=1 " \
+		"-f ./awk/inc_foo_lex.awk $(make_input_name peek_n_back)"
 }
 
 function run_tests_on_multiple_files
@@ -103,12 +112,12 @@ function eval_success
 # <awk>
 function test_awk_ver
 {
-	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.8"
+	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.9"
 }
 function test_awk_run_test
 {
 	local L_LEX="$G_AWK -f ./awk/lex.awk -f ./awk/inc_lex.awk"
-	local L_LEX_PREF="$G_AWK -f ./awk/foo-lex.awk -f ./awk/foo_inc_lex.awk"
+	local L_LEX_PREF="$G_AWK -f ./awk/foo-lex.awk -f ./awk/inc_foo_lex.awk"
 
 	bt_eval run_tests_on_single_file "$L_LEX"
 	bt_eval run_tests_on_multiple_files "$L_LEX"
@@ -116,12 +125,13 @@ function test_awk_run_test
 	bt_eval run_tests_on_multiple_files "$L_LEX_PREF"
 
 	L_LEX="$G_AWK -f ./awk/lex.awk -vStrPos=1 -f ./awk/inc_lex.awk"
-	L_LEX_PREF="$G_AWK -f ./awk/foo-lex.awk -vStrPos=1 -f ./awk/foo_inc_lex.awk"
+	L_LEX_PREF="$G_AWK -f ./awk/foo-lex.awk -vStrPos=1 -f ./awk/inc_foo_lex.awk"
 	bt_eval run_tests_str_pos "$L_LEX"
 	bt_eval run_tests_str_pos "$L_LEX_PREF"
 
 	bt_eval run_tests_state
 	bt_eval run_tests_together
+	bt_eval run_tests_peek_n_back
 }
 function test_awk
 {

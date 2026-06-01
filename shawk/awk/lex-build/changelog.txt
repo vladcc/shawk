@@ -1,3 +1,7 @@
+2026-06-01
+	lex-awk.awk 1.9
+	lex_peek_n(n), lex_back_pos() introduced
+
 2026-04-25
 	lex-awk.awk 1.8
 	lex_state_(set|get)() added + tests

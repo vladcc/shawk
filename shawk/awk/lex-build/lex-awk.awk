@@ -2,7 +2,6 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2024-08-26
 
 # Generates a lexer in awk. It determines the next token by branching on the
 # character class of the current input character, and then branches on the next
@@ -11,7 +10,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.8"}
+function SCRIPT_VERSION() {return "1.9"}
 # </script>
 
 # <out_signature>
@@ -231,6 +230,31 @@ function out_lex_io() {
 	out_line()
 	out_line("# return the next character, but do not advance the input")
 	out_line(sprintf("%s()\n{return %s}", fdecl("peek_ch"), VAR_PEEK_CH()))
+	out_line()
+	out_line("# return the character at position pos characters away")
+	out_line("# return \"\" if pos is out of bounds")
+	out_line(sprintf("%s(pos) {", fdecl("peek_ch_n")))
+	tabs_inc()
+	out_line(sprintf("pos += (%s-1)", VAR_LINE_POS()))
+	out_line(sprintf("return (pos in %s) ? %s[pos] : \"\"",
+		VAR_INPUT_LINE(), VAR_INPUT_LINE()))
+	tabs_dec()
+	out_line("}")
+	out_line()
+	out_line("# go one character back; if at the first character on the line, "\
+		"do nothing")
+	out_line(sprintf("%s() {", fdecl("back_pos")))
+	tabs_inc()
+	out_line(sprintf("if (%s > 2) {", VAR_LINE_POS()))
+	tabs_inc()
+	out_line(sprintf("%s = %s[--%s]",
+		VAR_PEEK_CH(), VAR_INPUT_LINE(), VAR_LINE_POS()))
+	out_line(sprintf("%s = %s[%s-1]",
+		VAR_CURR_CH(), VAR_INPUT_LINE(), VAR_LINE_POS()))
+	tabs_dec()
+	out_line("}")
+	tabs_dec()
+	out_line("}")
 	out_line()
 	out_line("# return the position in the current line of input")
 	out_line(sprintf("%s()\n{return (%s-1)}", fdecl("get_pos"), VAR_LINE_POS()))

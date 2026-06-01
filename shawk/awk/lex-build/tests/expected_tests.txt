@@ -1,0 +1,37 @@
+run_tests_on_multiple_files awk -f ./awk/foo-lex.awk -f ./awk/inc_foo_lex.awk
+run_tests_on_multiple_files awk -f ./awk/lex.awk -f ./awk/inc_lex.awk
+run_tests_on_multiple_files ./foo_lex_bsearch0.bin
+run_tests_on_multiple_files ./foo_lex_bsearch3.bin
+run_tests_on_multiple_files ./foo_lex_ifs0.bin
+run_tests_on_multiple_files ./foo_lex_ifs3.bin
+run_tests_on_multiple_files ./lex_bsearch0.bin
+run_tests_on_multiple_files ./lex_bsearch3.bin
+run_tests_on_multiple_files ./lex_ifs0.bin
+run_tests_on_multiple_files ./lex_ifs3.bin
+run_tests_on_single_file awk -f ./awk/foo-lex.awk -f ./awk/inc_foo_lex.awk
+run_tests_on_single_file awk -f ./awk/lex.awk -f ./awk/inc_lex.awk
+run_tests_on_single_file ./foo_lex_bsearch0.bin
+run_tests_on_single_file ./foo_lex_bsearch3.bin
+run_tests_on_single_file ./foo_lex_ifs0.bin
+run_tests_on_single_file ./foo_lex_ifs3.bin
+run_tests_on_single_file ./lex_bsearch0.bin
+run_tests_on_single_file ./lex_bsearch3.bin
+run_tests_on_single_file ./lex_ifs0.bin
+run_tests_on_single_file ./lex_ifs3.bin
+run_tests_peek_n_back
+run_tests_state
+run_tests_str_pos awk -f ./awk/foo-lex.awk -vStrPos=1 -f ./awk/inc_foo_lex.awk
+run_tests_str_pos awk -f ./awk/lex.awk -vStrPos=1 -f ./awk/inc_lex.awk
+run_tests_together
+test_all #fcall
+test_awk #fcall
+test_awk_run_test #fcall
+test_awk_ver #fcall
+test_c_clean #fcall
+test_c_compile_lex #fcall
+test_c #fcall
+test_c_kw_len #fcall
+test_c_run_tests #fcall
+test_c_ver #fcall
+test_lex_first_ver #fcall
+test_versions #fcall

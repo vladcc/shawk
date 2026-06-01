@@ -35,7 +35,7 @@ function generate_awk
 	$G_AWK -f ../lex-awk.awk > ./awk/inc_lex.awk
 
 	$G_AWK -f ../lex-first.awk input.lb |
-	$G_AWK -f ../lex-awk.awk -vNamePrefix="foo_" > ./awk/foo_inc_lex.awk
+	$G_AWK -f ../lex-awk.awk -vNamePrefix="foo_" > ./awk/inc_foo_lex.awk
 }
 
 main "$@"

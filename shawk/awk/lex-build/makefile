@@ -18,6 +18,7 @@ ALL = lib lex-first lex-c lex-awk
 .PHONY: help
 help:
 	@echo 'make all       - lib + lex-* + test'
+	@echo 'make sure      - testv + make sure all run'
 	@echo 'make test      - run tests'
 	@echo 'make testv     - like test but verbose'
 	@echo 'make lib       - generates the lex-build library'
@@ -41,6 +42,12 @@ test:
 .PHONY: testv
 testv:
 	bash tests/run-tests.sh x
+
+.PHONY: sure
+sure:
+	bash ./tests/run-tests.sh x | grep -E '^(run_test|test_)' | sort \
+		> ./tests/performed_tests.txt
+	diff ./tests/performed_tests.txt ./tests/expected_tests.txt
 
 .PHONY: clean
 clean:
