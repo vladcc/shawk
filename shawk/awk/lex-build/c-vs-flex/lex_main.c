@@ -23,11 +23,12 @@ void init_tbl(char * tbl)
 	}
 }
 
-const char * lex_usr_get_input(void * arg)
+const char * lex_usr_get_input(void * arg, size_t * len)
 {
 	char * buff = (char *)arg;
 	int read = fread(buff, 1, BUFF_SZ, stdin);
 	buff[read] = '\0';
+	*len = read;
 	return buff;
 }
 
@@ -65,7 +66,7 @@ tok_id lex_usr_get_number(lex_state * lex)
 	}
 
 	lex_save_end(lex);
-	
+
 	return NUM;
 }
 
@@ -85,7 +86,7 @@ static void output(lex_state * lex)
 
 	while (lex_next(lex) != TOK_EOI)
 		printf("%s\n", lex_tok_to_str(lex_get_curr_tok(lex)));
-    
+
     end = clock();
     time = (double)(end - begin) / CLOCKS_PER_SEC;
     fprintf(stderr, "%f sec\n", time);
@@ -97,10 +98,10 @@ static void silent(lex_state * lex)
     double time;
 
     begin = clock();
-    
+
     while (lex_next(lex) != TOK_EOI)
         continue;
-    
+
     end = clock();
     time = (double)(end - begin) / CLOCKS_PER_SEC;
     printf("%f sec\n", time);
@@ -122,7 +123,7 @@ int main(int argc, char * argv[])
 			return -1;
 		}
 	}
-	
+
 	lex_init_info info = {
 		.usr_arg = file_buff,
 		.write_buff = tok_buff,
@@ -136,6 +137,6 @@ int main(int argc, char * argv[])
         output(lex);
     else
 		silent(lex);
-	
+
 	return 0;
 }

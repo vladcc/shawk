@@ -22,7 +22,7 @@ static void init_lex(lex_state * lex, char *** usr_arg)
 		.write_buff = g_save,
 		.write_buff_len = BUFF_SZ
 	};
-	
+
 	lex_init(lex, &info);
 }
 
@@ -31,19 +31,19 @@ static bool test_lex(void)
 	static char input[] = "= <= ==!456 foo===while \n whilex123_z if &";
 	char * str = input;
 	char ** pinput = &str;
-	
+
 	lex_state lex_, * lex = &lex_;
 	init_lex(lex, &pinput);
 
 	static char unknown[] = "@"; // second line of input
 	str = unknown;
-	
+
 	check(TOK_EQ == lex_next(lex));
 	check(TOK_EQ == lex_get_curr_tok(lex));
 	check('=' == lex_get_curr_ch(lex));
 	check(' ' == lex_peek_ch(lex));
-	check(1 == lex_get_input_pos(lex));
-	check(1 == lex_get_input_line_no(lex));
+	check(1 == lex_get_input_line_pos(lex));
+	check(1 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "=") == 0);
 	check(lex_match(lex, TOK_EQ));
 	check(!lex_match(lex, TOK_ERROR));
@@ -52,17 +52,17 @@ static bool test_lex(void)
 	check(TOK_LEQ == lex_get_curr_tok(lex));
 	check('=' == lex_get_curr_ch(lex));
 	check(' ' == lex_peek_ch(lex));
-	check(4 == lex_get_input_pos(lex));
-	check(1 == lex_get_input_line_no(lex));
+	check(4 == lex_get_input_line_pos(lex));
+	check(1 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "<=") == 0);
 	check(lex_match(lex, TOK_LEQ));
-	
+
 	check(TOK_NEQEQEQ == lex_next(lex));
 	check(TOK_NEQEQEQ == lex_get_curr_tok(lex));
 	check('!' == lex_get_curr_ch(lex));
 	check('4' == lex_peek_ch(lex));
-	check(8 == lex_get_input_pos(lex));
-	check(1 == lex_get_input_line_no(lex));
+	check(8 == lex_get_input_line_pos(lex));
+	check(1 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "==!") == 0);
 	check(lex_match(lex, TOK_NEQEQEQ));
 
@@ -70,20 +70,20 @@ static bool test_lex(void)
 	check(TOK_NUMBER == lex_get_curr_tok(lex));
 	check('6' == lex_get_curr_ch(lex));
 	check(' ' == lex_peek_ch(lex));
-	check(11 == lex_get_input_pos(lex));
-	check(1 == lex_get_input_line_no(lex));
+	check(11 == lex_get_input_line_pos(lex));
+	check(1 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "number") == 0);
 	check(lex_match(lex, TOK_NUMBER));
 	check(strcmp(lex_get_saved(lex), "456") == 0);
 	check(3 == lex_get_saved_len(lex));
 	check(!lex_match(lex, TOK_ERROR));
-	
+
 	check(TOK_ID == lex_next(lex));
 	check(TOK_ID == lex_get_curr_tok(lex));
 	check('o' == lex_get_curr_ch(lex));
 	check('=' == lex_peek_ch(lex));
-	check(15 == lex_get_input_pos(lex));
-	check(1 == lex_get_input_line_no(lex));
+	check(15 == lex_get_input_line_pos(lex));
+	check(1 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "id") == 0);
 	check(lex_match(lex, TOK_ID));
 	check(strcmp(lex_get_saved(lex), "foo") == 0);
@@ -93,8 +93,8 @@ static bool test_lex(void)
 	check(TOK_EQEQEQ == lex_get_curr_tok(lex));
 	check('=' == lex_get_curr_ch(lex));
 	check('w' == lex_peek_ch(lex));
-	check(18 == lex_get_input_pos(lex));
-	check(1 == lex_get_input_line_no(lex));
+	check(18 == lex_get_input_line_pos(lex));
+	check(1 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "===") == 0);
 	check(lex_match(lex, TOK_EQEQEQ));
 
@@ -102,20 +102,20 @@ static bool test_lex(void)
 	check(TOK_WHILE == lex_get_curr_tok(lex));
 	check('e' == lex_get_curr_ch(lex));
 	check(' ' == lex_peek_ch(lex));
-	check(23 == lex_get_input_pos(lex));
-	check(1 == lex_get_input_line_no(lex));
+	check(23 == lex_get_input_line_pos(lex));
+	check(1 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "while") == 0);
 	check(lex_match(lex, TOK_WHILE));
 	check(strcmp(lex_get_saved(lex), "while") == 0);
 	check(5 == lex_get_saved_len(lex));
 	check(!lex_match(lex, TOK_ERROR));
-	
+
 	check(TOK_ID == lex_next(lex));
 	check(TOK_ID == lex_get_curr_tok(lex));
 	check('z' == lex_get_curr_ch(lex));
 	check(' ' == lex_peek_ch(lex));
-	check(12 == lex_get_input_pos(lex));
-	check(2 == lex_get_input_line_no(lex));
+	check(12 == lex_get_input_line_pos(lex));
+	check(2 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "id") == 0);
 	check(lex_match(lex, TOK_ID));
 	check(strcmp(lex_get_saved(lex), "whilex12") == 0);
@@ -125,8 +125,8 @@ static bool test_lex(void)
 	check(TOK_IF == lex_get_curr_tok(lex));
 	check('f' == lex_get_curr_ch(lex));
 	check(' ' == lex_peek_ch(lex));
-	check(15 == lex_get_input_pos(lex));
-	check(2 == lex_get_input_line_no(lex));
+	check(15 == lex_get_input_line_pos(lex));
+	check(2 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "if") == 0);
 	check(lex_match(lex, TOK_IF));
 	check(strcmp(lex_get_saved(lex), "if") == 0);
@@ -136,46 +136,46 @@ static bool test_lex(void)
 	check(TOK_AND == lex_get_curr_tok(lex));
 	check('&' == lex_get_curr_ch(lex));
 	check('@' == lex_peek_ch(lex));
-	check(17 == lex_get_input_pos(lex));
-	check(2 == lex_get_input_line_no(lex));
+	check(17 == lex_get_input_line_pos(lex));
+	check(2 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "&") == 0);
 	check(lex_match(lex, TOK_AND));
 
 	static char empty[] = ""; // third line of input
 	str = empty;
-	
+
 	check(TOK_ERROR == lex_next(lex));
 	check(TOK_ERROR == lex_get_curr_tok(lex));
 	check('@' == lex_get_curr_ch(lex));
 	check('\0' == lex_peek_ch(lex));
-	check(18 == lex_get_input_pos(lex));
-	check(2 == lex_get_input_line_no(lex));
+	check(18 == lex_get_input_line_pos(lex));
+	check(2 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "error") == 0);
 	check(lex_match(lex, TOK_ERROR));
 	check(strcmp(lex_get_saved(lex), "@") == 0);
 	check(1 == lex_get_saved_len(lex));
 	check(!lex_match(lex, TOK_EQ));
-	
+
 	check(TOK_EOI == lex_next(lex));
 	check(TOK_EOI == lex_get_curr_tok(lex));
 	check('\0' == lex_get_curr_ch(lex));
-	//check('\0' == lex_peek_ch(lex));
-	check(19 == lex_get_input_pos(lex));
-	check(2 == lex_get_input_line_no(lex));
+	check('\0' == lex_peek_ch(lex));
+	check(18 == lex_get_input_line_pos(lex));
+	check(2 == lex_get_input_line_num(lex));
 	check(strcmp(lex_tok_to_str(lex_get_curr_tok(lex)), "EOI") == 0);
 	check(lex_match(lex, TOK_EOI));
-	
+
 	// test lex_save_ch_usr()
 	static char slash[] = "/aabbcc/";
 	str = slash;
-	
+
 	init_lex(lex, &pinput);
 	check(TOK_SLASH == lex_next(lex));
 	check(TOK_SLASH == lex_get_curr_tok(lex));
 	check(lex_match(lex, TOK_SLASH));
 	check(strcmp(lex_get_saved(lex), "bbccdd") == 0);
 	check(6 == lex_get_saved_len(lex));
-	
+
 	return true;
 }
 //------------------------------------------------------------------------------
@@ -217,7 +217,7 @@ void init_tbl(char * tbl)
 	}
 }
 
-const char * lex_usr_get_input(void * arg)
+const char * lex_usr_get_input(void * arg, size_t * out_len)
 {
 	return **((const char ***)arg);
 }
@@ -256,16 +256,16 @@ tok_id lex_usr_get_number(lex_state * lex)
 	}
 
 	lex_save_end(lex);
-	
+
 	return TOK_NUMBER;
 }
 
 tok_id lex_usr_handle_slash(lex_state * lex)
 {
 	lex_read_ch(lex);
-	
+
 	lex_save_begin(lex);
-	
+
 	while (1)
 	{
 		lex_save_ch_usr(lex, lex_get_curr_ch(lex)+1);
@@ -275,9 +275,9 @@ tok_id lex_usr_handle_slash(lex_state * lex)
 		else
 			break;
 	}
-	
+
 	lex_save_end(lex);
-	
+
 	return TOK_SLASH;
 }
 
@@ -286,7 +286,7 @@ tok_id lex_usr_on_unknown_ch(lex_state * lex)
 	lex_save_begin(lex);
 	lex_save_ch(lex);
 	lex_save_end(lex);
-	
+
 	return TOK_ERROR;
 }
 

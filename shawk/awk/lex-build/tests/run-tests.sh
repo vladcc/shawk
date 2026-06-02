@@ -20,6 +20,12 @@ function run_tests_on_single_file
 	done
 }
 
+function run_tests_peek_back
+{
+	local L_EXEC="$@"
+	eval_success "$L_EXEC --peek_n_back $(make_input_name peek_n_back)"
+}
+
 function run_tests_str_pos
 {
 	local L_EXEC="$@"
@@ -170,14 +176,16 @@ function test_c_run_tests
 	for lexer in $G_C_LEXERS; do
 		bt_eval run_tests_on_single_file "./${lexer}0.bin"
 		bt_eval run_tests_on_multiple_files "./${lexer}0.bin"
+		bt_eval run_tests_peek_back "./${lexer}0.bin"
 		bt_eval run_tests_on_single_file "./${lexer}3.bin"
 		bt_eval run_tests_on_multiple_files "./${lexer}3.bin"
+		bt_eval run_tests_peek_back "./${lexer}3.bin"
 		eval_success "./${lexer}_unit_test.bin"
 	done
 }
 function test_c_ver
 {
-	run_test_version_info "lex-c.awk" "lex-c.awk 1.9.5"
+	run_test_version_info "lex-c.awk" "lex-c.awk 2.0"
 }
 function test_c_kw_len
 {

@@ -13,7 +13,7 @@ FILE_SML_ZIP=small.almost.c.zip
 FILE_BIG=big.almost.c
 FILE_BIG_ZIP=big.almost.c.zip
 
-override CFLAGS+=-Wall
+override CFLAGS+=-flto -Wall
 
 .PHONY: help
 help:

@@ -18,6 +18,14 @@ run_tests_on_single_file ./lex_bsearch0.bin
 run_tests_on_single_file ./lex_bsearch3.bin
 run_tests_on_single_file ./lex_ifs0.bin
 run_tests_on_single_file ./lex_ifs3.bin
+run_tests_peek_back ./foo_lex_bsearch0.bin
+run_tests_peek_back ./foo_lex_bsearch3.bin
+run_tests_peek_back ./foo_lex_ifs0.bin
+run_tests_peek_back ./foo_lex_ifs3.bin
+run_tests_peek_back ./lex_bsearch0.bin
+run_tests_peek_back ./lex_bsearch3.bin
+run_tests_peek_back ./lex_ifs0.bin
+run_tests_peek_back ./lex_ifs3.bin
 run_tests_peek_n_back
 run_tests_state
 run_tests_str_pos awk -f ./awk/foo-lex.awk -vStrPos=1 -f ./awk/inc_foo_lex.awk

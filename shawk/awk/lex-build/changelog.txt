@@ -1,3 +1,20 @@
+2026-06-02
+	lex-c.awk 2.0
+	introduced:
+	lex_bump_line_num(), lex_peek_ch_n(), lex_back_pos(), lex_get_input()
+
+	incompatibility:
+	lex_input_pos()     -> lex_input_line_pos()
+	lex_input_line_no() -> lex_input_line_num()
+	const char * lex_usr_get_input(void * usr_arg);
+	is now
+	const char * lex_usr_get_input(void * usr_arg, size_t * out_len);
+
+	makefile
+	-flto added to c-vs-flex
+	note: lto seems to make the flex lexer ~10% slower but the lex-c lexer ~10%
+	faster
+
 2026-06-01
 	lex-awk.awk 1.9
 	lex_peek_n(n), lex_back_pos() introduced

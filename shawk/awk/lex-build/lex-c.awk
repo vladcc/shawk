@@ -2,7 +2,6 @@
 
 # Author: Vladimir Dinev
 # vld.dinev@gmail.com
-# 2026-03-11
 
 # Generates a lexer in C. The lexing strategy is quite simple - the next token
 # is determined by switch-ing on the class of the current input character and
@@ -16,7 +15,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-c.awk"}
-function SCRIPT_VERSION() {return "1.9.5"}
+function SCRIPT_VERSION() {return "2.0"}
 # </script>
 
 # <out_signature>
@@ -28,15 +27,18 @@ function out_signature() {
 # <constant_names>
 function N_LEX_GET_CURR_CH() {return npref("lex_get_curr_ch")}
 function N_LEX_GET_CURR_TOK() {return npref("lex_get_curr_tok")}
-function N_LEX_GET_INPUT_LINE_NO() {return npref("lex_get_input_line_no")}
-function N_LEX_GET_INPUT_POS() {return npref("lex_get_input_pos")}
+function N_LEX_GET_INPUT_LINE_NUM() {return npref("lex_get_input_line_num")}
+function N_LEX_GET_INPUT_LINE_POS() {return npref("lex_get_input_line_pos")}
 function N_LEX_GET_SAVED() {return npref("lex_get_saved")}
 function N_LEX_GET_SAVED_LEN() {return npref("lex_get_saved_len")}
 function N_LEX_GET_USR_ARG() {return npref("lex_get_usr_arg")}
 function N_LEX_INIT() {return npref("lex_init")}
 function N_LEX_MATCH() {return npref("lex_match")}
 function N_LEX_NEXT() {return npref("lex_next")}
+function N_LEX_BUMP_LINE_NUM() {return npref("lex_bump_line_num")}
+function N_LEX_BACK_POS() {return npref("lex_back_pos")}
 function N_LEX_PEEK_CH() {return npref("lex_peek_ch")}
+function N_LEX_PEEK_CH_N() {return npref("lex_peek_ch_n")}
 function N_LEX_READ_CH() {return npref("lex_read_ch")}
 function N_LEX_SAVE_BEGIN() {return npref("lex_save_begin")}
 function N_LEX_SAVE_CH() {return npref("lex_save_ch")}
@@ -44,6 +46,7 @@ function N_LEX_SAVE_CH_USR() {return npref("lex_save_ch_usr")}
 function N_LEX_SAVE_END() {return npref("lex_save_end")}
 function N_LEX_STATE() {return npref("lex_state")}
 function N_LEX_TOK_TO_STR() {return npref("lex_tok_to_str")}
+function N_LEX_GET_INPUT() {return npref("lex_get_input")}
 function N_LEX_USR_GET_INPUT() {return npref("lex_usr_get_input")}
 function N_LEX_USR_ON_UNKNOWN_CH() {return npref("lex_usr_on_unknown_ch")}
 function N_LEX_INIT_INFO() {return npref("lex_init_info")}
@@ -62,6 +65,7 @@ function out_header(    _hdr) {
 	out_line()
 	out_line("// <lex_includes>")
 	out_line("#include <stdbool.h>")
+	out_line("#include <stddef.h>")
 	out_line("// </lex_includes>")
 	out_line()
 	out_tok_enum()
@@ -75,7 +79,8 @@ function out_lex_cls_events_memb(    _set, _i, _end, _str) {
 	lb_vect_make_set(_set, G_actions_vect, 2)
 
 	out_line("// return text input; when done return \"\", never NULL")
-	out_line(sprintf("const char * %s(void * usr_arg);", N_LEX_USR_GET_INPUT()))
+	out_line(sprintf("const char * %s(void * usr_arg, size_t * out_len);",
+		N_LEX_USR_GET_INPUT()))
 	out_line("// user events")
 	_end = vect_len(_set)
 	for(_i = 1; _i <= _end; ++_i) {
@@ -119,14 +124,16 @@ function out_lex_define(    _set, _i, _end, _str) {
 	out_line(sprintf("typedef struct %s {", N_LEX_STATE()))
 	tabs_inc()
 	out_line("const char * input;")
-	out_line("unsigned int input_pos;")
 	out_line("int curr_ch;")
 	out_line(sprintf("%s curr_tok;", N_TOK_ID()))
-	out_line("unsigned int input_line;")
-	out_line("void * usr_arg;")
-	out_line("char * write_buff;")
-	out_line("unsigned int write_buff_len;")
+	out_line("unsigned int input_line_pos;")
+	out_line("unsigned int input_line_num;")
 	out_line("unsigned int write_buff_pos;")
+	out_line("unsigned int write_buff_len;")
+	out_line("char * write_buff;")
+	out_line("const char * input_start;")
+	out_line("const char * input_end_excl;")
+	out_line("void * usr_arg;")
 	tabs_dec()
 	out_line(sprintf("} %s;", N_LEX_STATE()))
 	out_line()
@@ -137,26 +144,90 @@ function out_lex_define(    _set, _i, _end, _str) {
 	out_line("// <lex_usr_defined>")
 	out_lex_cls_events_memb()
 	out_line("// </lex_usr_defined>")
-	out_line()
 
+	out_line()
 	out_line("// <lex_static_inline>")
+	out_line("// read input")
+	out_line(sprintf("static inline void %s(%s * lex)",
+		N_LEX_GET_INPUT(), N_LEX_STATE()))
+	out_line("{")
+	tabs_inc()
+	out_line(sprintf("size_t len = 0;"))
+	out_line(sprintf("lex->input = %s(lex->usr_arg, &len);",
+		N_LEX_USR_GET_INPUT()))
+	out_line("lex->input_start = lex->input;")
+	out_line("lex->input_end_excl = lex->input_start + len;")
+	tabs_dec()
+	out_line("}")
+
+	out_line()
+	out_line("// bump up the line number and zero the line position")
+	out_line(sprintf("static inline void %s(%s * lex)",
+		N_LEX_BUMP_LINE_NUM(), N_LEX_STATE()))
+	out_line("{")
+	tabs_inc()
+	out_line("++lex->input_line_num;")
+	out_line("lex->input_line_pos = 0;")
+	tabs_dec()
+	out_line("}")
+
+	out_line()
 	out_line("// read the next character, advance the input")
 	out_line(sprintf("static inline int %s(%s * lex)",
 		N_LEX_READ_CH(), N_LEX_STATE()))
 	out_line("{")
 	tabs_inc()
-	out_line("lex->curr_ch = *lex->input++;")
-	out_line("++lex->input_pos;")
+	out_line("if ((lex->curr_ch = *lex->input))")
+	out_line("{")
+	tabs_inc()
+	out_line("++lex->input;")
+	out_line("++lex->input_line_pos;")
 	out_line("if (!(*lex->input))")
 	tabs_inc()
-	out_line(sprintf("lex->input = %s(lex->usr_arg);", N_LEX_USR_GET_INPUT()))
+	out_line(sprintf("%s(lex);", N_LEX_GET_INPUT()))
 	tabs_dec()
+	tabs_dec()
+	out_line("}")
 	out_line("return lex->curr_ch;")
 	tabs_dec()
 	out_line("}")
 
 	out_line()
-	out_line("// look at, but do not read, the next character")
+	out_line("// move the input one position back")
+	out_line("// if at the start of the buffer, do nothing")
+	out_line(sprintf("static inline void %s(%s * lex)",
+		N_LEX_BACK_POS(), N_LEX_STATE()))
+	out_line("{")
+	tabs_inc()
+	out_line("if (lex->input > lex->input_start+1)")
+	out_line("{")
+	tabs_inc()
+	out_line("--lex->input;")
+	out_line("--lex->input_line_pos;")
+	out_line("lex->curr_ch = lex->input[-1];")
+	tabs_dec()
+	out_line("}")
+	tabs_dec()
+	out_line("}")
+
+	out_line()
+	out_line("// peek character n from the current position")
+	out_line("// if out of buffer bounds, return \\0")
+	out_line(sprintf("static inline int %s(%s * lex, int n)",
+		N_LEX_PEEK_CH_N(), N_LEX_STATE()))
+	out_line("{")
+	tabs_inc()
+	out_line("const char * target = (lex->input - 1) + n;")
+	out_line("if (target >= lex->input_start && target < lex->input_end_excl)")
+	tabs_inc()
+	out_line("return *target;")
+	tabs_dec()
+	out_line("return '\\0';")
+	tabs_dec()
+	out_line("}")
+
+	out_line()
+	out_line("// look at, but do not read, the next character in the buffer")
 	out_line(sprintf("static inline int %s(%s * lex)",
 		N_LEX_PEEK_CH(), N_LEX_STATE()))
 	out_line("{return *lex->input;}")
@@ -167,13 +238,11 @@ function out_lex_define(    _set, _i, _end, _str) {
 	out_line("{lex->write_buff_pos = 0;}")
 	out_line()
 
-	out_lex_save_ch(N_LEX_SAVE_CH(),
-		sprintf("%s * lex", N_LEX_STATE()),
+	out_lex_save_ch(N_LEX_SAVE_CH(), sprintf("%s * lex", N_LEX_STATE()),
 		"lex->curr_ch")
 
 	out_lex_save_ch(N_LEX_SAVE_CH_USR(),
-		sprintf("%s * lex, char ch", N_LEX_STATE()),
-		"ch")
+		sprintf("%s * lex, char ch", N_LEX_STATE()), "ch")
 
 	out_line()
 	out_line("// call this after you're done writing to the lexer write space")
@@ -198,13 +267,13 @@ function out_lex_define(    _set, _i, _end, _str) {
 	out_line()
 	out_line("// get the character position on the current input line")
 	out_line(sprintf("static inline unsigned int %s(%s * lex)",
-		N_LEX_GET_INPUT_POS(), N_LEX_STATE()))
-	out_line("{return lex->input_pos;}")
+		N_LEX_GET_INPUT_LINE_POS(), N_LEX_STATE()))
+	out_line("{return lex->input_line_pos;}")
 	out_line()
 	out_line("// get the number of the current input line")
 	out_line(sprintf("static inline unsigned int %s(%s * lex)",
-		N_LEX_GET_INPUT_LINE_NO(), N_LEX_STATE()))
-	out_line("{return lex->input_line;}")
+		N_LEX_GET_INPUT_LINE_NUM(), N_LEX_STATE()))
+	out_line("{return lex->input_line_num;}")
 	out_line()
 	out_line("// get the last character the lexer read")
 	out_line(sprintf("static inline int %s(%s * lex)",
@@ -226,15 +295,15 @@ function out_lex_define(    _set, _i, _end, _str) {
 		N_LEX_INIT(), N_LEX_STATE(), N_LEX_INIT_INFO()))
 	out_line("{")
 	tabs_inc()
-	out_line(sprintf("lex->input = %s(init->usr_arg);", N_LEX_USR_GET_INPUT()))
-	out_line("lex->input_pos = 0;")
+	out_line("lex->input_line_pos = 0;")
 	out_line("lex->curr_ch = -1;")
 	out_line(sprintf("lex->curr_tok = %s;", TOK_ERR_ENUM()))
-	out_line("lex->input_line = 1;")
+	out_line("lex->input_line_num = 1;")
 	out_line("lex->usr_arg = init->usr_arg;")
 	out_line("lex->write_buff = init->write_buff;")
 	out_line("lex->write_buff_len = init->write_buff_len;")
 	out_line("lex->write_buff_pos = 0;")
+	out_line(sprintf("%s(lex);", N_LEX_GET_INPUT()))
 	tabs_dec()
 	out_line("}")
 	out_line("// </lex_static_inline>")
@@ -587,9 +656,7 @@ function out_ch_cls_action(ch_cls, map_act, map_symb, map_cls_chr, tree,
 			_done = 0
 		} else if (NEXT_LINE() == _act) {
 			# Count lines.
-
-			out_line("++lex->input_line;")
-			out_line("lex->input_pos = 0;")
+			out_line(sprintf("%s(lex);", N_LEX_BUMP_LINE_NUM()))
 			out_line("continue;")
 			_done = 0
 		} else if (is_constant(_act)) {
