@@ -8,8 +8,6 @@
 
 #define BUFF_SZ (8*1024)
 
-static bool g_do_peek_n_back_pos;
-
 enum {WORD_ = 1, NUM_};
 static char base_tbl[0xFF+1];
 #define is_word(ch) (base_tbl[(unsigned char)ch] == WORD_)
@@ -26,203 +24,31 @@ void init_tbl(char * tbl)
 	}
 }
 
-const char * lex_usr_get_input(void * arg, size_t * out_len)
+const char * lex_usr_get_input(void * arg)
 {
 	char * buff = (char *)arg;
 	size_t read = fread(buff, 1, BUFF_SZ, stdin);
 	buff[read] = '\0';
-	*out_len = read;
 	return buff;
-}
-
-void my_assert(bool expr, const char * str_expr, unsigned int line)
-{
-	if (!expr)
-	{
-		fprintf(
-			stderr,
-			"error: line %u, assertion '%s' failed",
-			line,
-			str_expr
-		);
-		exit(EXIT_FAILURE);
-	}
-}
-
-#define MY_ASSERT(expr) my_assert(expr, #expr, __LINE__)
-
-void do_peek_n_back(lex_state * lex)
-{
-	MY_ASSERT(lex_get_input_line_num(lex) == 1);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 1);
-	MY_ASSERT(lex_get_curr_ch(lex) == 'f');
-	MY_ASSERT(lex_peek_ch(lex) == 'o');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == lex_get_curr_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == lex_peek_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 2) == '_');
-	MY_ASSERT(lex_peek_ch_n(lex, 3) == ' ');
-	MY_ASSERT(lex_peek_ch_n(lex, 4) == 'b');
-
-	lex_back_pos(lex);
-	MY_ASSERT(lex_get_input_line_num(lex) == 1);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 1);
-	MY_ASSERT(lex_get_curr_ch(lex) == 'f');
-	MY_ASSERT(lex_peek_ch(lex) == 'o');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == lex_get_curr_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == lex_peek_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 2) == '_');
-	MY_ASSERT(lex_peek_ch_n(lex, 3) == ' ');
-	MY_ASSERT(lex_peek_ch_n(lex, 4) == 'b');
-	MY_ASSERT(lex_peek_ch_n(lex, -1) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, -1000) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, 1000) == '\0');
-
-	lex_back_pos(lex);
-	lex_back_pos(lex);
-	lex_back_pos(lex);
-	MY_ASSERT(lex_get_input_line_num(lex) == 1);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 1);
-	MY_ASSERT(lex_get_curr_ch(lex) == 'f');
-	MY_ASSERT(lex_peek_ch(lex) == 'o');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == lex_get_curr_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == lex_peek_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 2) == '_');
-	MY_ASSERT(lex_peek_ch_n(lex, 3) == ' ');
-	MY_ASSERT(lex_peek_ch_n(lex, 4) == 'b');
-
-	MY_ASSERT(lex_read_ch(lex) == 'o');
-	MY_ASSERT(lex_get_input_line_num(lex) == 1);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 2);
-	MY_ASSERT(lex_get_curr_ch(lex) == 'o');
-	MY_ASSERT(lex_peek_ch(lex) == '_');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == lex_get_curr_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == lex_peek_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 2) == ' ');
-	MY_ASSERT(lex_peek_ch_n(lex, 3) == 'b');
-	MY_ASSERT(lex_peek_ch_n(lex, 4) == 'a');
-
-	MY_ASSERT(lex_read_ch(lex) == '_');
-	MY_ASSERT(lex_get_input_line_num(lex) == 1);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 3);
-	MY_ASSERT(lex_get_curr_ch(lex) == '_');
-	MY_ASSERT(lex_peek_ch(lex) == ' ');
-	MY_ASSERT(lex_peek_ch_n(lex, -2) == 'f');
-	MY_ASSERT(lex_peek_ch_n(lex, -1) == 'o');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == lex_get_curr_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == lex_peek_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 2) == 'b');
-	MY_ASSERT(lex_peek_ch_n(lex, 3) == 'a');
-	MY_ASSERT(lex_peek_ch_n(lex, 4) == 'r');
-
-	lex_back_pos(lex);
-	MY_ASSERT(lex_get_input_line_num(lex) == 1);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 2);
-	MY_ASSERT(lex_get_curr_ch(lex) == 'o');
-	MY_ASSERT(lex_peek_ch(lex) == '_');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == lex_get_curr_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == lex_peek_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 2) == ' ');
-	MY_ASSERT(lex_peek_ch_n(lex, 3) == 'b');
-	MY_ASSERT(lex_peek_ch_n(lex, 4) == 'a');
-
-	lex_back_pos(lex);
-	MY_ASSERT(lex_get_input_line_num(lex) == 1);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 1);
-	MY_ASSERT(lex_get_curr_ch(lex) == 'f');
-	MY_ASSERT(lex_peek_ch(lex) == 'o');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == lex_get_curr_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == lex_peek_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 2) == '_');
-	MY_ASSERT(lex_peek_ch_n(lex, 3) == ' ');
-	MY_ASSERT(lex_peek_ch_n(lex, 4) == 'b');
-
-	lex_back_pos(lex);
-	MY_ASSERT(lex_get_input_line_num(lex) == 1);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 1);
-	MY_ASSERT(lex_get_curr_ch(lex) == 'f');
-	MY_ASSERT(lex_peek_ch(lex) == 'o');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == lex_get_curr_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == lex_peek_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 2) == '_');
-	MY_ASSERT(lex_peek_ch_n(lex, 3) == ' ');
-	MY_ASSERT(lex_peek_ch_n(lex, 4) == 'b');
-
-	while (lex_peek_ch(lex) != '\n')
-		lex_read_ch(lex);
-	MY_ASSERT(lex_get_input_line_num(lex) == 1);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 11);
-
-	MY_ASSERT(lex_read_ch(lex) == '\n');
-	lex_bump_line_num(lex);
-	MY_ASSERT(lex_get_input_line_num(lex) == 2);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 0);
-
-	lex_read_ch(lex);
-	MY_ASSERT(lex_get_input_line_num(lex) == 2);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 1);
-
-	while (lex_peek_ch(lex) != '\n')
-		lex_read_ch(lex);
-	MY_ASSERT(lex_get_input_line_num(lex) == 2);
-	MY_ASSERT(lex_get_input_line_pos(lex) == 11);
-
-	MY_ASSERT(lex_get_curr_ch(lex) == 'Z');
-	MY_ASSERT(lex_peek_ch(lex) == '\n');
-	MY_ASSERT(lex_peek_ch_n(lex, -3) == ' ');
-	MY_ASSERT(lex_peek_ch_n(lex, -2) == 'B');
-	MY_ASSERT(lex_peek_ch_n(lex, -1) == 'A');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == lex_get_curr_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == lex_peek_ch(lex));
-	MY_ASSERT(lex_peek_ch_n(lex, 2) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, 3) == '\0');
-
-	MY_ASSERT(lex_read_ch(lex) == '\n');
-	MY_ASSERT(lex_get_curr_ch(lex) == '\n');
-	MY_ASSERT(lex_peek_ch(lex) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, -1) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == '\0');
-
-	MY_ASSERT(lex_read_ch(lex) == '\0');
-	MY_ASSERT(lex_get_curr_ch(lex) == '\0');
-	MY_ASSERT(lex_peek_ch(lex) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, -1) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == '\0');
-
-	MY_ASSERT(lex_read_ch(lex) == '\0');
-	MY_ASSERT(lex_get_curr_ch(lex) == '\0');
-	MY_ASSERT(lex_peek_ch(lex) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, -1) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, 0) == '\0');
-	MY_ASSERT(lex_peek_ch_n(lex, 1) == '\0');
 }
 
 tok_id lex_usr_get_word(lex_state * lex)
 {
-	if (g_do_peek_n_back_pos)
+	lex_save_begin(lex);
+
+	while (1)
 	{
-		do_peek_n_back(lex);
-		exit(EXIT_SUCCESS);
+		lex_save_ch(lex);
+
+		if (is_word_num(lex_peek_ch(lex)))
+			lex_read_ch(lex);
+		else
+			break;
 	}
-	else
-	{
-		lex_save_begin(lex);
 
-		while (1)
-		{
-			lex_save_ch(lex);
+	lex_save_end(lex);
 
-			if (is_word_num(lex_peek_ch(lex)))
-				lex_read_ch(lex);
-			else
-				break;
-		}
-
-		lex_save_end(lex);
-
-		return lex_keyword_or_base(lex, TOK_ID);
-	}
+	return lex_keyword_or_base(lex, TOK_ID);
 }
 
 tok_id lex_usr_get_number(lex_state * lex)
@@ -262,9 +88,7 @@ tok_id lex_usr_on_unknown_ch(lex_state * lex)
 	);
 	return TOK_ERROR;
 }
-
-static void output(lex_state * lex)
-{
+static void output(lex_state * lex) {
 	tok_id tok;
 	while ((tok = lex_next(lex)) != TOK_EOI)
 	{
@@ -286,10 +110,116 @@ static void output(lex_state * lex)
 	printf("'%s'\n", lex_tok_to_str(TOK_FCALL));
 }
 
+static void my_assert(bool expr, const char * str_expr, size_t line)
+{
+	if (!expr)
+	{
+		fprintf(stderr, "error: %zu: assertion '%s' failed\n", line, str_expr);
+		exit(EXIT_FAILURE);
+	}
+}
+
+#define MY_ASSERT(expr) my_assert(expr, #expr, __LINE__)
+
+static void peek_1(lex_state * lex, lex_init_info * info)
+{
+	lex_init(lex, info);
+
+	MY_ASSERT(lex_get_input_line_pos(lex) == 0);
+	MY_ASSERT(lex_get_input_line_num(lex) == 1);
+	MY_ASSERT(lex_get_curr_ch(lex) == -1);
+	MY_ASSERT(lex_peek_ch(lex) == 'f');
+
+	MY_ASSERT(lex_read_ch(lex) == 'f');
+	MY_ASSERT(lex_get_curr_ch(lex) == 'f');
+	MY_ASSERT(lex_peek_ch(lex) == 'o');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 1);
+	MY_ASSERT(lex_get_input_line_num(lex) == 1);
+
+	MY_ASSERT(lex_read_ch(lex) == 'o');
+	MY_ASSERT(lex_get_curr_ch(lex) == 'o');
+	MY_ASSERT(lex_peek_ch(lex) == '_');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 2);
+	MY_ASSERT(lex_get_input_line_num(lex) == 1);
+
+	MY_ASSERT(lex_read_ch(lex) == '_');
+	MY_ASSERT(lex_get_curr_ch(lex) == '_');
+	MY_ASSERT(lex_peek_ch(lex) == '\n');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 3);
+	MY_ASSERT(lex_get_input_line_num(lex) == 1);
+
+	MY_ASSERT(lex_read_ch(lex) == '\n');
+	lex_bump_line_num(lex);
+	MY_ASSERT(lex_get_curr_ch(lex) == '\n');
+	MY_ASSERT(lex_peek_ch(lex) == 'F');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 0);
+	MY_ASSERT(lex_get_input_line_num(lex) == 2);
+
+	MY_ASSERT(lex_read_ch(lex) == 'F');
+	MY_ASSERT(lex_get_curr_ch(lex) == 'F');
+	MY_ASSERT(lex_peek_ch(lex) == 'O');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 1);
+	MY_ASSERT(lex_get_input_line_num(lex) == 2);
+
+	MY_ASSERT(lex_read_ch(lex) == 'O');
+	MY_ASSERT(lex_get_curr_ch(lex) == 'O');
+	MY_ASSERT(lex_peek_ch(lex) == '_');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 2);
+	MY_ASSERT(lex_get_input_line_num(lex) == 2);
+
+	MY_ASSERT(lex_read_ch(lex) == '_');
+	MY_ASSERT(lex_get_curr_ch(lex) == '_');
+	MY_ASSERT(lex_peek_ch(lex) == '\n');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 3);
+	MY_ASSERT(lex_get_input_line_num(lex) == 2);
+
+	MY_ASSERT(lex_read_ch(lex) == '\n');
+	MY_ASSERT(lex_get_curr_ch(lex) == '\n');
+	MY_ASSERT(lex_peek_ch(lex) == '\0');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 4);
+	MY_ASSERT(lex_get_input_line_num(lex) == 2);
+
+	MY_ASSERT(lex_read_ch(lex) == '\0');
+	MY_ASSERT(lex_get_curr_ch(lex) == '\0');
+	MY_ASSERT(lex_peek_ch(lex) == '\0');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 4);
+	MY_ASSERT(lex_get_input_line_num(lex) == 2);
+
+	MY_ASSERT(lex_read_ch(lex) == '\0');
+	MY_ASSERT(lex_get_curr_ch(lex) == '\0');
+	MY_ASSERT(lex_peek_ch(lex) == '\0');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 4);
+	MY_ASSERT(lex_get_input_line_num(lex) == 2);
+}
+
+static void peek_2(lex_state * lex, lex_init_info * info)
+{
+	lex_init(lex, info);
+
+	tok_id tok = lex_next(lex);
+	MY_ASSERT(TOK_ID == tok);
+	MY_ASSERT(0 == strcmp("fo_", lex_get_saved(lex)));
+	MY_ASSERT(lex_get_input_line_pos(lex) == 3);
+	MY_ASSERT(lex_get_input_line_num(lex) == 1);
+	MY_ASSERT(lex_get_curr_ch(lex) == '_');
+	MY_ASSERT(lex_peek_ch(lex) == '\n');
+
+	MY_ASSERT(lex_read_ch(lex) == '\n');
+	lex_bump_line_num(lex);
+	MY_ASSERT(lex_get_curr_ch(lex) == '\n');
+	MY_ASSERT(lex_peek_ch(lex) == 'F');
+	MY_ASSERT(lex_get_input_line_pos(lex) == 0);
+	MY_ASSERT(lex_get_input_line_num(lex) == 2);
+}
+
+static int g_peek;
+
 #define REAL_BSZ (BUFF_SZ+1)
 int main(int argc, char * argv[])
 {
-	static char * peek_n_back_opt = "--peek_n_back";
+	static char * opt_peek_1 = "--peek_1";
+	static char * opt_peek_2 = "--peek_2";
+
 	static char tok_buff[REAL_BSZ];
 	static char file_buff[REAL_BSZ];
 	init_tbl(base_tbl);
@@ -306,9 +236,13 @@ int main(int argc, char * argv[])
 	{
 		for (int i = 1; i < argc; ++i)
 		{
-			if (0 == strcmp(argv[i], peek_n_back_opt))
+			if (0 == strcmp(opt_peek_1, argv[i]))
 			{
-				g_do_peek_n_back_pos = true;
+				g_peek = 1;
+			}
+			else if (0 == strcmp(opt_peek_2, argv[i]))
+			{
+				g_peek = 2;
 			}
 			else
 			{
@@ -323,8 +257,19 @@ int main(int argc, char * argv[])
 					return -1;
 				}
 
-				lex_init(lex, &info);
-				output(lex);
+				if (1 == g_peek)
+				{
+					peek_1(lex, &info);
+				}
+				else if (2 == g_peek)
+				{
+					peek_2(lex, &info);
+				}
+				else
+				{
+					lex_init(lex, &info);
+					output(lex);
+				}
 			}
 		}
 	}

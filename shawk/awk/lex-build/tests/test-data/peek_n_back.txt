@@ -1,2 +1,0 @@
-fo_ bar baz
-FO_ BAR BAZ

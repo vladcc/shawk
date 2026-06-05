@@ -37,7 +37,7 @@ function lex_usr_get_number() {
 
 function lex_usr_on_unknown_ch() {
 	print sprintf("error: line %d, pos %d: unknown char '%s'",
-		lex_get_line_no(), lex_get_pos(), lex_curr_ch())
+		lex_get_line_num(), lex_get_pos(), lex_curr_ch())
 	return TOK_ERROR()
 }
 
@@ -93,7 +93,7 @@ function process(    _st_local_a, _st_local_b, _st_lex) {
 	assert(CH_CLS_AUTO_1_() == _B_lex_curr_ch_cls_cache,
 		   "CH_CLS_AUTO_1_() == _B_lex_curr_ch_cls_cache")
 	assert(TOK_EQ() == _B_lex_curr_tok, "TOK_EQ() == _B_lex_curr_tok")
-	assert(1 == _B_lex_line_no, "1 == _B_lex_line_no")
+	assert(1 == _B_lex_line_num, "1 == _B_lex_line_num")
 	assert(2 == _B_lex_line_pos, "2 == _B_lex_line_pos")
 	assert("\n" == _B_lex_peek_ch, "\"\\n\" == _B_lex_peek_ch")
 	assert("\n" == _B_lex_peeked_ch_cache, "\"\\n\" == _B_lex_peeked_ch_cache")
@@ -118,7 +118,7 @@ function process(    _st_local_a, _st_local_b, _st_lex) {
 		_B_lex_curr_ch           = "!",
 		_B_lex_curr_ch_cls_cache = 777,
 		_B_lex_curr_tok          = "baz",
-		_B_lex_line_no           = 1000,
+		_B_lex_line_num           = 1000,
 		_B_lex_line_pos          = 2000,
 		_B_lex_peek_ch           = "@",
 		_B_lex_peeked_ch_cache   = "#",
@@ -132,7 +132,7 @@ function process(    _st_local_a, _st_local_b, _st_lex) {
 	assert("!" == _B_lex_curr_ch, "\"!\" == _B_lex_curr_ch")
 	assert(777 == _B_lex_curr_ch_cls_cache, "777 == _B_lex_curr_ch_cls_cache")
 	assert("baz" == _B_lex_curr_tok, "\"baz\" == _B_lex_curr_tok")
-	assert(1000 == _B_lex_line_no, "1000 == _B_lex_line_no")
+	assert(1000 == _B_lex_line_num, "1000 == _B_lex_line_num")
 	assert(2000 == _B_lex_line_pos, "2000 == _B_lex_line_pos")
 	assert("@" == _B_lex_peek_ch, "\"@\" == _B_lex_peek_ch")
 	assert("#" == _B_lex_peeked_ch_cache, "\"#\" == _B_lex_peeked_ch_cache")
@@ -148,7 +148,7 @@ function process(    _st_local_a, _st_local_b, _st_lex) {
 	assert(CH_CLS_AUTO_1_() == _B_lex_curr_ch_cls_cache,
 		   "CH_CLS_AUTO_1_() == _B_lex_curr_ch_cls_cache")
 	assert(TOK_EQ() == _B_lex_curr_tok, "TOK_EQ() == _B_lex_curr_tok")
-	assert(1 == _B_lex_line_no, "1 == _B_lex_line_no")
+	assert(1 == _B_lex_line_num, "1 == _B_lex_line_num")
 	assert(2 == _B_lex_line_pos, "2 == _B_lex_line_pos")
 	assert("\n" == _B_lex_peek_ch, "\"\\n\" == _B_lex_peek_ch")
 	assert("\n" == _B_lex_peeked_ch_cache, "\"\\n\" == _B_lex_peeked_ch_cache")

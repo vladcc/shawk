@@ -1,3 +1,23 @@
+2026-06-06
+	major changes from the previous versions removed
+	lex-c and lex-awk now use the same read_ch() model
+
+	lex-c.awk 3.0
+	removed:
+	lex_peek_ch_n(), lex_back_pos() removed; turns out they don't make much
+	sense with the arbitrary input model
+	lex_get_input() removed - becomes superfluous
+	const char * lex_usr_get_input(void * usr_arg, size_t * out_len);
+	back to
+	const char * lex_usr_get_input(void * usr_arg);
+
+	lex-awk.awk 2.0
+	removed:
+	lex_peek_n(), lex_back_pos()
+	incompatibility:
+	lex_read_line() returns nothing
+	lex_get_line_no() renamed to lex_get_line_num()
+
 2026-06-02
 	lex-c.awk 2.0
 	introduced:

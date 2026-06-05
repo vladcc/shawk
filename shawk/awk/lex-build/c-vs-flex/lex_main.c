@@ -23,12 +23,11 @@ void init_tbl(char * tbl)
 	}
 }
 
-const char * lex_usr_get_input(void * arg, size_t * len)
+const char * lex_usr_get_input(void * arg)
 {
 	char * buff = (char *)arg;
 	int read = fread(buff, 1, BUFF_SZ, stdin);
 	buff[read] = '\0';
-	*len = read;
 	return buff;
 }
 

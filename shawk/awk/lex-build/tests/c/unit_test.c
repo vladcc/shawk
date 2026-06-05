@@ -217,7 +217,7 @@ void init_tbl(char * tbl)
 	}
 }
 
-const char * lex_usr_get_input(void * arg, size_t * out_len)
+const char * lex_usr_get_input(void * arg)
 {
 	return **((const char ***)arg);
 }

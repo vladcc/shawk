@@ -20,12 +20,6 @@ function run_tests_on_single_file
 	done
 }
 
-function run_tests_peek_back
-{
-	local L_EXEC="$@"
-	eval_success "$L_EXEC --peek_n_back $(make_input_name peek_n_back)"
-}
-
 function run_tests_str_pos
 {
 	local L_EXEC="$@"
@@ -68,12 +62,16 @@ function run_tests_together
 	eval_success "[ $L_NUM_NONE -eq 0 ]"
 }
 
-function run_tests_peek_n_back
+function run_tests_awk_peek
 {
-	eval_success "$G_AWK -f ./awk/lex.awk -vPeekBack=1 " \
-		"-f ./awk/inc_lex.awk $(make_input_name peek_n_back)"
-	eval_success "$G_AWK -f ./awk/foo-lex.awk -vPeekBack=1 " \
-		"-f ./awk/inc_foo_lex.awk $(make_input_name peek_n_back)"
+	eval_success "$G_AWK -f ./awk/lex.awk -f ./awk/inc_lex.awk" \
+		"-vPeek=1 $(make_input_name peek)"
+	eval_success "$G_AWK -f ./awk/lex.awk -f ./awk/inc_lex.awk" \
+		"-vPeek=2 $(make_input_name peek)"
+	eval_success "$G_AWK -f ./awk/foo-lex.awk -f ./awk/inc_foo_lex.awk" \
+		"-vPeek=1 $(make_input_name peek)"
+	eval_success "$G_AWK -f ./awk/foo-lex.awk -f ./awk/inc_foo_lex.awk" \
+		"-vPeek=2 $(make_input_name peek)"
 }
 
 function run_tests_on_multiple_files
@@ -118,7 +116,7 @@ function eval_success
 # <awk>
 function test_awk_ver
 {
-	run_test_version_info "lex-awk.awk" "lex-awk.awk 1.9"
+	run_test_version_info "lex-awk.awk" "lex-awk.awk 2.0"
 }
 function test_awk_run_test
 {
@@ -137,7 +135,7 @@ function test_awk_run_test
 
 	bt_eval run_tests_state
 	bt_eval run_tests_together
-	bt_eval run_tests_peek_n_back
+	bt_eval run_tests_awk_peek
 }
 function test_awk
 {
@@ -171,21 +169,27 @@ function test_c_compile_lex
 		"gcc ./c/${lexer}.c ./c/foo_unit_test.c -o ${lexer}_unit_test.bin -Wall"
 	done
 }
+function run_tests_c_peek
+{
+	local L_EXEC="$1"
+	eval_success "$L_EXEC --peek_1 $(make_input_name peek)"
+	eval_success "$L_EXEC --peek_2 $(make_input_name peek)"
+}
 function test_c_run_tests
 {
 	for lexer in $G_C_LEXERS; do
 		bt_eval run_tests_on_single_file "./${lexer}0.bin"
 		bt_eval run_tests_on_multiple_files "./${lexer}0.bin"
-		bt_eval run_tests_peek_back "./${lexer}0.bin"
+		bt_eval run_tests_c_peek "./${lexer}0.bin"
 		bt_eval run_tests_on_single_file "./${lexer}3.bin"
 		bt_eval run_tests_on_multiple_files "./${lexer}3.bin"
-		bt_eval run_tests_peek_back "./${lexer}3.bin"
+		bt_eval run_tests_c_peek "./${lexer}3.bin"
 		eval_success "./${lexer}_unit_test.bin"
 	done
 }
 function test_c_ver
 {
-	run_test_version_info "lex-c.awk" "lex-c.awk 2.0"
+	run_test_version_info "lex-c.awk" "lex-c.awk 3.0"
 }
 function test_c_kw_len
 {

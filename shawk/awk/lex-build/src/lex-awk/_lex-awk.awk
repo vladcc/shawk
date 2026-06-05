@@ -10,7 +10,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "1.9"}
+function SCRIPT_VERSION() {return "2.0"}
 # </script>
 
 # <out_signature>
@@ -168,7 +168,7 @@ function VAR_CURR_CH() {return vname("curr_ch")}
 function VAR_CURR_CH_CLS_CACHE() {return vname("curr_ch_cls_cache")}
 function VAR_LINE_STR() {return vname("line_str")}
 function VAR_CURR_TOK() {return vname("curr_tok")}
-function VAR_LINE_NO() {return vname("line_no")}
+function VAR_LINE_NUM() {return vname("line_num")}
 function VAR_LINE_POS() {return vname("line_pos")}
 function VAR_PEEK_CH() {return vname("peek_ch")}
 function VAR_PEEKED_CH_CACHE() {return vname("peeked_ch_cache")}
@@ -196,34 +196,37 @@ function out_lex_io() {
 	tabs_inc()
 	out_line(sprintf("%s = _ln", VAR_LINE_STR()))
 	out_line(sprintf("split(%s, %s, \"\")", VAR_LINE_STR(), VAR_INPUT_LINE()))
-	out_line(sprintf("++%s", VAR_LINE_NO()))
+	out_line(sprintf("++%s", VAR_LINE_NUM()))
 	out_line(sprintf("%s = 1", VAR_LINE_POS()))
-	out_line("return 1")
+	out_line("return")
 	tabs_dec()
 	out_line("}")
-	out_line(sprintf("%s = length(%s)+2", VAR_LINE_POS(), VAR_LINE_STR()))
-	out_line("return 0")
+	out_line(sprintf("%s = length(%s)+1", VAR_LINE_POS(), VAR_LINE_STR()))
 	tabs_dec()
 	out_line("}")
 	out_line()
 	out_line("# read the next character and advance the input")
 	out_line(sprintf("%s() {", fdecl("read_ch")))
 	tabs_inc()
-	out_line(sprintf("%s = %s[%s++]",
+	out_line(sprintf("%s = %s[%s]",
 		VAR_CURR_CH(), VAR_INPUT_LINE(), VAR_LINE_POS()))
+	out_line(sprintf("if (%s != \"\") {", VAR_CURR_CH()))
+	tabs_inc()
+	out_line(sprintf("%s = %s[++%s]",
+		VAR_PEEK_CH(), VAR_INPUT_LINE(), VAR_LINE_POS()))
+	out_line(sprintf("if (\"\" == %s) {", VAR_PEEK_CH()))
+	tabs_inc()
+	out_line(sprintf("%s()", F_READ_LN()))
 	out_line(sprintf("%s = %s[%s]",
 		VAR_PEEK_CH(), VAR_INPUT_LINE(), VAR_LINE_POS()))
-	out_line(sprintf("if (%s != \"\" || %s())", VAR_PEEK_CH(), F_READ_LN()))
-	tabs_inc()
-	out_line(sprintf("return %s", VAR_CURR_CH()))
 	tabs_dec()
-	out_line(sprintf("else if (\"\" == %s)", VAR_CURR_CH()))
-	tabs_inc()
-	out_line(sprintf("--%s", VAR_LINE_POS()))
+	out_line("}")
 	tabs_dec()
+	out_line("}")
 	out_line(sprintf("return %s", VAR_CURR_CH()))
 	tabs_dec()
 	out_line("}")
+
 	out_line()
 	out_line("# return the last read character")
 	out_line(sprintf("%s()\n{return %s}", fdecl("curr_ch"), VAR_CURR_CH()))
@@ -231,37 +234,12 @@ function out_lex_io() {
 	out_line("# return the next character, but do not advance the input")
 	out_line(sprintf("%s()\n{return %s}", fdecl("peek_ch"), VAR_PEEK_CH()))
 	out_line()
-	out_line("# return the character at position pos characters away")
-	out_line("# return \"\" if pos is out of bounds")
-	out_line(sprintf("%s(pos) {", fdecl("peek_ch_n")))
-	tabs_inc()
-	out_line(sprintf("pos += (%s-1)", VAR_LINE_POS()))
-	out_line(sprintf("return (pos in %s) ? %s[pos] : \"\"",
-		VAR_INPUT_LINE(), VAR_INPUT_LINE()))
-	tabs_dec()
-	out_line("}")
-	out_line()
-	out_line("# go one character back; if at the first character on the line, "\
-		"do nothing")
-	out_line(sprintf("%s() {", fdecl("back_pos")))
-	tabs_inc()
-	out_line(sprintf("if (%s > 2) {", VAR_LINE_POS()))
-	tabs_inc()
-	out_line(sprintf("%s = %s[--%s]",
-		VAR_PEEK_CH(), VAR_INPUT_LINE(), VAR_LINE_POS()))
-	out_line(sprintf("%s = %s[%s-1]",
-		VAR_CURR_CH(), VAR_INPUT_LINE(), VAR_LINE_POS()))
-	tabs_dec()
-	out_line("}")
-	tabs_dec()
-	out_line("}")
-	out_line()
 	out_line("# return the position in the current line of input")
 	out_line(sprintf("%s()\n{return (%s-1)}", fdecl("get_pos"), VAR_LINE_POS()))
 	out_line()
 	out_line("# return the current line number")
 	out_line(sprintf("%s()\n{return %s}",
-		fdecl("get_line_no"), vname("line_no")))
+		fdecl("get_line_num"), vname("line_num")))
 	out_line()
 	out_line("# return the last read token")
 	out_line(sprintf("%s()\n{return %s}", fdecl("curr_tok"), VAR_CURR_TOK()))
@@ -327,7 +305,7 @@ function out_state_get() {
 	out_line(sprintf("%s           %s() \\", VAR_CURR_CH(), C_SEP()))
 	out_line(sprintf("%s %s() \\", VAR_CURR_CH_CLS_CACHE(), C_SEP()))
 	out_line(sprintf("%s          %s() \\", VAR_CURR_TOK(), C_SEP()))
-	out_line(sprintf("%s           %s() \\", VAR_LINE_NO(), C_SEP()))
+	out_line(sprintf("%s          %s() \\", VAR_LINE_NUM(), C_SEP()))
 	out_line(sprintf("%s          %s() \\", VAR_LINE_POS(), C_SEP()))
 	out_line(sprintf("%s           %s() \\", VAR_PEEK_CH(), C_SEP()))
 	out_line(sprintf("%s   %s() \\", VAR_PEEKED_CH_CACHE(), C_SEP()))
@@ -346,7 +324,7 @@ function out_state_set() {
 	out_line(sprintf("%s           = _arr_st[2]", VAR_CURR_CH()))
 	out_line(sprintf("%s = _arr_st[3]", VAR_CURR_CH_CLS_CACHE()))
 	out_line(sprintf("%s          = _arr_st[4]", VAR_CURR_TOK()))
-	out_line(sprintf("%s           = _arr_st[5]", VAR_LINE_NO()))
+	out_line(sprintf("%s          = _arr_st[5]", VAR_LINE_NUM()))
 	out_line(sprintf("%s          = _arr_st[6]", VAR_LINE_POS()))
 	out_line(sprintf("%s           = _arr_st[7]", VAR_PEEK_CH()))
 	out_line(sprintf("%s   = _arr_st[8]", VAR_PEEKED_CH_CACHE()))
@@ -529,7 +507,7 @@ function out_init() {
 	out_line(sprintf("%s = \"\"", VAR_CURR_CH()))
 	out_line(sprintf("%s = \"\"", VAR_CURR_CH_CLS_CACHE()))
 	out_line(sprintf("%s = \"%s\"", VAR_CURR_TOK(), TOK_ERR()))
-	out_line(sprintf("%s = 0", VAR_LINE_NO()))
+	out_line(sprintf("%s = 0", VAR_LINE_NUM()))
 	out_line(sprintf("%s = 0", VAR_LINE_POS()))
 	out_line(sprintf("%s = \"\"", VAR_PEEK_CH()))
 	out_line(sprintf("%s = \"\"", VAR_PEEKED_CH_CACHE()))
