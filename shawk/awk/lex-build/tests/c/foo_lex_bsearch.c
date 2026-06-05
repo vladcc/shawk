@@ -180,7 +180,12 @@ foo_tok_id foo_lex_next(foo_lex_state * lex)
 			{
 				tok = FOO_TOK_EQ;
 				peek_ch = foo_lex_peek_ch(lex);
-				if ('=' == peek_ch)
+				if ('!' == peek_ch)
+				{
+					foo_lex_read_ch(lex);
+					tok = FOO_TOK_NEQ;
+				}
+				else if ('=' == peek_ch)
 				{
 					foo_lex_read_ch(lex);
 					tok = FOO_TOK_EQEQ;
@@ -195,11 +200,6 @@ foo_tok_id foo_lex_next(foo_lex_state * lex)
 						foo_lex_read_ch(lex);
 						tok = FOO_TOK_EQEQEQ;
 					}
-				}
-				else if ('!' == peek_ch)
-				{
-					foo_lex_read_ch(lex);
-					tok = FOO_TOK_NEQ;
 				}
 				goto done;
 			} break;

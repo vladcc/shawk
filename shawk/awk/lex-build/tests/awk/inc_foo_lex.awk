@@ -231,7 +231,10 @@ function foo_lex_next() {
 		} else if (12 == _B_foo_lex_curr_ch_cls_cache) { # FOO_CH_CLS_AUTO_1_()
 			_B_foo_lex_curr_tok = "="
 			_B_foo_lex_peeked_ch_cache = foo_lex_peek_ch()
-			if ("=" == _B_foo_lex_peeked_ch_cache) {
+			if ("!" == _B_foo_lex_peeked_ch_cache) {
+				foo_lex_read_ch()
+				_B_foo_lex_curr_tok = "=!"
+			} else if ("=" == _B_foo_lex_peeked_ch_cache) {
 				foo_lex_read_ch()
 				_B_foo_lex_curr_tok = "=="
 				_B_foo_lex_peeked_ch_cache = foo_lex_peek_ch()
@@ -242,9 +245,6 @@ function foo_lex_next() {
 					foo_lex_read_ch()
 					_B_foo_lex_curr_tok = "==="
 				} 
-			} else if ("!" == _B_foo_lex_peeked_ch_cache) {
-				foo_lex_read_ch()
-				_B_foo_lex_curr_tok = "=!"
 			} 
 		} else if (13 == _B_foo_lex_curr_ch_cls_cache) { # FOO_CH_CLS_AUTO_2_()
 			_B_foo_lex_curr_tok = "&"

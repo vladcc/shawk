@@ -180,7 +180,12 @@ tok_id lex_next(lex_state * lex)
 			{
 				tok = TOK_EQ;
 				peek_ch = lex_peek_ch(lex);
-				if ('=' == peek_ch)
+				if ('!' == peek_ch)
+				{
+					lex_read_ch(lex);
+					tok = TOK_NEQ;
+				}
+				else if ('=' == peek_ch)
 				{
 					lex_read_ch(lex);
 					tok = TOK_EQEQ;
@@ -195,11 +200,6 @@ tok_id lex_next(lex_state * lex)
 						lex_read_ch(lex);
 						tok = TOK_EQEQEQ;
 					}
-				}
-				else if ('!' == peek_ch)
-				{
-					lex_read_ch(lex);
-					tok = TOK_NEQ;
 				}
 				goto done;
 			} break;
