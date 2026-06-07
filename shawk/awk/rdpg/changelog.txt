@@ -2,13 +2,13 @@
 	rdpg-comp.awk 2.2.5
 	custom Sync function calls now output as escapes
 	Sync line now in output comments header
-	updated to lex-awk 3.0, structs 2.2
+	updated to lex-awk 3.0, rdpg-to-awk 2.2.1, structs 2.2
 
 	rdpg-to-c.awk 2.2.6
-	updated to rdpg-comp 2.2.5, structs 2.2
+	updated to rdpg-comp 2.2.5, rdpg-to-awk 2.2.1, structs 2.2
 
 	rdpg-to-awk.awk 2.2.1
-	updated to rdpg-comp 2.2.5, structs 2.2
+	updated to rdpg-comp 2.2.5, rdpg-to-awk 2.2.1, structs 2.2
 
 2026-04-25
 	rdpg-to-c.awk   2.2.5
