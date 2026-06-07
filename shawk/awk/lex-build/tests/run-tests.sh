@@ -116,7 +116,7 @@ function eval_success
 # <awk>
 function test_awk_ver
 {
-	run_test_version_info "lex-awk.awk" "lex-awk.awk 2.0"
+	run_test_version_info "lex-awk.awk" "lex-awk.awk 3.0"
 }
 function test_awk_run_test
 {

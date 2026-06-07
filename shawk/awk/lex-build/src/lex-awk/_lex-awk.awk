@@ -10,7 +10,7 @@
 
 # <script>
 function SCRIPT_NAME() {return "lex-awk.awk"}
-function SCRIPT_VERSION() {return "2.0"}
+function SCRIPT_VERSION() {return "3.0"}
 # </script>
 
 # <out_signature>
@@ -198,10 +198,11 @@ function out_lex_io() {
 	out_line(sprintf("split(%s, %s, \"\")", VAR_LINE_STR(), VAR_INPUT_LINE()))
 	out_line(sprintf("++%s", VAR_LINE_NUM()))
 	out_line(sprintf("%s = 1", VAR_LINE_POS()))
-	out_line("return")
+	out_line("return 1")
 	tabs_dec()
 	out_line("}")
 	out_line(sprintf("%s = length(%s)+1", VAR_LINE_POS(), VAR_LINE_STR()))
+	out_line("return 0")
 	tabs_dec()
 	out_line("}")
 	out_line()

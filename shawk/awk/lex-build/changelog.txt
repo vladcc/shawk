@@ -1,3 +1,9 @@
+2026-06-07
+	lex-awk.awk 3.0
+	incompatibility:
+	lex_read_line() returns 1/0 so single line comments can be skipped without
+	reading all characters in a loop
+
 2026-06-06
 	major changes from the previous versions removed
 	lex-c and lex-awk now use the same read_ch() model
