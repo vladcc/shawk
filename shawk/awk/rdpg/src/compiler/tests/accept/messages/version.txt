@@ -1,1 +1,1 @@
-rdpg-comp.awk 2.2.4
+rdpg-comp.awk 2.2.5

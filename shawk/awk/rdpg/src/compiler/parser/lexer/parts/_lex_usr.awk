@@ -54,7 +54,7 @@ function _lu_is_term_rest(ch) {return _lu_is_upped(ch) || _lu_is_name_part(ch)}
 function _lu_is_nont_rest(ch) {return _lu_is_lower(ch) || _lu_is_name_part(ch)}
 
 function _lu_pos_str_pretty(    _pref, _pos_str) {
-    _pref = sprintf("    %d | ", lex_get_line_no())
+    _pref = sprintf("    %d | ", lex_get_line_num())
     _pos_str = (_pref lex_get_pos_str(tok_get_text(tok_curr())))
     gsub("[^[:space:]|]", " ", _pref)
     sub("\n", ("\n" _pref), _pos_str)
@@ -66,7 +66,7 @@ function _lu_msg_pos_pretty(msg) {
 
 function _lu_err_print(msg) {
 	parsing_error_set()
-    error_print(sprintf("%s:%d:%d\n%s", fname(), lex_get_line_no(), \
+    error_print(sprintf("%s:%d:%d\n%s", fname(), lex_get_line_num(), \
         lex_get_pos(), _lu_msg_pos_pretty(msg)))
 }
 function _lu_err_quit(msg) {

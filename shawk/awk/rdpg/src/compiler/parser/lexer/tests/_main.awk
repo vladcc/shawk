@@ -29,7 +29,7 @@ function rdpg_expect(arr) {
 }
 
 function out(msg) {
-	print sprintf("%d:%d: %s", lex_get_line_no(), lex_get_pos(), msg)
+	print sprintf("%d:%d: %s", lex_get_line_num(), lex_get_pos(), msg)
 	print lex_get_pos_str()
 }
 

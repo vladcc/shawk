@@ -7,7 +7,7 @@ function ast_root_set(root) {_B_ast_root = root}
 function ast_root() {return _B_ast_root}
 
 function ast_start_create(nont) {
-	return ast_start_make(nont, "", "", lex_get_line_no(), ast_lhs_lst_make())
+	return ast_start_make(nont, "", "", lex_get_line_num(), ast_lhs_lst_make())
 }
 function ast_start_push_lhs(start, lhs,    _lst) {
 	_lst = ast_start_get_lhs_lst(start)
@@ -28,7 +28,7 @@ function ast_start_last_lhs(start) {
 
 function ast_lhs_create(name, line_num) {
 	if (!line_num)
-		line_num = lex_get_line_no()
+		line_num = lex_get_line_num()
 	return ast_lhs_make(name, line_num, ast_rule_lst_make())
 }
 function ast_lhs_push_rule(lhs, rule,    _lst) {
