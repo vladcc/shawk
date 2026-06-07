@@ -1,3 +1,7 @@
+2026-06-08
+	ptrip.awk 2.1
+	updated to rdpg-comp 2.2.5, rdpg-to-awk 2.2.1, lex-awk 3.0
+
 2026-04-27
 	ptrip.awk 2.0
 	migrated to rdpg

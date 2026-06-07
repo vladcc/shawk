@@ -143,7 +143,7 @@ function lex_usr_get_saved_string(    _ret) {
 function lex_usr_pos_msg(msg) {
 	return sprintf("%s\n%s",
 		sprintf("file '%s', line %d, pos %d: %s",
-			get_file_name(), lex_get_line_no(), lex_get_pos(), msg),
+			get_file_name(), lex_get_line_num(), lex_get_pos(), msg),
 		_lex_usr_pretty_pos())
 }
 function _lex_usr_pretty_pos(    _ptr, _arr, _ch, _i, _end) {

@@ -246,10 +246,10 @@ function ptree_tok_err_exp(arr, len) {
 function _ptree_lvl_push() {_key_path_push()}
 function _ptree_lvl_pop() {_key_path_pop()}
 function _ptree_read_string() {
-	_last_symbol_save(lex_usr_get_saved_string(), lex_get_line_no())
+	_last_symbol_save(lex_usr_get_saved_string(), lex_get_line_num())
 }
 function _ptree_read_word() {
-	_last_symbol_save(lex_get_saved(), lex_get_line_no())
+	_last_symbol_save(lex_get_saved(), lex_get_line_num())
 }
 function _ptree_push_state() {
 	++_B_ptree_state_lvl
