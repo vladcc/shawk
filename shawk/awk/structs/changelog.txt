@@ -1,3 +1,7 @@
+2026-06-07
+	structs.awk 2.2
+	removed unnecessary spaces in comments header output and *_errq() gen
+
 2026-05-31
 	structs.awk 2.1
 	check for end state before exit implemented

@@ -51,7 +51,7 @@ function on_{&}(memb, type) {{&}_save(memb, type)}
 # vld.dinev@gmail.com
 
 function SCRIPT_NAME()    {return "structs.awk"}
-function SCRIPT_VERSION() {return "2.1"}
+function SCRIPT_VERSION() {return "2.2"}
 
 # <awk_rules>
 function init() {

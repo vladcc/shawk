@@ -94,7 +94,7 @@ function gen_base(    _fname, _db_nm) {
 			sprintf(                                                          \
 				(                                                             \
 				"%s_errq(sprintf(\"entity '%%s': expected type match '%%s', " \
-				"entity type '%%s'\", \n\t\t ent, texp, %s(ent)))"            \
+				"entity type '%%s'\",\n\t\tent, texp, %s(ent)))"              \
 				),                                                            \
 				prefix_get(),                                                 \
 				make_fnm("type_of")                                           \
@@ -483,7 +483,10 @@ function gen_type_memb_cmnts(type,    _i, _end, _memb, _mtype, _rev_union) {
 			emit(sprintf("# # %s is %s", _rev_union, _mtype))
 			emit(sprintf("# has %s %s", _memb, _rev_union))
 		} else {
-			emit(sprintf("# has %s %s", _memb, _mtype))
+			if (_mtype)
+				emit(sprintf("# has %s %s", _memb, _mtype))
+			else
+				emit(sprintf("# has %s", _memb))
 		}
 	}
 }
