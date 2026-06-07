@@ -1,3 +1,7 @@
+2026-06-07
+	awkson.awk 2.2
+	updated to rdpg-comp 2.2.5, rdpg-to-awk 2.2.1, lex-awk 3.0
+
 2026-04-27
 	awkson.awk 2.1
 	updated to rdpg-comp.awk 2.2.4

@@ -36,17 +36,17 @@ BEGIN {
 
 function lex_pretty_pos(line,    _ptr, _arr, _ch, _i, _end) {
 	split(line, _arr, "")
-	
+
 	_end = _lex_get_pos()
 	for (_i = 1; _i < _end; ++_i) {
 		_ch = _arr[_i]
 		_ptr = (_ptr (_ch != "\t" ? " " : "\t"))
 	}
-		
+
 	return (line "\n" _ptr "^")
 }
 function pretty_print(msg) {
 	print sprintf("file '%s', line %d, pos %d: %s",
-		get_file_name(), _lex_get_line_no(), _lex_get_pos(), msg)
+		get_file_name(), _lex_get_line_num(), _lex_get_pos(), msg)
 	print lex_pretty_pos(_lex_get_line_str())
 }

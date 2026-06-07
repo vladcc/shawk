@@ -8,7 +8,7 @@ function tok_err(    _arr, _len) {
 
 	error_print(sprintf("%s:%d:%d",
 		get_file_name(),
-		_lex_get_line_no(),
+		_lex_get_line_num(),
 		_lex_get_pos()))
 
 	error_print(sprintf("expected%s'%s', got '%s'",
