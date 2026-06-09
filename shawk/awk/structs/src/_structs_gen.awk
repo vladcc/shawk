@@ -33,7 +33,7 @@ function DESCRIPT() {
 # vld.dinev@gmail.com
 
 function SCRIPT_NAME()    {return "structs.awk"}
-function SCRIPT_VERSION() {return "2.2"}
+function SCRIPT_VERSION() {return "2.3"}
 
 # <awk_rules>
 function init() {

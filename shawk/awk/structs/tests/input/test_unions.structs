@@ -1,5 +1,24 @@
 start
 
+# <anchor_tests>
+union u_SIGNED
+name INT
+name DOUBLE
+
+union u_NUM
+name UINT
+name u_SIGNED
+
+type INT
+has val
+
+type DOUBLE
+has val
+
+type UINT
+has val
+# </anchor_tests>
+
 union uA
 name type_a
 name type_b

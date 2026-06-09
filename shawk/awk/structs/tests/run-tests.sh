@@ -263,6 +263,9 @@ function test_runs_unions
 	run_main_unions "-vBadType=1"
 	bt_assert_failure
 	diff_stderr "main_union_bad_type.txt"
+
+	run_main_unions "-vUnionMatching=1"
+	bt_assert_success
 }
 function test_runs_unions_pref
 {
@@ -296,6 +299,9 @@ function test_runs_unions_pref
 	run_main_unions_pref "-vBadType=1"
 	bt_assert_failure
 	diff_stderr "main_union_pref_bad_type.txt"
+
+	run_main_unions_pref "-vUnionMatching=1"
+	bt_assert_success
 }
 # </runs>
 

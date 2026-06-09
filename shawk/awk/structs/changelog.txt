@@ -1,3 +1,7 @@
+2026-06-10
+	structs.awk 2.3
+	union constant anchored rx now generated
+
 2026-06-07
 	structs.awk 2.2
 	removed unnecessary spaces in comments header output and *_errq() gen

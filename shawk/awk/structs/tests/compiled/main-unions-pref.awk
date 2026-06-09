@@ -85,19 +85,32 @@ function test_bad_type(    _ent, _type, _a) {
 	ast_testu_set_x(_ent, _type)
 }
 
+function test_union_matching(    _type, _a) {
+	# test that union rx are generated with anchors
+	assert(AST_INT() == "INT", ++_a)
+	assert(AST_DOUBLE() == "DOUBLE", ++_a)
+	assert(AST_UINT() == "UINT", ++_a)
+	assert(AST_U_SIGNED() == "^(INT|DOUBLE)$", ++_a)
+	assert(AST_U_NUM() == "^(UINT|INT|DOUBLE)$", ++_a)
+
+	assert(AST_UINT() ~ AST_INT(), ++_a)
+
+	assert(AST_INT() ~ AST_U_SIGNED(), ++_a)
+	assert(AST_DOUBLE() ~ AST_U_SIGNED(), ++_a)
+	assert(AST_UINT() !~ AST_U_SIGNED(), ++_a)
+
+	assert(AST_INT() ~ AST_U_NUM(), ++_a)
+	assert(AST_DOUBLE() ~ AST_U_NUM(), ++_a)
+	assert(AST_UINT() ~ AST_U_NUM(), ++_a)
+}
+
 function main() {
-	if (Ok)
-		test_ok()
-	if (1 == NoEnt)
-		test_no_ast_1()
-	if (2 == NoEnt)
-		test_no_ast_2()
-	if (3 == NoEnt)
-		test_no_ast_3()
-	if (1 == BadEnt)
-		test_bad_ast_1()
-	if (2 == BadEnt)
-		test_bad_ast_1()
-	if (BadType)
-		test_bad_type()
+	if (Ok)                 test_ok()
+	else if (1 == NoEnt)    test_no_ast_1()
+	else if (2 == NoEnt)    test_no_ast_2()
+	else if (3 == NoEnt)    test_no_ast_3()
+	else if (1 == BadEnt)   test_bad_ast_1()
+	else if (2 == BadEnt)   test_bad_ast_2()
+	else if (BadType)       test_bad_type()
+	else if (UnionMatching) test_union_matching()
 }

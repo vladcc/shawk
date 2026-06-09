@@ -73,6 +73,8 @@ function make_dbnm() {return sprintf("_STRUCTS_%s_db", prefix_get())}
 
 function emit(str) {tabs_print(str)}
 
+function anchor(rx) {return sprintf("^(%s)$", rx)}
+
 function gen_base(    _fname, _db_nm) {
 	tag_open("private")
 	_db_nm = make_dbnm()
@@ -181,7 +183,7 @@ function gen_type(type,    _i, _end, _memb, _mtype, _pref, _fname, _type_rx) {
 	emit("}")
 	emit("")
 
-	_type_rx = sprintf("^(%s)$", type)
+	_type_rx = anchor(type)
 	for (_i = 1; _i <= _end; ++_i) {
 		_memb = has_get_memb(type, _i)
 		_mtype = has_get_mtype(type, _i)
@@ -191,15 +193,16 @@ function gen_type(type,    _i, _end, _memb, _mtype, _pref, _fname, _type_rx) {
 		tabs_inc()
 			emit(sprintf("_%s(ent, \"%s\")", make_fnm("type_chk"), _type_rx))
 			if (_mtype) {
+				_mtype = anchor(_mtype)
 				emit(sprintf("if (%s)", _memb))
 				tabs_inc()
-					emit(                             \
-						sprintf(                      \
-							"_%s(%s, \"%s\")",        \
-							make_fnm("type_chk"),     \
-							_memb,                    \
-							sprintf("^(%s)$", _mtype) \
-						)                             \
+					emit(                         \
+						sprintf(                  \
+							"_%s(%s, \"%s\")",    \
+							make_fnm("type_chk"), \
+							_memb,                \
+							_mtype                \
+						)                         \
 					)
 				tabs_dec()
 			}
@@ -222,6 +225,16 @@ function gen_type(type,    _i, _end, _memb, _mtype, _pref, _fname, _type_rx) {
 		tabs_dec()
 		emit("}")
 		emit("")
+	}
+}
+
+function gen_unions(    _i, _end, _union, _rx, _fname) {
+	_end = union_count()
+	for (_i = 1; _i <= _end; ++_i) {
+		_union = union_get(_i)
+		_rx = anchor(resolved_union_get(_union))
+		_fname = toupper(make_fnm(_union))
+		emit(sprintf("function %s() {return \"%s\"}", _fname, _rx))
 	}
 }
 
@@ -419,32 +432,40 @@ function resolve_unions_of_type_members(type,    _i, _end, _mtype) {
 	_end = has_count(type)
 	for (_i = 1; _i <= _end; ++_i) {
 		_mtype = has_get_mtype(type, _i)
-		if (union_is(_mtype)) {
-			if (!resolved_union_is(_mtype))
-				resolved_union_save(_mtype, resolve_union(_mtype))
+		if (union_is(_mtype))
 			has_set_mtype(type, _i, resolved_union_get(_mtype))
-		}
 	}
 }
 
 function resolve_union(union, _types,    _i, _end, _name, _next) {
+	if (resolved_union_is(union))
+		return
+
 	_end = name_count(union)
 	for (_i = 1; _i <= _end; ++_i) {
 		_name = name_get(union, _i)
 
 		if (type_is(_name))
 			_next = _name
-		else if (union_is(_name))
-			_next = resolve_union(_name)
-		else
+		else if (union_is(_name)) {
+			resolve_union(_name)
+			_next = resolved_union_get(_name)
+		} else
 			error_quit("if you see this there's a bug")
 
 		_types = !(_types) ? _next : (_types "|" _next)
 	}
-	return _types
+	resolved_union_save(union, _types)
+}
+
+function resolve_unions(    _i, _end) {
+	_end = union_count()
+	for (_i = 1; _i <= _end; ++_i)
+		resolve_union(union_get(_i))
 }
 
 function resolve_unions_to_types() {
+	resolve_unions()
 	resolve_unions_of_types()
 }
 # </resolve>
@@ -513,6 +534,7 @@ function generate() {
 	gen_struct_cmnts()
 	gen_base()
 	tag_open("types")
+	gen_unions()
 	gen_types()
 	tag_close("types")
 	tag_close(tag_structs())
