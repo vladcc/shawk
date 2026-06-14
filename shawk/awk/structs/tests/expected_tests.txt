@@ -1,5 +1,5 @@
 test_all
-test_bad_input
+test_err_input
 test_fsm
 test_help
 test_opts
@@ -8,3 +8,4 @@ test_runs_prefix
 test_runs_unions
 test_runs_unions_pref
 test_ver
+test_warn_input

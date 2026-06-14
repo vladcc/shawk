@@ -33,7 +33,7 @@ function DESCRIPT() {
 # vld.dinev@gmail.com
 
 function SCRIPT_NAME()    {return "structs.awk"}
-function SCRIPT_VERSION() {return "2.3"}
+function SCRIPT_VERSION() {return "2.4"}
 
 # <awk_rules>
 function init() {
@@ -784,6 +784,7 @@ function check_unions(    _i, _end, _union, _set) {
 
 		check_unions_type_of_names(_union)
 		check_unions_unique_names(_union)
+		check_union_non_reference(_union)
 	}
 }
 function check_unions_redefined_fail(union) {
@@ -839,6 +840,44 @@ path) {
 	pstderr(sprintf("last  union: %s", union_end))
 	pstderr(sprintf("path:%s", path))
 	exit_failure()
+}
+
+function _get_union_refs(out_rtbl,    _i, _end_i, _j, _end_j, _t, _u, _n) {
+	delete out_rtbl
+	_end_i = union_count()
+	for (_i = 1; _i <= _end_i; ++_i) {
+		_u = union_get(_i)
+		_end_j = name_count(_u)
+		for (_j = 1; _j <= _end_j; ++_j) {
+			_n = name_get(_u, _j)
+			if (union_is(_n))
+				out_rtbl[_n]
+		}
+	}
+
+	_end_i = type_count()
+	for (_i = 1; _i <= _end_i; ++_i) {
+		_t = type_get(_i)
+		_end_j = has_count(_t)
+		for (_j = 1; _j <= _end_j; ++_j) {
+			_n = has_get_mtype(_t, _j)
+			if (union_is(_n))
+				out_rtbl[_n]
+		}
+	}
+}
+function check_union_non_reference(union) {
+	if (!_B_check_union_non_reference_ref_init) {
+		_get_union_refs(_B_check_union_non_reference_ref_tbl)
+		_B_check_union_non_reference_ref_init = 1
+	}
+
+	if (!(union in _B_check_union_non_reference_ref_tbl))
+		check_union_non_reference_fail(union)
+}
+function check_union_non_reference_fail(union) {
+	pstderr(sprintf("%s: warning: union %s not referenced",
+		SCRIPT_NAME(), union))
 }
 # </unions>
 

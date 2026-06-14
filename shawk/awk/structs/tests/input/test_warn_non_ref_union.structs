@@ -1,15 +1,18 @@
 start
 
-union baz
+union bar
 name foo
 
 union baz
+name foo
+
+union zog
 name bar
 
 type foo
 has x
 
-type bar
-has y baz
+type zig
+has y zog
 
 end

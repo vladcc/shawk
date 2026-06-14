@@ -1,3 +1,7 @@
+2026-06-14
+	structs.awk 2.4
+	union not referenced warning implemented
+
 2026-06-10
 	structs.awk 2.3
 	union constant anchored rx now generated

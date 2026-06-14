@@ -83,8 +83,8 @@ function test_opts
 }
 # </options>
 
-# <bad_input>
-function test_bad_input
+# <err_input>
+function test_err_input
 {
 	run_structs ""
 	bt_assert_failure
@@ -166,7 +166,16 @@ function test_bad_input
 	bt_assert_failure
 	diff_stderr "err_structs_union_rec_ref_2.txt"
 }
-# </bad_input>
+# </err_input>
+
+# <warn_input>
+function test_warn_input
+{
+	run_structs "./input/test_warn_non_ref_union.structs"
+	bt_assert_success
+	diff_stderr "warn_non_ref_union.txt"
+}
+# </warn_input>
 
 # <runs>
 function test_runs
@@ -308,7 +317,8 @@ function test_runs_unions_pref
 function test_all
 {
 	bt_eval test_opts
-	bt_eval test_bad_input
+	bt_eval test_err_input
+	bt_eval test_warn_input
 	bt_eval test_runs
     bt_eval test_runs_prefix
 	bt_eval test_runs_unions
