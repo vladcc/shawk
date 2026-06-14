@@ -23,6 +23,11 @@ typedef struct lexer {
 	bool err;
 } lexer;
 
+typedef struct lex_prs_ctx {
+    lexer * lex;
+    prs_ctx * prs;
+} lex_prs_ctx;
+
 #define BUFF_SZ 1024
 
 static const char * lex_to_str(tok_id tk)
@@ -317,10 +322,17 @@ void stack_pop(void)
 // </stack>
 
 // <esc>
-static lexer * ctx_lex(usr_ctx * ctx)
+static lexer * ctx_lex(usr_ctx * usr)
 {
-	return (lexer *)(ctx->ctx);
+	return usr->ctx->lex;
 }
+
+#ifdef COMPILE_SYNC_USR_FN
+static prs_ctx * ctx_prs(usr_ctx * usr)
+{
+	return usr->ctx->prs;
+}
+#endif
 
 typedef enum act {
 	ON_START, ON_END,
@@ -403,6 +415,35 @@ void on_neg(usr_ctx * usr) {do_act(usr, ON_NEG);}
 void on_number(usr_ctx * usr) {do_act(usr, ON_NUMBER);}
 // </esc>
 
+#ifdef COMPILE_SYNC_USR_FN
+// <sync>
+bool usr_sync_past_semi(usr_ctx * ctx)
+{
+    bool ret = false;
+    tok_id tok = ERR;
+
+    while (1)
+    {
+        tok = tok_curr(ctx);
+        if (SEMI == tok)
+        {
+            tok_next(ctx);
+            ret = true;
+            break;
+        }
+        else if (EOI == tok)
+        {
+            break;
+        }
+        tok_next(ctx);
+    }
+
+    rdpg_reread_curr_tok(ctx_prs(ctx));
+    return ret;
+}
+// </sync>
+#endif
+
 // <callbacks>
 void tok_err(usr_ctx * usr, prs_ctx * prs)
 {
@@ -444,67 +485,40 @@ void tok_err(usr_ctx * usr, prs_ctx * prs)
 }
 tok_id tok_next(usr_ctx * usr)
 {
-	return lex_next((lexer *)(usr->ctx));
+	return lex_next(ctx_lex(usr));
 }
 tok_id tok_curr(usr_ctx * usr)
 {
-    return lex_curr((lexer *)(usr->ctx));
+    return lex_curr(ctx_lex(usr));
 }
 // </callbacks>
 
 #ifdef COMPILE_FOO
+// These are here to compile and therefore prove there are no name clashes.
 // <foo>
-static lexer * ctx_lex_foo(usr_ctx_foo * ctx)
-{
-	return (lexer *)(ctx->ctx);
-}
-
 void tok_err_foo(usr_ctx_foo * usr, prs_ctx_foo * prs)
 {
-	lexer * lex = ctx_lex_foo(usr);
-
-	lex->err = true;
-
-	fprintf(stderr, "file %s, line %d, pos %d: unexpected '%s'",
-		lex->fname, lex->line, lex->pos, lex_to_str(lex->curr));
-
-	tok_id_foo prev = (tok_id_foo)lex->prev;
-	if (prev != NONE_FOO)
-		fprintf(stderr, " after '%s'", lex_to_str((tok_id)prev));
-	fprintf(stderr, "%s", "\n");
-
-	fprintf(stderr, "%s", lex->str);
-	int end = lex->pos-1, ch = 0;
-	for (int i = 0; i < end; ++i)
-	{
-		ch = lex->str[i];
-		fprintf(stderr, "%c", isspace(ch) ? ch : ' ');
-	}
-	fprintf(stderr, "%c\n", '^');
-
-	size_t exp_size = 0;
-	const tok_id_foo * exp = rdpg_expect_foo(prs, &exp_size);
-
-	if (1 == exp_size)
-		fprintf(stderr, "expected: %s", lex_to_str((tok_id)exp[0]));
-	else if (exp_size > 1)
-	{
-		fprintf(stderr, "%s", "expected one of:");
-		for (size_t i = 0; i < exp_size; ++i)
-			fprintf(stderr, " %s", lex_to_str((tok_id)exp[i]));
-	}
-	fprintf(stderr, "%c", '\n');
+    return;
 }
 tok_id_foo tok_curr_foo(usr_ctx_foo * usr)
 {
 	// hack
-	return (tok_id_foo)lex_curr((lexer *)(usr->ctx));
+    return ERR_FOO;
 }
 tok_id_foo tok_next_foo(usr_ctx_foo * usr)
 {
 	// hack
-	return (tok_id_foo)lex_next((lexer *)(usr->ctx));
+    return ERR_FOO;
 }
+
+#ifdef COMPILE_SYNC_USR_FN
+// <sync>
+bool usr_sync_past_semi_foo(usr_ctx * ctx)
+{
+    return false;
+}
+// </sync>
+#endif
 // </foo>
 #endif
 
@@ -528,8 +542,10 @@ int main(int argc, char * argv[])
 	}
 
 	lex_init(lex, fname, fp);
-	usr_ctx usr = {(void *)lex};
 	prs_ctx prs = {0};
+
+    lex_prs_ctx lpc = {lex, &prs};
+    usr_ctx usr = {&lpc};
 
 	int res = EXIT_FAILURE;
 	if (rdpg_parse(&prs, &usr))

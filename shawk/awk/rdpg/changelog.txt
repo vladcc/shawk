@@ -1,3 +1,12 @@
+2026-06-15
+	custom function sync test added for backends
+
+	rdpg-comp.awk 2.2.6
+	rdpg-to-c.awk 2.2.7
+	rdpg-to-awk.awk 2.2.2
+	all three updated to structs.awk 2.4 and each other
+	rdpg-to-c bug fix: user provided sync function now works
+
 2026-06-07
 	rdpg-comp.awk 2.2.5
 	custom Sync function calls now output as escapes

@@ -42,7 +42,8 @@ function _compile_parser
     bt_eval "command -v ${_G_CMP} > /dev/null"
 	bt_assert_success
 
-	local L_CMP_FLAGS="-Wall -Werror -Wfatal-errors"
+    local L_EXTRA_FLAGS="$1"
+	local L_CMP_FLAGS="-Wall -Werror -Wfatal-errors ${L_EXTRA_FLAGS}"
 
 	# compile with *_foo; tests more than one parser in a binary
 	bt_eval "${_G_CMP} ${_G_C_MAIN_SRC} ${_G_C_PSR_SRC} ${_G_C_PSR_FOO_SRC} -DCOMPILE_FOO -o ${_G_C_BIN} ${L_CMP_FLAGS}"
@@ -67,7 +68,7 @@ function _generate_parser_src
         bt_eval "$_G_AWK -f $L_COMP $L_COMP_FLAGS $L_EXPR | $_G_AWK -f $L_TO_C $L_TO_C_FLAGS -vDir=./${_G_C_TDIR}"
     elif [ "$L_HOW" = "tag" ]; then
         L_TAG="$4"
-        bt_eval "$_G_AWK -f $L_COMP $L_COMP_FLAGS $L_EXPR | sed -E 's/[A-Z][A-Z_]+/&_${L_TAG}/g' | $_G_AWK -f $L_TO_C $L_TO_C_FLAGS -vDir=./${_G_C_TDIR}"
+        bt_eval "$_G_AWK -f $L_COMP $L_COMP_FLAGS $L_EXPR | sed -E 's/[A-Z][A-Z_]+/&_${L_TAG}/g;s/usr_sync_past_semi/&_foo/g' | $_G_AWK -f $L_TO_C $L_TO_C_FLAGS -vDir=./${_G_C_TDIR}"
     elif [ "$L_HOW" = "bad-enum-state" ]; then
         bt_eval "$_G_AWK -f $L_COMP $L_COMP_FLAGS $L_EXPR | $_G_AWK -f ./${_G_C_TDIR}/enum_bad_state_begin.awk -f $L_TO_C $L_TO_C_FLAGS -vDir=./${_G_C_TDIR}"
     else
@@ -81,6 +82,7 @@ function _generate_parser
 
     local L_COMP_FLAGS=""
     local L_TO_C_FLAGS=""
+    local L_GCC_FLAGS=""
 
     [ "$1" != "-v_Dummy_=0" ] && L_COMP_FLAGS="$1"
     [ "$2" != "-v_Dummy_=0" ] && L_TO_C_FLAGS="$2"
@@ -93,7 +95,8 @@ function _generate_parser
 	_generate_parser_src "tag" "$L_COMP_FLAGS" "$L_TO_C_FLAGS -vTag=foo" "FOO"
 	bt_assert_success
 
-    _compile_parser
+    [ "$2" == "-vTokHack=1" ] && L_GCC_FLAGS="-DCOMPILE_SYNC_USR_FN"
+    _compile_parser "$L_GCC_FLAGS"
 }
 
 # <custom-test-cases>

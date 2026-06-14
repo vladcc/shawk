@@ -16,7 +16,8 @@ enum tok_id {
 	ERR,
 };
 
+typedef struct lex_prs_ctx lex_prs_ctx;
 struct usr_ctx {
-	void * ctx;
+	lex_prs_ctx * ctx;
 };
 #endif

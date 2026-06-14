@@ -148,7 +148,7 @@ function test_sync_custom_err
 	diff_stderr "bad_start.txt"
 	cleanup
 }
-function test_sync_custom
+function test_sync_custom_tok
 {
 	pretest "-vSync=expr=SEMI" "-v_Dummy_=0"
 	bt_eval test_use_cases
@@ -165,11 +165,19 @@ function test_sync_custom
 	bt_eval test_sync_custom_err "bad_sync_custom_3.txt"
 	postest
 }
+function test_sync_custom_fn
+{
+	pretest "-vSync=expr=usr_sync_past_semi" "-vTokHack=1"
+	bt_eval test_use_cases
+	bt_eval test_sync_custom_err "bad_sync_custom_4.txt"
+	postest
+}
 function test_sync
 {
 	bt_eval test_sync_default
 	bt_eval test_sync_none
-	bt_eval test_sync_custom
+	bt_eval test_sync_custom_tok
+	bt_eval test_sync_custom_fn
 }
 # </sync>
 function test_tok_hack

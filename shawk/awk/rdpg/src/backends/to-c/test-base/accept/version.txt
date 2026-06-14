@@ -1,1 +1,1 @@
-rdpg-to-c.awk 2.2.6
+rdpg-to-c.awk 2.2.7
