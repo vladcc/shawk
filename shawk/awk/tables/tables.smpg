@@ -1,0 +1,94 @@
+@BEGIN
+
+@INCLUDE
+	../awklib/src/awklib_prog.awk
+	../awklib/src/awklib_tabs.awk
+@END
+
+@FSM fsm
+	start  -> prefix | defn
+	prefix -> defn
+	defn   -> field
+	field  -> field | defn | end
+	end    -> start
+@END
+
+@HANDLER start
+	prefix_save("tbl")
+@END
+
+@HANDLER prefix|defn|field
+	data_or_err()
+	on_{&}($2)
+@END
+
+@HANDLER end
+	generate()
+	exit_success()
+@END
+
+@HANDLER error
+	error_qfpos(sprintf("expected '%s', got '%s'", expected, got))
+@END
+
+@TEMPLATE prefix|defn|field
+function on_{&}(v) {{&}_save(v)}
+@END
+
+@OTHER
+# Author: Vladimir Dinev
+# vld.dinev@gmail.com
+
+function SCRIPT_NAME()    {return "tables.awk"}
+function SCRIPT_VERSION() {return "1.0"}
+
+# <awk_rules>
+function init() {
+	set_program_name(SCRIPT_NAME())
+
+	if (Fsm)
+		print_fsm()
+	if (Help)
+		print_help()
+	if (Version)
+		print_version()
+	if (ARGC != 2)
+		print_use_try()
+}
+
+function leave() {
+	if (!should_skip_end()) {
+		fsm_get_state(G_the_fsm)
+		if (fsm_get_state(G_the_fsm) != FSM_END())
+			fsm_on_error("", FSM_END(), fsm_get_state(G_the_fsm))
+	}
+}
+
+BEGIN {
+	init()
+}
+
+# ignore empty lines and comments
+/^[[:space:]]*(#|$)/ {next}
+
+# strip spaces and fsm
+{
+	gsub("^[[:space:]]+|[[:space:]]+$", "", $0)
+	fsm_next(G_the_fsm, $1)
+}
+
+END {
+	leave()
+}
+# </awk_rules>
+
+function data_or_err() {
+	if (NF < 2)
+		error_qfpos(sprintf("no data after '%s'", $1))
+}
+function error_qfpos(msg) {
+	error_quit(sprintf("file '%s' line %d: %s", FILENAME, FNR, msg))
+}
+@END
+
+@GENERATE
