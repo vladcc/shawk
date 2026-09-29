@@ -1,3 +1,8 @@
+2026-09-29
+	structs.awk 2.5
+	bugfix: only two entity generations possible
+	more obscure db static table name
+
 2026-06-14
 	structs.awk 2.4
 	union not referenced warning implemented
