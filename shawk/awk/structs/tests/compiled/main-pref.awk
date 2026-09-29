@@ -70,6 +70,9 @@ function test_gen_ind(    _lst) {
 	foo_clear()
 	print list_make()
 	print list_make()
+	foo_clear()
+	print list_make()
+	print list_make()
 	list_head(_lst)
 }
 

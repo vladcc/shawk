@@ -65,15 +65,13 @@ function name_count(union)  {return __get(sprintf("name.count.%s", union))}
 function name_get(union, n) {return __get(sprintf("name.%d.%s", n, union))}
 # </data>
 
-function tag_structs() {return ("structs-" prefix_get())}
-function tag_open(tag) {print sprintf("# <%s>", tag)}
+function tag_structs()  {return ("structs-" prefix_get())}
+function tag_open(tag)  {print sprintf("# <%s>", tag)}
 function tag_close(tag) {print sprintf("# <\\%s>", tag)}
-function make_fnm(str,    _pref) {return (prefix_get() "_" str)}
-function make_dbnm() {return sprintf("_STRUCTS_%s_db", prefix_get())}
-
-function emit(str) {tabs_print(str)}
-
-function anchor(rx) {return sprintf("^(%s)$", rx)}
+function make_fnm(str)  {return (prefix_get() "_" str)}
+function make_dbnm()    {return sprintf("__STRUCTS_%s_db__", prefix_get())}
+function emit(str)      {tabs_print(str)}
+function anchor(rx)     {return sprintf("^(%s)$", rx)}
 
 function gen_base(    _fname, _db_nm) {
 	tag_open("private")
@@ -109,16 +107,11 @@ function gen_base(    _fname, _db_nm) {
 	emit("")
 
 	_fname = make_fnm("clear")
-	emit(sprintf("function %s() {", _fname))
+	emit(sprintf("function %s(    _gen) {", _fname))
 	tabs_inc()
+		emit(sprintf("_gen = _%s(\"gen\")", make_fnm("get")))
 		emit(sprintf("delete %s", _db_nm))
-		emit(                                   \
-			sprintf(                            \
-				"_%s(\"gen\", _%s(\"gen\")+1)", \
-				make_fnm("set"),                \
-				make_fnm("get")                 \
-			)                                   \
-		)
+		emit(sprintf("_%s(\"gen\", _gen+1)", make_fnm("set")))
 	tabs_dec()
 	emit("}")
 
