@@ -1,6 +1,7 @@
-SHELL := bash
-AWK := awk
-SMPG := $(AWK) -f ../smpg/smpg.awk
+SHELL  := bash
+AWK    := awk
+SMPG   := $(AWK) -f ../smpg/smpg.awk
+TABLES := $(AWK) -f ./tables.awk
 
 .PHONY: help
 help:
@@ -21,6 +22,17 @@ RUN_TESTS  := $(TEST_DIR)/run-tests.sh
 RUN_TESTSV := $(RUN_TESTS) x
 # </tests>
 
+SRC_DIR := ./src
+TABLES_SMPG   := tables.smpg
+TABLES_TABLES := tables.tables
+
+TABLES_SMPG_AWK   := $(SRC_DIR)/_tables_smpg.awk
+TABLES_TABLES_AWK := $(SRC_DIR)/_tables_tables.awk
+TABLES_USR_AWK    := $(SRC_DIR)/_tables_usr.awk
+
+TABLES_AWK     := tables.awk
+TABLES_AWK_DEP := $(TABLES_SMPG_AWK) $(TABLES_TABLES_AWK) $(TABLES_USR_AWK)
+
 .PHONY: all
 all: target
 
@@ -31,12 +43,15 @@ target: build sure
 build: tables
 
 .PHONY: tables
-tables: tables.awk
-tables.awk: src/_tables_gen.awk src/_tables_usr.awk src/_doc.awk
+tables: $(TABLES_AWK)
+$(TABLES_AWK): $(TABLES_AWK_DEP)
 	cat $^ > $@ && chmod +x $@
 
-src/_tables_gen.awk: tables.smpg
+$(TABLES_SMPG_AWK): $(TABLES_SMPG)
 	$(SMPG) $^ > $@
+
+$(TABLES_TABLES_AWK): $(TABLES_TABLES)
+	$(TABLES) $^ > $@
 
 .PHONY: test
 test:
