@@ -29,9 +29,13 @@ TABLES_TABLES := tables.tables
 TABLES_SMPG_AWK   := $(SRC_DIR)/_tables_smpg.awk
 TABLES_TABLES_AWK := $(SRC_DIR)/_tables_tables.awk
 TABLES_USR_AWK    := $(SRC_DIR)/_tables_usr.awk
+TABLES_DOC_AWK    := $(SRC_DIR)/_doc.awk
 
 TABLES_AWK     := tables.awk
-TABLES_AWK_DEP := $(TABLES_SMPG_AWK) $(TABLES_TABLES_AWK) $(TABLES_USR_AWK)
+TABLES_AWK_DEP := $(TABLES_SMPG_AWK)
+TABLES_AWK_DEP += $(TABLES_TABLES_AWK)
+TABLES_AWK_DEP += $(TABLES_USR_AWK)
+TABLES_AWK_DEP += $(TABLES_DOC_AWK)
 
 .PHONY: all
 all: target

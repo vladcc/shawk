@@ -1,5 +1,4 @@
 start
-
 prefix tables
 
 defn  prefix
@@ -12,5 +11,4 @@ field field[]
 defn  field
 field name
 field is_arr
-
 end
