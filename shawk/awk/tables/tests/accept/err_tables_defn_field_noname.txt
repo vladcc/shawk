@@ -1,0 +1,1 @@
+tables.awk: error: file './input/test_err_defn_field_nodata.tables' line 4: no data after 'field'

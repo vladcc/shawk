@@ -1,0 +1,37 @@
+tables.awk - data model compiler
+
+Use: tables.awk <tables-file>
+
+Compiles data descriptions into a type system in awk. 'Compiles in awk'
+means it generates awk source code for setters/getters for each data's
+fields, along with functions to create a variable of a certain type of,
+data, check its type, and a db to remember the values of all fields.
+
+E.g. the following describes the data model for this program itself:
+
+start
+prefix tables
+
+defn  prefix
+field name
+
+defn  defn
+field name
+field field[]
+
+defn  field
+field name
+field is_arr
+end
+
+The user must define an error function which the generated code can call.
+With the provided example the function looks like: tables_errq(msg)
+
+To understand how this all works, it's best to look at the tables_*(),
+prefix_*(), defn_*(), and field_*(), functions in the source of this
+script.
+
+Options:
+-vFsm=1     - print the fsm grammar
+-vVersion=1 - version information
+-vHelp=1    - this screen

@@ -1,0 +1,12 @@
+start
+
+defn foo
+field x
+
+defn bar
+field y
+
+defn foo
+field z
+
+end

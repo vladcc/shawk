@@ -1,0 +1,8 @@
+start
+
+prefix
+
+defn foo
+type x
+
+end

@@ -1,0 +1,2 @@
+Use: tables.awk <tables-file>
+Try: tables.awk -vHelp=1

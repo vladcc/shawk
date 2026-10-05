@@ -31,7 +31,7 @@ function DESCRIPT() {
 # vld.dinev@gmail.com
 
 function SCRIPT_NAME()    {return "tables.awk"}
-function SCRIPT_VERSION() {return "1.0"}
+function SCRIPT_VERSION() {return "1.1"}
 
 # <awk_rules>
 function init() {

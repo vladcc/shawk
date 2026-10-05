@@ -36,6 +36,45 @@ function field_save(name,    _is_arr, _field_id) {
 }
 # </input>
 
+# <checks>
+function errq_redefined(msg) {
+	error_quit(sprintf("%s defined more than once", msg))
+}
+
+function check_defn_field_redefn(defn_id,    _i, _end, _fld_id, _fld_nm,
+_fld_nm_set) {
+	_end = defn_count_field(defn_id)
+	for (_i = 1; _i <= _end; ++_i) {
+		_fld_id = defn_get_field(defn_id, _i)
+		_fld_nm = field_get_name(_fld_id)
+		if (_fld_nm in _fld_nm_set) {
+			errq_redefined(sprintf("%s '%s' in %s '%s'", TABLES_FIELD(),
+				_fld_nm, TABLES_DEFN(), defn_get_name(defn_id)))
+		}
+		_fld_nm_set[_fld_nm]
+	}
+}
+function check_defn_redefn(    _i, _end, _defn_id, _defn_nm, _defn_nm_set) {
+	_end = defn_count()
+	for (_i = 1; _i <= _end; ++_i) {
+		_defn_id = defn_get(_i)
+		_defn_nm = defn_get_name(_defn_id)
+		if (_defn_nm in _defn_nm_set)
+			errq_redefined(sprintf("%s '%s'", TABLES_DEFN(), _defn_nm))
+		_defn_nm_set[_defn_nm]
+		check_defn_field_redefn(_defn_id)
+	}
+}
+function check_redefn() {
+	check_defn_redefn()
+}
+
+
+function do_checks() {
+	check_redefn()
+}
+# </checks>
+
 # <generate>
 function tag_tables()   {return ("tables-" prefix_name())}
 function tag_open(tag)  {print sprintf("# <%s>", tag)}
@@ -305,6 +344,7 @@ function generate_defns(    _i, _end, _defn_id) {
 }
 
 function generate() {
+	do_checks()
 	gen_header_cmnt()
 	tag_open(tag_tables())
 	gen_struct_cmnts()

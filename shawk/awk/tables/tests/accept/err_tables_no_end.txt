@@ -1,0 +1,1 @@
+tables.awk: error: file './input/test_err_no_end.tables' line 4: expected 'end', got 'field'

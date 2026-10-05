@@ -1,0 +1,74 @@
+# <errors>
+test error: entity 'defn.foo': not an index
+test error: 'foo' not an entity
+test error: 'foo' not an entity
+test error: entity 'foo': expected type match 'defn', entity type ''
+test error: 'foo' not an entity
+test error: 'foo' not an entity
+test error: entity 'foo': expected type match 'defn', entity type ''
+test error: 'foo' not an entity
+test error: 'foo' not an entity
+test error: entity 'foo': expected type match 'defn', entity type ''
+test error: 'foo' not an entity
+test error: 'foo' not an entity
+test error: entity 'foo': expected type match 'defn', entity type ''
+test error: 'foo' not an entity
+test error: 'foo' not an entity
+test error: entity 'foo': expected type match 'defn', entity type ''
+test error: entity 'defn.foo.field.': not an index
+test error: 'foo' not an entity
+test error: 'foo' not an entity
+test error: entity 'foo': expected type match 'defn', entity type ''
+
+test error: entity 'field.bar': not an index
+test error: 'bar' not an entity
+test error: 'bar' not an entity
+test error: entity 'bar': expected type match 'field', entity type ''
+test error: 'bar' not an entity
+test error: 'bar' not an entity
+test error: entity 'bar': expected type match 'field', entity type ''
+test error: 'bar' not an entity
+test error: 'bar' not an entity
+test error: entity 'bar': expected type match 'field', entity type ''
+test error: 'bar' not an entity
+test error: 'bar' not an entity
+test error: entity 'bar': expected type match 'field', entity type ''
+# </errors>
+# <gen>
+1
+_tables-0-1
+_tables-0-2
+_tables-0-3
+
+_tables-0-4
+_tables-0-5
+_tables-0-6
+2
+_tables-1-1
+test error: '_tables-0-1' not an entity
+test error: '_tables-0-1' not an entity
+test error: entity '_tables-0-1': expected type match 'defn', entity type ''
+_tables-1-2
+_tables-1-3
+
+_tables-1-4
+test error: '_tables-0-4' not an entity
+test error: '_tables-0-4' not an entity
+test error: entity '_tables-0-4': expected type match 'field', entity type ''
+_tables-1-5
+_tables-1-6
+3
+_tables-2-1
+test error: '_tables-0-1' not an entity
+test error: '_tables-0-1' not an entity
+test error: entity '_tables-0-1': expected type match 'defn', entity type ''
+_tables-2-2
+_tables-2-3
+
+_tables-2-4
+test error: '_tables-0-4' not an entity
+test error: '_tables-0-4' not an entity
+test error: entity '_tables-0-4': expected type match 'field', entity type ''
+_tables-2-5
+_tables-2-6
+# </gen>

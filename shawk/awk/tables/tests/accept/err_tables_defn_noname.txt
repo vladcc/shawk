@@ -1,0 +1,1 @@
+tables.awk: error: file './input/test_err_defn_nodata.tables' line 3: no data after 'defn'

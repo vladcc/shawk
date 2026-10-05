@@ -1,0 +1,8 @@
+test_all
+test_err_input
+test_fsm
+test_help
+test_opts
+test_runs
+test_runs_prefix
+test_ver

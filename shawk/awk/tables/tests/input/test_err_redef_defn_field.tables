@@ -1,0 +1,7 @@
+start
+
+defn foo
+field x
+field x
+
+end
