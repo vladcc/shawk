@@ -134,10 +134,26 @@ function test_runs
 	run_main
 	bt_assert_success
 	diff_stdout "main_ok.txt"
+
+	run_tables "./input/test_cmnt.tables"
+	bt_assert_success
+	bt_eval "cp $G_STDOUT compiled/test.awk"
+
+	run_main
+	bt_assert_success
+	diff_stdout "main_ok.txt"
 }
 function test_runs_prefix
 {
 	run_tables "./input/test_pref.tables"
+	bt_assert_success
+	bt_eval "cp $G_STDOUT ./compiled/test-pref.awk"
+
+	run_main_pref
+	bt_assert_success
+	diff_stdout "main_ok_pref.txt"
+
+	run_tables "./input/test_cmnt_pref.tables"
 	bt_assert_success
 	bt_eval "cp $G_STDOUT ./compiled/test-pref.awk"
 
